@@ -1,0 +1,131 @@
+/**
+ * 전역 스타일
+ * - Pretendard 는 `public/fonts` 의 woff2 를 `/fonts/...` 로 참조합니다(Vite 가 public 을 루트에 그대로 서빙).
+ * - `local()` 을 앞에 두면 PC에 글꼴이 설치된 경우 네트워크 요청 없이 즉시 적용됩니다.
+ */
+
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src:
+    local('Pretendard-Light'),
+    local('Pretendard-Light'),
+    url('/fonts/Pretendard-Light.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src:
+    local('Pretendard-SemiBold'),
+    local('Pretendard-SemiBold'),
+    url('/fonts/Pretendard-SemiBold') format('woff2');
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src:
+    local('Pretendard SemiBold'),
+    local('Pretendard-SemiBold'),
+    url('/fonts/Pretendard-SemiBold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src:
+    local('Pretendard Bold'),
+    local('Pretendard-Bold'),
+    url('/fonts/Pretendard-Bold.woff2') format('woff2');
+}
+
+:root {  /* DAZED 스타일의 화이트 베이스 매거진 톤 */
+  --prideRed: #c0002f; /* 포인트 레드는 유지 */
+  --inkBlack: #ffffff; /* 베이스 배경을 순백색으로 변경 (변수명 유지) */
+  --surfaceElevated: #fafafa;
+  --surfaceCard: #f3f3f3;
+  /* 본문(밝은 배경)과 헤더 띠를 나누기 위한 헤더 전용 연한 회색 — 스크롤 시에도 내비 위치가 드러납니다 */
+  --headerSurface: #e8eaef;
+  --ruleLine: rgba(0, 0, 0, 0.15); /* 연한 회색 실선 */
+  --ruleLineSoft: rgba(0, 0, 0, 0.08); /* 더 연한 회색 실선 */
+  --textPrimary: #000000;
+  --textMuted: rgba(0, 0, 0, 0.58);
+  --textQuiet: rgba(0, 0, 0, 0.38);
+  --focusRing: rgba(192, 0, 47, 0.55);
+
+  /* 기존 컴포넌트 선택자 깨짐 방지용 별칭(점진 교체 가능) */
+  --borderSubtle: var(--ruleLineSoft);
+  --textSecondary: var(--textMuted);
+  --silverMuted: var(--textMuted);
+  --silver: rgba(0, 0, 0, 0.7);
+  --elevatedBlack: var(--surfaceElevated);
+  --surfaceBlack: var(--surfaceCard);
+  --deepBlack: var(--inkBlack);
+  --shadowLift: 0 32px 100px rgba(0, 0, 0, 0.08);
+
+  color-scheme: light;
+  font-family: 'Pretendard', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--textPrimary);
+  background-color: var(--inkBlack);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  /* 그라디언트 대신 순단색 매거진 베이스로 시선이 본문 타이포에만 머물게 했습니다 */
+  background-color: var(--inkBlack);
+}
+
+/* 스크롤 체인이 끊기지 않도록 메인만 세로 플렉스로 채웁니다 */
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* 스크린리더 전용 제목 등: 레이아웃 박스는 유지하면서 보조기기에만 현재 블록의 역할을 읽히게 했습니다 */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

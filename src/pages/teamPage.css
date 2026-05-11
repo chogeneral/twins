@@ -1,0 +1,221 @@
+/**
+ * TEAM(홈): 커버 스토리 + 픽 피드 레이아웃입니다.
+ * - 대형 타이포·플랫 카드 구조는 매거진 메인의 시각 패턴과 맞춥니다.
+ */
+
+.teamPage {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(40px, 7vw, 72px);
+}
+
+.editorialCover {
+  border-bottom: 1px solid var(--ruleLine);
+}
+
+.editorialCoverInner {
+  display: grid;
+  gap: clamp(28px, 5vw, 48px);
+  align-items: end;
+  padding-bottom: clamp(40px, 6vw, 64px);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 900px) {
+  .editorialCoverInner {
+    grid-template-columns: minmax(0, 1.05fr) minmax(260px, 0.82fr);
+    align-items: end;
+    gap: clamp(36px, 5vw, 64px);
+  }
+}
+
+.editorialCoverIntro {
+  min-width: 0;
+}
+
+/* 킥커: 영역 라벨 + 브랜드 힌트를 한 줄에 묶었습니다 */
+.editorialKicker {
+  margin: 0 0 16px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--textQuiet);
+}
+
+.editorialKickerAccent {
+  color: var(--prideRed);
+}
+
+.editorialHeadline {
+  margin: 0 0 clamp(14px, 2.5vw, 22px);
+  font-weight: 700;
+  font-size: clamp(2.15rem, 6.8vw, 4.25rem);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+}
+
+.editorialDeck {
+  margin: 0 0 clamp(20px, 3vw, 28px);
+  max-width: 38rem;
+  color: var(--textMuted);
+  font-size: clamp(0.95rem, 1.8vw, 1.05rem);
+  line-height: 1.62;
+}
+
+/* 안내 라인을 리스트로 두어 상태가 나열임을 명시했습니다 */
+.editorialChipRow {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.editorialChipRowItem {
+  margin: 0;
+}
+
+.editorialChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1px solid var(--ruleLineSoft);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--textMuted);
+}
+
+.editorialChipAccent {
+  border-color: var(--prideRed);
+  color: var(--textPrimary);
+}
+
+.editorialHeroFigure {
+  margin: 0;
+  justify-self: end;
+}
+
+.editorialHeroImg {
+  width: min(100%, 460px);
+  height: auto;
+  object-fit: contain;
+}
+
+.editorialSection {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 3vw, 28px);
+}
+
+.editorialSectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ruleLine);
+}
+
+/* 섹션을 대문자 토큰으로만 박아 매거진 티크 헤드를 흉내냅니다 */
+.editorialSectionLabel {
+  margin: 0;
+  flex-shrink: 0;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--textPrimary);
+}
+
+.editorialSectionLine {
+  flex: 1;
+  height: 1px;
+  background: transparent;
+}
+
+.editorialPickList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.editorialPickItem {
+  margin: 0;
+}
+
+/* 카드처럼보이도록 전체 줄을 링크로 두고 호버만 슬림하게 줄였습니다 */
+.editorialPickRow {
+  display: grid;
+  grid-template-columns: minmax(76px, 100px) 1fr auto;
+  align-items: baseline;
+  gap: clamp(12px, 2.5vw, 24px);
+  padding: clamp(18px, 3vw, 26px) 0;
+  border-bottom: 1px solid var(--ruleLineSoft);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s ease;
+}
+
+@media (max-width: 560px) {
+  .editorialPickRow {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+.editorialPickRow:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.editorialPickRow:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 4px;
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.editorialPickCat {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--prideRed);
+}
+
+.editorialPickBody {
+  min-width: 0;
+}
+
+.editorialPickHeadline {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: clamp(1rem, 2.6vw, 1.135rem);
+  line-height: 1.38;
+}
+
+.editorialPickSynopsis {
+  display: block;
+  color: var(--textQuiet);
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+.editorialPickMeta {
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--textQuiet);
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .editorialPickMeta {
+    justify-self: start;
+  }
+}

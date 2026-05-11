@@ -1,0 +1,69 @@
+/**
+ * 게시판 공통 레이아웃: 라벨+h1 디바이더는 매거진 섹션 타이포와 같은 리듬을 씁니다.
+ */
+
+.boardPage {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(28px, 4vw, 40px);
+}
+
+.boardHeader {
+  border-bottom: 1px solid var(--ruleLine);
+  padding-bottom: clamp(22px, 3vw, 32px);
+}
+
+.boardEyebrow {
+  margin: 0 0 10px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--textQuiet);
+}
+
+.boardTitle {
+  margin: 0 0 12px;
+  font-weight: 700;
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+}
+
+.boardDescription {
+  margin: 0;
+  max-width: 52ch;
+  color: var(--textMuted);
+  font-size: clamp(0.9375rem, 1.5vw, 1.02rem);
+  line-height: 1.65;
+}
+
+.boardPanel {
+  padding: clamp(28px, 5vw, 44px) 0;
+  border-top: 1px solid var(--ruleLineSoft);
+  border-bottom: none;
+  background: transparent;
+}
+
+.emptyState {
+  text-align: left;
+  padding: clamp(12px, 2vw, 18px) 0;
+}
+
+.emptyTitle {
+  margin: 0 0 10px;
+  padding: 0;
+  border: none;
+  font: inherit;
+  font-weight: 700;
+  font-size: clamp(1rem, 2.5vw, 1.085rem);
+  letter-spacing: -0.01em;
+}
+
+.emptyBody {
+  margin: 0;
+  max-width: 54ch;
+  color: var(--textMuted);
+  font-size: 0.895rem;
+  line-height: 1.62;
+}

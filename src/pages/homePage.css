@@ -1,0 +1,171 @@
+/**
+ * 메인(/) 전용 스타일: 서브페이지보다 짧은 히어로 + 그리드 카드로 첫인상을 정리합니다.
+ */
+
+.homePage {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(40px, 6vw, 30px);
+}
+
+.homeHero {
+  display: grid;
+  gap:20px;
+  align-items: center;
+  grid-template-columns: 1fr;
+  padding-bottom: clamp(32px, 5vw, 48px);
+  border-bottom: 1px solid var(--ruleLineSoft);
+}
+
+@media (min-width: 768px) {
+  /* 로고 최대 폭(200px)과 동일하게 첫 칼럼을 맞춰 좌측 레일이 과하게 넓지 않게 했습니다 */
+  .homeHero {
+    grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+  }
+}
+
+.homeHeroFigure {
+  margin: 0;
+  width: 100%;
+  /* 모바일 1컬럼일 때 로고 블록이 셀 전체 너비를 쓰이므로 flex로 img를 가운데 둠 */
+  display: flex;
+  justify-content: center;
+  justify-self: center;
+}
+
+@media (min-width: 768px) {
+  .homeHeroFigure {
+    justify-self: start;
+    justify-content: flex-start;
+  }
+}
+
+/* 로고 블록 최대 폭 200px — 초소형 화면에서는 부모폭까지 축소 */
+.homeHeroImg {
+  width: min(100%, 200px);
+  height: auto;
+  object-fit: contain;
+}
+
+.homeHeroContent {
+  min-width: 0;
+}
+
+.homeKicker {
+  margin: 0 0 12px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--textQuiet);
+}
+
+.homeKickerAccent {
+  color: var(--prideRed);
+}
+
+.homeTitle {
+  margin: 0 0 14px;
+  font-weight: 700;
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  font-family: 'Pretendard', sans-serif;
+}
+
+.homeLead {
+  margin: 0;
+  max-width: 42rem;
+  font-size: clamp(0.9375rem, 1.8vw, 1.05rem);
+  line-height: 1.65;
+  color: var(--textMuted);
+}
+
+.homeShortcuts {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.homeSectionLabel {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--textMuted);
+}
+
+.homeShortcutGrid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 560px) {
+  .homeShortcutGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 960px) {
+  .homeShortcutGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.homeShortcutCell {
+  margin: 0;
+}
+
+.homeShortcutCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  min-height: 140px;
+  padding: 18px 18px 20px;
+  border: 1px solid var(--ruleLineSoft);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.homeShortcutCard:hover {
+  border-color: var(--ruleLine);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.homeShortcutCard:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 3px;
+}
+
+.homeShortcutTag {
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--textQuiet);
+}
+
+.homeShortcutTagAccent {
+  color: var(--prideRed);
+}
+
+.homeShortcutLabel {
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.homeShortcutDesc {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--textMuted);
+}
