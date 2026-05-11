@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# API 키 등 실제 값이 들어가는 로컬 환경 변수 — 실수로 저장소에 올리지 않기 위해 무시합니다.
+.env
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

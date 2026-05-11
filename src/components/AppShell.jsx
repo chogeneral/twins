@@ -17,10 +17,11 @@ export function AppShell() {
   const homePath = '/'
 
   const navItems = [
-    { to: '/team', label: 'TEAM' },
+    
     { to: '/free-board', label: '자유게시판' },
     { to: '/reviews', label: '직관후기' },
     { to: '/qna', label: '질문게시판' },
+    { to: '/team', label: '응원가' },
   ]
 
   const closeMobileNav = () => setMobileNavOpen(false)

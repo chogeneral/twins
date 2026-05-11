@@ -5,7 +5,7 @@
 .homePage {
   display: flex;
   flex-direction: column;
-  gap: clamp(40px, 6vw, 30px);
+  gap: clamp(20px, 6vw, 30px);
 }
 
 .homeHero {

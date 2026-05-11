@@ -1,0 +1,315 @@
+.kboWeatherSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+}
+
+.kboWeatherHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+/* h2는 영역 제목, 실제 클릭 타깃은 안의 button 입니다(스크린리더·키보드 대응). */
+.kboWeatherTitleHeading {
+  margin: 0;
+  width: 100%;
+}
+
+/* 타이틀 전체를 버튼으로 두어 한 번 클릭으로 패널을 열고 닫습니다. */
+.kboWeatherTitleToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  margin: 0;
+  padding: 4px 0;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--textPrimary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 0;
+  transition:
+    color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.kboWeatherTitleToggle:hover {
+  color: var(--prideRed);
+}
+
+.kboWeatherTitleToggle:active {
+  transform: scale(0.995);
+}
+
+.kboWeatherTitleToggle:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 3px;
+}
+
+.kboWeatherTitleText {
+  min-width: 0;
+}
+
+/* 펼침/접힘 상태를 시각적으로 알려 주는 작은 화살표(본문 토글 힌트). */
+.kboWeatherTitleChevron {
+  flex: 0 0 auto;
+  display: block;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-top: 0.15em;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kboWeatherTitleToggle[aria-expanded='true'] .kboWeatherTitleChevron {
+  transform: rotate(-135deg);
+  margin-top: 0.35em;
+}
+
+/*
+ * 아코디언 높이 애니메이션: 바깥을 grid 한 행(0fr ↔ 1fr)으로 두고, 안쪽에 overflow hidden 을 걸면
+ * 콘텐츠 실제 높이만큼만 부드럽게 열리고 닫힙니다(max-height 추측값 불필요).
+ */
+.kboWeatherPanel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kboWeatherPanel.kboWeatherPanelOpen {
+  grid-template-rows: 1fr;
+}
+
+.kboWeatherPanelInner {
+  overflow: hidden;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    opacity 0.32s ease,
+    transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kboWeatherPanel.kboWeatherPanelOpen .kboWeatherPanelInner {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kboWeatherTitleToggle {
+    transition: none;
+  }
+
+  .kboWeatherTitleToggle:active {
+    transform: none;
+  }
+
+  .kboWeatherTitleChevron {
+    transition: none;
+  }
+
+  .kboWeatherPanel {
+    transition: none;
+  }
+
+  .kboWeatherPanelInner {
+    transition: none;
+    transform: none;
+  }
+
+  .kboWeatherPanel.kboWeatherPanelOpen .kboWeatherPanelInner {
+    transform: none;
+  }
+}
+
+.kboWeatherNote {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--textMuted);
+}
+
+.kboWeatherToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
+}
+
+.kboWeatherSynced {
+  font-size: 0.75rem;
+  color: var(--textQuiet);
+}
+
+.kboWeatherRefresh {
+  padding: 7px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--prideRed);
+  background: transparent;
+  border: 1px solid rgba(192, 0, 47, 0.45);
+  border-radius: 0;
+}
+
+.kboWeatherRefresh:hover:not(:disabled) {
+  background: rgba(192, 0, 47, 0.06);
+}
+
+.kboWeatherRefresh:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.kboWeatherRefresh:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 2px;
+}
+
+.kboWeatherState {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--textMuted);
+}
+
+.kboWeatherStateError {
+  color: var(--textMuted);
+}
+
+.kboWeatherGrid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 560px) {
+  .kboWeatherGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .kboWeatherGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.kboWeatherCard {
+  margin: 0;
+  padding: 16px 18px;
+  border: 1px solid var(--ruleLineSoft);
+  background: var(--surfaceElevated);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100%;
+}
+
+.kboWeatherCardTop {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.kboWeatherIconWrap {
+  flex: 0 0 auto;
+  color: var(--prideRed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+}
+
+.weatherWmoIcon {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.kboWeatherCardHead {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.kboWeatherStadiumName {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.kboWeatherSummary {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--textMuted);
+  line-height: 1.4;
+}
+
+.kboWeatherStats {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+}
+
+.kboWeatherStatRow {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 10px;
+  align-items: baseline;
+  font-size: 0.8125rem;
+}
+
+.kboWeatherStatRow dt {
+  margin: 0;
+  font-weight: 600;
+  color: var(--textQuiet);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.kboWeatherStatRow dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--textPrimary);
+}
+
+.kboWeatherObserved {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--textQuiet);
+}
+
+.kboWeatherCardError {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kboWeatherErrMsg {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--textMuted);
+}

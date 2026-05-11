@@ -1,0 +1,164 @@
+.cheerSongList {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(36px, 5vw, 56px);
+}
+
+.csSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.csSectionHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ruleLine);
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+}
+
+.csSectionHeader:hover .csSectionLabel {
+  color: var(--prideRed);
+}
+
+.csSectionHeader:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 2px;
+}
+
+.csSectionToggle {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: var(--textQuiet);
+  transition: transform 0.25s ease;
+  display: inline-block;
+}
+
+.csSectionToggleOpen {
+  transform: rotate(180deg);
+}
+
+/* 섹션 바디 — 접기/펼치기 */
+.csSectionBody {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+  overflow: hidden;
+}
+
+.csSectionBodyOpen {
+  grid-template-rows: 1fr;
+}
+
+.csSectionBody > ul {
+  overflow: hidden;
+}
+
+.csSectionLabel {
+  margin: 0;
+  flex-shrink: 0;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--textPrimary);
+}
+
+.csSectionLine {
+  flex: 1;
+  height: 1px;
+  background: transparent;
+}
+
+.csList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-height: 0;
+}
+
+.csRow {
+  border-bottom: 1px solid var(--ruleLineSoft);
+}
+
+.csLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: clamp(14px, 2.5vw, 20px) 0;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.12s ease;
+}
+
+.csLink:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.csLink:hover .csName {
+  color: var(--prideRed);
+}
+
+.csLink:hover .csYtIcon {
+  color: #ff0000;
+}
+
+.csLink:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 2px;
+}
+
+.csLinkTeam .csName {
+  font-size: clamp(1rem, 2.2vw, 1.1rem);
+}
+
+.csRowLeft {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.csName {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  transition: color 0.12s ease;
+}
+
+.csPos {
+  font-size: 0.75rem;
+  color: var(--textQuiet);
+  letter-spacing: 0.04em;
+}
+
+.csRowRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.csTag {
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--textQuiet);
+}
+
+.csYtIcon {
+  width: 20px;
+  height: 20px;
+  color: var(--textQuiet);
+  transition: color 0.12s ease;
+}
