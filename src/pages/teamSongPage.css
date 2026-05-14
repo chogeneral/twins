@@ -1,0 +1,5 @@
+.teamSongPage {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(40px, 7vw, 30px);
+}

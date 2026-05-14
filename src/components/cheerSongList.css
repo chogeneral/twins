@@ -162,3 +162,144 @@
   color: var(--textQuiet);
   transition: color 0.12s ease;
 }
+
+/* 재생 중인 행 강조 */
+.csLinkPlaying .csName {
+  color: var(--prideRed);
+}
+
+.csLinkPlaying .csYtIcon {
+  color: var(--prideRed);
+}
+
+/* button reset — csLink가 button일 때 */
+button.csLink {
+  background: none;
+  border: none;
+  padding-left: 0;
+  padding-right: 0;
+  width: 100%;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* 하단 고정 오디오 플레이어 바 */
+.csAudioBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px clamp(16px, 4vw, 40px);
+  background: var(--surfaceBase, #fff);
+  border-top: 1px solid var(--ruleLine);
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* YT API가 교체하는 div — DOM에 존재해야 autoplay 허용 */
+.csAudioIframe {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.csAudioLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  min-width: 0;
+  max-width: 30%;
+}
+
+.csAudioPlayIcon {
+  width: 16px;
+  height: 16px;
+  color: var(--prideRed);
+  flex-shrink: 0;
+  animation: csPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes csPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.csAudioTitle {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.csAudioCenter {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.csAudioProgressWrap {
+  flex: 1;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.csAudioProgressBar {
+  height: 100%;
+  background: var(--prideRed);
+  border-radius: 2px;
+  transition: width 0.4s linear;
+}
+
+.csAudioTime {
+  flex-shrink: 0;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--textQuiet);
+  font-variant-numeric: tabular-nums;
+}
+
+.csAudioClose {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--ruleLine);
+  padding: 8px 16px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: var(--textPrimary);
+  font-family: inherit;
+  transition: background 0.12s ease;
+}
+
+.csAudioClose:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.csAudioClose:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 2px;
+}
+
+@media (max-width: 560px) {
+  .csAudioLeft {
+    max-width: 40%;
+  }
+  .csAudioTime {
+    display: none;
+  }
+}

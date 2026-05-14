@@ -1,0 +1,285 @@
+/**
+ * 구장정보 페이지 — 탭·패널 레이아웃.
+ * - 각 탭에 거칠지도(`stadiumRoughMapOnly`·`stadiumInfoTabPanelFeatured`)와,
+ *   9개 홈구장 탭 모두 실시간 날씨 아래에 교통 안내(`stadiumJamsilAccessGuide`·`stadiumGocheokAccessGuide`·`stadiumIncheonMunhakAccessGuide`·`stadiumSuwonKtAccessGuide`·`stadiumDaejeonHanwhaAccessGuide`·`stadiumDaeguSamsungAccessGuide`·`stadiumBusanSajikAccessGuide`·`stadiumChangwonNcAccessGuide`·`stadiumGwangjuKiaAccessGuide`)를 둡니다.
+ */
+
+.stadiumInfoTabs {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 3vw, 28px);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.stadiumInfoTabs .teamTabList {
+  flex-wrap: wrap;
+  row-gap: 10px;
+  column-gap: 0;
+}
+
+.stadiumInfoTabs .teamTabBtn {
+  text-transform: none;
+  letter-spacing: 0.03em;
+  font-size: clamp(0.625rem, 1.9vw, 0.75rem);
+  padding: 10px 14px;
+  line-height: 1.25;
+  text-align: center;
+  white-space: normal;
+  max-width: min(100%, 12.5rem);
+}
+
+/* 뷰포트 너비 1117px 이하: 탭을 한 줄에 3개씩(grid 3열) 고정 — 모바일·노트북에서 한눈에 구역을 나눕니다 */
+@media (max-width: 1117px) {
+  .stadiumInfoTabs .teamTabList {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px 8px;
+  }
+
+  .stadiumInfoTabs .teamTabBtn {
+    max-width: none;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* 빈 패널이 접히지 않도록 최소 높이만 둡니다 */
+.stadiumInfoTabPanel {
+  min-height: 1.5rem;
+}
+
+/* 잠실(거칠지도 퍼가기)처럼 지도 카드가 붙은 패널은 너무 납작해 보이지 않게 최소 높이 확보 */
+.stadiumInfoTabPanelFeatured {
+  min-height: min(420px, 70vh);
+}
+
+/* 지도 가로 100%·하단 보더 — 좁은 뷰에서 불필요한 가로 스크롤은 숨깁니다 */
+.stadiumRoughMapOnly {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid rgba(20, 20, 26, 0.14);
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* 래퍼·지도 루트 모두 가로 100% — Lander 가 남기는 인라인 width 를 덮어 반응형으로 맞춥니다 */
+.stadiumRoughMapOnly .root_daum_roughmap {
+  margin: 0;
+  display: block;
+  width: 100% !important;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.stadiumRoughMapOnly .wrap_map {
+  width: 100% !important;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/*
+ * 카카오 거칠지도(roughmapLander) 하단 **주소·전화** 줄 제거:
+ * Lander 가 장소에 주소 데이터가 있으면 `div.section.section_address` 를 만들고 그 안에
+ * `.address`(주소)·`.phone`(전화) HTML 을 넣습니다(roughmapLander.js 의 RoughMapHtmlGenerator).
+ * 전역 `.address` 와 이름이 겹칠 수 있어 **반드시** `.stadiumRoughMapOnly` 아래로만 선택합니다.
+ * 카카오 번들 CSS 이후에도 적용되도록 `!important` 를 둡니다.
+ */
+.stadiumRoughMapOnly .section_address {
+  display: none !important;
+}
+
+/*
+ * KBO 9개 홈구장 탭 전용 교통 안내 — 실시간 날씨(`stadiumInfoTabKboWeather`) 카드 **아래**에 두며, 동일 박스 스타일을 공유합니다.
+ * 지도(`stadiumRoughMapOnly`)와 날씨 블록 사이에는 두지 않고, 날씨와 겹치지 않게 상단 여백·하단 구분선을 둡니다.
+ */
+.stadiumJamsilAccessGuide,
+.stadiumGocheokAccessGuide,
+.stadiumIncheonMunhakAccessGuide,
+.stadiumSuwonKtAccessGuide,
+.stadiumDaejeonHanwhaAccessGuide,
+.stadiumDaeguSamsungAccessGuide,
+.stadiumBusanSajikAccessGuide,
+.stadiumChangwonNcAccessGuide,
+.stadiumGwangjuKiaAccessGuide {
+  margin-top: 20px;
+
+  padding: 16px 0 18px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+
+ 
+}
+
+.stadiumJamsilAccessGuideTitle,
+.stadiumGocheokAccessGuideTitle,
+.stadiumIncheonMunhakAccessGuideTitle,
+.stadiumSuwonKtAccessGuideTitle,
+.stadiumDaejeonHanwhaAccessGuideTitle,
+.stadiumDaeguSamsungAccessGuideTitle,
+.stadiumBusanSajikAccessGuideTitle,
+.stadiumChangwonNcAccessGuideTitle,
+.stadiumGwangjuKiaAccessGuideTitle {
+  margin: 0 0 14px 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: rgba(20, 20, 26, 0.9);
+}
+
+.stadiumJamsilAccessGuideBlock,
+.stadiumGocheokAccessGuideBlock,
+.stadiumIncheonMunhakAccessGuideBlock,
+.stadiumSuwonKtAccessGuideBlock,
+.stadiumDaejeonHanwhaAccessGuideBlock,
+.stadiumDaeguSamsungAccessGuideBlock,
+.stadiumBusanSajikAccessGuideBlock,
+.stadiumChangwonNcAccessGuideBlock,
+.stadiumGwangjuKiaAccessGuideBlock {
+  margin-top: 14px;
+}
+
+.stadiumJamsilAccessGuideBlock:first-of-type,
+.stadiumGocheokAccessGuideBlock:first-of-type,
+.stadiumIncheonMunhakAccessGuideBlock:first-of-type,
+.stadiumSuwonKtAccessGuideBlock:first-of-type,
+.stadiumDaejeonHanwhaAccessGuideBlock:first-of-type,
+.stadiumDaeguSamsungAccessGuideBlock:first-of-type,
+.stadiumBusanSajikAccessGuideBlock:first-of-type,
+.stadiumChangwonNcAccessGuideBlock:first-of-type,
+.stadiumGwangjuKiaAccessGuideBlock:first-of-type {
+  margin-top: 0;
+}
+
+.stadiumJamsilAccessGuideBlockHeading,
+.stadiumGocheokAccessGuideBlockHeading,
+.stadiumIncheonMunhakAccessGuideBlockHeading,
+.stadiumSuwonKtAccessGuideBlockHeading,
+.stadiumDaejeonHanwhaAccessGuideBlockHeading,
+.stadiumDaeguSamsungAccessGuideBlockHeading,
+.stadiumBusanSajikAccessGuideBlockHeading,
+.stadiumChangwonNcAccessGuideBlockHeading,
+.stadiumGwangjuKiaAccessGuideBlockHeading {
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: rgba(20, 20, 26, 0.85);
+}
+
+.stadiumJamsilAccessGuideIcon,
+.stadiumGocheokAccessGuideIcon,
+.stadiumIncheonMunhakAccessGuideIcon,
+.stadiumSuwonKtAccessGuideIcon,
+.stadiumDaejeonHanwhaAccessGuideIcon,
+.stadiumDaeguSamsungAccessGuideIcon,
+.stadiumBusanSajikAccessGuideIcon,
+.stadiumChangwonNcAccessGuideIcon,
+.stadiumGwangjuKiaAccessGuideIcon {
+  flex: 0 0 auto;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.stadiumJamsilAccessGuideLead,
+.stadiumGocheokAccessGuideLead,
+.stadiumIncheonMunhakAccessGuideLead,
+.stadiumSuwonKtAccessGuideLead,
+.stadiumDaejeonHanwhaAccessGuideLead,
+.stadiumDaeguSamsungAccessGuideLead,
+.stadiumBusanSajikAccessGuideLead,
+.stadiumChangwonNcAccessGuideLead,
+.stadiumGwangjuKiaAccessGuideLead {
+  margin: 0 0 8px 0;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: rgba(20, 20, 26, 0.62);
+}
+
+.stadiumJamsilAccessGuideList,
+.stadiumGocheokAccessGuideList,
+.stadiumIncheonMunhakAccessGuideList,
+.stadiumSuwonKtAccessGuideList,
+.stadiumDaejeonHanwhaAccessGuideList,
+.stadiumDaeguSamsungAccessGuideList,
+.stadiumBusanSajikAccessGuideList,
+.stadiumChangwonNcAccessGuideList,
+.stadiumGwangjuKiaAccessGuideList {
+  margin: 0;
+  padding: 0 0 0 1.1rem;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: rgba(20, 20, 26, 0.72);
+}
+
+.stadiumJamsilAccessGuideList li,
+.stadiumGocheokAccessGuideList li,
+.stadiumIncheonMunhakAccessGuideList li,
+.stadiumSuwonKtAccessGuideList li,
+.stadiumDaejeonHanwhaAccessGuideList li,
+.stadiumDaeguSamsungAccessGuideList li,
+.stadiumBusanSajikAccessGuideList li,
+.stadiumChangwonNcAccessGuideList li,
+.stadiumGwangjuKiaAccessGuideList li {
+  margin: 0 0 6px 0;
+}
+
+.stadiumJamsilAccessGuideList li:last-child,
+.stadiumGocheokAccessGuideList li:last-child,
+.stadiumIncheonMunhakAccessGuideList li:last-child,
+.stadiumSuwonKtAccessGuideList li:last-child,
+.stadiumDaejeonHanwhaAccessGuideList li:last-child,
+.stadiumDaeguSamsungAccessGuideList li:last-child,
+.stadiumBusanSajikAccessGuideList li:last-child,
+.stadiumChangwonNcAccessGuideList li:last-child,
+.stadiumGwangjuKiaAccessGuideList li:last-child {
+  margin-bottom: 0;
+}
+
+.stadiumJamsilAccessGuideList strong,
+.stadiumGocheokAccessGuideList strong,
+.stadiumIncheonMunhakAccessGuideList strong,
+.stadiumSuwonKtAccessGuideList strong,
+.stadiumDaejeonHanwhaAccessGuideList strong,
+.stadiumDaeguSamsungAccessGuideList strong,
+.stadiumBusanSajikAccessGuideList strong,
+.stadiumChangwonNcAccessGuideList strong,
+.stadiumGwangjuKiaAccessGuideList strong {
+  font-weight: 700;
+  color: rgba(20, 20, 26, 0.55);
+}
+
+/*
+ * 탭 패널 안 지도 아래 날씨 — `KboStadiumWeatherTabCard` 가 `kboWeatherCard` 를 쓰므로
+ * 지도(`stadiumRoughMapOnly`) 하단과 카드 사이 여백만 구장정보 전용으로 잡습니다.
+ * 교통 안내(`stadium*AccessGuide`) 블록은 이 섹션 **다음**에 렌더됩니다(`StadiumInfoPage.jsx`).
+ */
+.stadiumInfoTabKboWeather {
+  margin-top: 16px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* 지도 바로 아래·날씨 카드 위 구역 제목 — `section` 의 `aria-label` 과 함께 접근성을 보강합니다 */
+.stadiumInfoTabKboWeatherHeading {
+  margin: 0 0 10px 0;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: rgba(20, 20, 26, 0.72);
+}
+
+/* 탭 안 날씨 카드 — 패널 가로를 꽉 채움(요청: width 100%) */
+.stadiumInfoTabKboWeatherCard {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}

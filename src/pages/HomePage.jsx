@@ -1,5 +1,4 @@
 import logoLgBrand from '../assets/lglogo.png'
-import { KboStadiumWeatherGrid } from '../components/KboStadiumWeatherGrid'
 import './homePage.css'
 
 export function HomePage() {
@@ -27,7 +26,6 @@ export function HomePage() {
           </p>
         </div>
       </section>
-      <KboStadiumWeatherGrid />
     </article>
   )
 }

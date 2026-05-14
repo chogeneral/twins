@@ -12,6 +12,15 @@
   </head>
   <body>
     <div id="root"></div>
+    <!--
+      카카오맵 거칠지도 퍼가기 로더 — 퍼 가기 블록이 여러 페이지에 있더라도 script 태그는 이 한 줄만 두는 카카오 권장 형태입니다.
+      document.write 흔적 때문에 React 번들 이전에 동기식으로 놓았습니다(KakaoRoughMapEmbed 참고).
+    -->
+    <script
+      charset="UTF-8"
+      class="daum_roughmap_loader_script"
+      src="https://ssl.daumcdn.net/dmaps/map_js_init/roughmapLoader.js"
+    ></script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

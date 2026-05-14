@@ -9,6 +9,872 @@
   gap: clamp(40px, 7vw, 72px);
 }
 
+/* ── 탭 ── */
+.teamTabs {
+  /* 영구결번 등 탭 패널이 PC 에서도 article 폭을 꽉 채우도록 가로 100% 를 둡니다 */
+  display: flex;
+  flex-direction: column;
+  gap: clamp(24px, 4vw, 36px);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.teamTabList {
+  display: flex;
+  border-bottom: 1px solid var(--ruleLine);
+  gap: 0;
+}
+
+.teamTabBtn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  padding: 12px 20px;
+  font-family: inherit;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--textQuiet);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.teamTabBtn:hover {
+  color: var(--textPrimary);
+}
+
+.teamTabBtnActive {
+  color: var(--textPrimary);
+  border-bottom-color: var(--prideRed);
+}
+
+.teamTabBtn:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 2px;
+}
+
+.teamTabPanel {
+  display: flex;
+  flex-direction: column;
+}
+
+.teamTabPanel[hidden] {
+  display: none;
+}
+
+/* ── 타임라인 ── */
+.teamTimeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.teamTimelineItem {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: clamp(16px, 3vw, 32px);
+  padding: clamp(20px, 3vw, 28px) 0;
+  border-bottom: 1px solid var(--ruleLineSoft);
+  align-items: start;
+}
+
+.teamTimelineYear {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--prideRed);
+  padding-top: 3px;
+  text-transform: uppercase;
+}
+
+.teamTimelineBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.teamTimelineTitle {
+  font-size: clamp(1rem, 2.2vw, 1.125rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.teamTimelineDesc {
+  margin: 0;
+  color: var(--textMuted);
+  font-size: clamp(0.875rem, 1.4vw, 0.9375rem);
+  line-height: 1.65;
+  max-width: 52ch;
+}
+
+@media (max-width: 480px) {
+  .teamTimelineItem {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
+
+/* ── 연도별 성적 ── */
+/* 좁은 화면에서 8열 표가 깨지지 않도록 가로 스크롤 래퍼를 둡니다 */
+.teamRecordTableWrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.teamRecordTable {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+}
+
+.teamRecordTh {
+  padding: 10px 16px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--textQuiet);
+  text-align: left;
+  border-bottom: 1px solid var(--ruleLine);
+}
+
+.teamRecordThYear {
+  width: 4.25rem;
+}
+
+/* 경기·승·무·패·승률 열은 숫자 정렬로 한눈에 비교하기 쉽게 했습니다 */
+.teamRecordThNum {
+  text-align: right;
+}
+
+/* 행 배경·최종순위 열에 덧씌우던 색상은 요청에 따라 제거했습니다. 구분은 테두리·호버만 사용합니다 */
+.teamRecordRow {
+  border-bottom: 1px solid var(--ruleLineSoft);
+  transition: background 0.1s ease;
+}
+
+.teamRecordRow:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+/* 우승 연도(한국시리즈 우승) 행만 — 셀 전체에 팀 레드를 옅게 깔아 한눈에 구분합니다 */
+.teamRecordRowWinner {
+  background: rgba(192, 0, 47, 0.09);
+}
+
+.teamRecordRowWinner:hover {
+  background: rgba(192, 0, 47, 0.14);
+}
+
+/* championYoutube 가 있는 우승 행 — 어느 셀을 눌러도 팝업이 열리도록 tr 에 포인터·포커스 링을 둡니다 */
+.teamRecordRowClickable {
+  cursor: pointer;
+}
+
+.teamRecordRowClickable:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: -2px;
+}
+
+.teamRecordTd {
+  padding: clamp(12px, 2vw, 16px) 16px;
+  font-size: clamp(0.875rem, 1.6vw, 0.9375rem);
+}
+
+.teamRecordYear {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--textPrimary);
+}
+
+.teamRecordYearMbc {
+  color: var(--textMuted);
+  font-weight: 600;
+}
+
+.teamRecordRegular {
+  color: var(--textMuted);
+  font-size: clamp(0.8125rem, 1.5vw, 0.875rem);
+  line-height: 1.35;
+}
+
+.teamRecordNum {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--textMuted);
+}
+
+.teamRecordFinalCell {
+
+  font-size: clamp(0.8125rem, 1.5vw, 0.875rem);
+  color: var(--textPrimary);
+}
+
+.teamRecordRank {
+  color: var(--textMuted);
+  font-variant-numeric: tabular-nums;
+}
+
+.teamRecordPost {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.teamRecordStat {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8125rem;
+  color: var(--textMuted);
+}
+
+.teamRecordRate {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8125rem;
+  color: var(--textMuted);
+}
+
+.teamRecordDividerCell {
+  padding: 8px 16px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--textQuiet);
+  border-bottom: 1px solid var(--ruleLine);
+}
+
+/* 우승 표시 별: 팀 포인트 컬러 대신 본문과 같은 색으로만 둡니다 */
+.teamRecordStar {
+  color: inherit;
+  font-size: 0.75rem;
+  margin-right: 4px;
+}
+
+@media (max-width: 480px) {
+  .teamRecordTd {
+    padding: 12px 10px;
+  }
+}
+
+/* 우승 영상 YouTube 팝업 — 헤더보다 위에 보이도록 z-index 를 크게 잡았습니다 */
+.teamChampionModalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 4vw, 32px);
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.teamChampionModalDialog {
+  width: min(960px, 100%);
+  max-height: min(90dvh, 900px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: clamp(16px, 3vw, 24px);
+  border-radius: 0;
+  background: var(--surfaceCard);
+  border: 1px solid var(--ruleLine);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.teamChampionModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.teamChampionModalTitle {
+  margin: 0;
+  font-size: clamp(0.9375rem, 2vw, 1.0625rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.teamChampionModalClose {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid var(--ruleLine);
+  background: transparent;
+  color: var(--textPrimary);
+  cursor: pointer;
+}
+
+.teamChampionModalClose:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 2px;
+}
+
+/* 16:9 비율 박스 안에 iframe 을 맞춰 레이아웃이 깨지지 않게 했습니다 */
+.teamChampionModalEmbedWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+
+.teamChampionModalIframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ── 사진 모달 ── */
+.teamPhotoModalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.teamPhotoModalDialog {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  max-width: min(560px, 100%);
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+  /* 좌우 20px + 연도 테이블 아래(모달 하단) 20px */
+  padding: 0 20px 20px;
+}
+
+.teamPhotoModalClose {
+  align-self: flex-end;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--ruleLine);
+  color: #000;
+  padding: 10px 16px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: inherit;
+  width: 100%;
+  text-align: right;
+  transition: background 0.12s ease;
+}
+
+.teamPhotoModalClose:hover {
+  background: none;
+}
+
+.teamPhotoModalClose:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 2px;
+}
+
+.teamPhotoModalImg {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  /* 사진↔연도 테이블 간격은 테이블 margin-top 20px 한 곳에서만 둠 */
+  margin-bottom: 0;
+}
+
+.teamPhotoModalStats {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+  color: var(--textPrimary);
+  border-top: 1px solid var(--ruleLine);
+  /* 연도 테이블 위(사진 아래) 20px — 모달팝업에서 성적 표와 이미지 사이 여백 */
+  margin-top: 20px;
+}
+
+.teamPhotoModalStats th {
+  padding: 8px 12px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--textQuiet);
+  border-bottom: 1px solid var(--ruleLine);
+  text-align: left;
+}
+
+.teamPhotoModalStats td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--ruleLineSoft) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.teamPhotoModalStats tr:last-child td {
+  border-bottom: none;
+}
+
+.teamPhotoModalStatNote {
+  font-size: 0.6875rem;
+  color: var(--textQuiet);
+  letter-spacing: 0.02em;
+}
+
+/* 투수 성적표 열이 많아 좁은 폭에서 가로 스크롤로 잘리지 않게 했습니다 */
+.teamPhotoModalStatsScroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.teamPhotoModalStatsPitcher {
+  min-width: 520px;
+}
+
+/* ── 골든글러브 ── */
+.teamGGList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.teamGGEraLabel {
+  padding: 8px 0;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--textQuiet);
+  border-bottom: 1px solid var(--ruleLine);
+}
+
+.teamGGEraLabelMbc {
+  margin-top: clamp(20px, 3vw, 28px);
+}
+
+.teamGGItemMbc .teamGGName {
+  color: var(--textMuted);
+}
+
+.teamGGItemClickable {
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.teamGGItemClickable:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.teamGGItemClickable:hover .teamGGName {
+  color: var(--prideRed);
+}
+
+.teamGGItemClickable:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 2px;
+}
+
+.teamGGItem {
+  display: grid;
+  grid-template-columns: 6rem 8rem 1fr;
+  align-items: baseline;
+  gap: clamp(12px, 2vw, 24px);
+  padding: clamp(16px, 2.5vw, 22px) 0;
+  border-bottom: 1px solid var(--ruleLineSoft);
+}
+
+.teamGGName {
+  font-size: clamp(1rem, 2vw, 1.125rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.teamGGPos {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--prideRed);
+  letter-spacing: 0.06em;
+}
+
+.teamGGYearsWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.teamGGYears {
+  font-size: 0.8125rem;
+  color: var(--textQuiet);
+  letter-spacing: 0.04em;
+}
+
+.teamGGNote {
+  font-size: 0.6875rem;
+  color: var(--textQuiet);
+  letter-spacing: 0.02em;
+  opacity: 0.7;
+}
+
+@media (max-width: 480px) {
+  .teamGGItem {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+  }
+  .teamGGYearsWrap {
+    grid-column: 1 / -1;
+  }
+}
+
+.teamTabNote {
+  margin: 16px 0 0;
+  font-size: 0.6875rem;
+  color: var(--textQuiet);
+  letter-spacing: 0.04em;
+}
+
+/* ── 영구결번 ── */
+/* PC·모바일 모두 사용자 레퍼런스처럼 카드를 세로로 쌓고, 각 카드가 컨테이너 가로 100% 를 씁니다(다열 그리드 없음) */
+#panel-retired.teamTabPanel {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.teamRetiredGrid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(20px, 3vw, 28px);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.teamRetiredCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: clamp(24px, 4vw, 36px) clamp(16px, 3vw, 24px);
+  border: 1px solid var(--ruleLine);
+  text-align: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.teamRetiredNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  border: 3px solid var(--prideRed);
+  border-radius: 50%;
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--prideRed);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.teamRetiredInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.teamRetiredName {
+  font-size: clamp(1.0625rem, 2.2vw, 1.25rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.teamRetiredPos {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--prideRed);
+}
+
+.teamRetiredPeriod {
+  font-size: 0.8125rem;
+  color: var(--textQuiet);
+  letter-spacing: 0.04em;
+}
+
+.teamRetiredNote {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--textMuted);
+  line-height: 1.5;
+}
+
+/* 영구결번 카드 하단 KBO 요약 표(박용택·이병규 타자, 김용수 투수 등) — 사용자 제공 이미지와 동일한 제목·격자·가운데 정렬 */
+.teamRetiredKboSummary {
+  align-self: stretch;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 4px;
+  box-sizing: border-box;
+}
+
+.teamRetiredKboSummaryTitle {
+  margin: 0 0 8px;
+  padding: 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--textPrimary);
+  text-align: left;
+}
+
+.teamRetiredKboSummaryTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  color: var(--textPrimary);
+  border-top: 1px solid var(--ruleLine);
+  border-bottom: 1px solid var(--ruleLine);
+}
+
+.teamRetiredKboSummaryTable th,
+.teamRetiredKboSummaryTable td {
+  text-align: center;
+  padding: 8px 4px;
+  border-left: 1px solid var(--ruleLineSoft);
+  border-right: 1px solid var(--ruleLineSoft);
+  font-variant-numeric: tabular-nums;
+}
+
+.teamRetiredKboSummaryTable th {
+  font-weight: 700;
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid var(--ruleLine);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.teamRetiredKboSummaryTable td {
+  border-bottom: none;
+}
+
+/* 이미지에서 경기(613)만 약간 더 굵게 보이도록 첫 칸만 강조 */
+.teamRetiredKboSummaryStrong {
+  font-weight: 800;
+}
+
+/* 작은 화면에서 번 뱃지만 살짝 축소 */
+@media (max-width: 480px) {
+  .teamRetiredNumber {
+    width: 72px;
+    height: 72px;
+  }
+}
+
+/* ── 잠실구장(구장 문의 섹션) ── */
+.teamStadiumSection {
+  margin: 0;
+  padding: clamp(20px, 3vw, 28px) 0 0;
+  border-top: 1px solid var(--ruleLineSoft);
+}
+
+.teamStadiumSectionTitle {
+  margin: 0 0 12px;
+  font-size: clamp(1rem, 2vw, 1.125rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.teamStadiumSectionLead {
+  margin: 0 0 clamp(16px, 2.5vw, 20px);
+  max-width: 40rem;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--textMuted);
+}
+
+/* 두 블록 구조에서 두 번째 문단 여백을 줄여 카드 높이를 과하지 않게 합니다 */
+.teamStadiumSectionLeadTight {
+  margin-bottom: clamp(12px, 2vw, 16px);
+}
+
+.teamStadiumBlock {
+  scroll-margin-top: clamp(72px, 12vw, 100px);
+}
+
+.teamStadiumBlockDivider {
+  margin-top: clamp(20px, 3vw, 28px);
+  padding-top: clamp(20px, 3vw, 28px);
+  border-top: 1px solid var(--ruleLineSoft);
+}
+
+/* 구장정보 단독 페이지용 — boardPanel 안에 넣을 때 이중 상단 테두리를 줄입니다 */
+.teamStadiumSectionStandalone {
+  padding-top: 0;
+  border-top: none;
+}
+
+.teamStadiumOfficialLink {
+  color: var(--prideRed);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.teamStadiumOfficialLink:hover {
+  color: var(--textPrimary);
+}
+
+.teamStadiumOfficialLink:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 2px;
+}
+
+.teamStadiumList {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.teamStadiumRow {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: clamp(16px, 3vw, 32px);
+  padding: clamp(16px, 2.5vw, 22px) 0;
+  border-bottom: 1px solid var(--ruleLineSoft);
+  align-items: baseline;
+}
+
+.teamStadiumLabel {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--textQuiet);
+}
+
+.teamStadiumValue {
+  margin: 0;
+  font-size: clamp(0.9375rem, 1.8vw, 1rem);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+  .teamStadiumRow {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+/* ── (구) 섹션 헤더 — 탭으로 대체되어 숨김 ── */
+.teamHistorySection {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 3vw, 28px);
+}
+
+.teamSectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ruleLine);
+}
+
+.teamSectionLabel {
+  margin: 0;
+  flex-shrink: 0;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--textPrimary);
+}
+
+.teamSectionLine {
+  flex: 1;
+  height: 1px;
+  background: transparent;
+}
+
+.teamTimeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.teamTimelineItem {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: clamp(16px, 3vw, 32px);
+  padding: clamp(20px, 3vw, 28px) 0;
+  border-bottom: 1px solid var(--ruleLineSoft);
+  align-items: start;
+}
+
+.teamTimelineYear {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--prideRed);
+  padding-top: 3px;
+  text-transform: uppercase;
+}
+
+.teamTimelineBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.teamTimelineTitle {
+  font-size: clamp(1rem, 2.2vw, 1.125rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.teamTimelineDesc {
+  margin: 0;
+  color: var(--textMuted);
+  font-size: clamp(0.875rem, 1.4vw, 0.9375rem);
+  line-height: 1.65;
+  max-width: 52ch;
+}
+
+@media (max-width: 480px) {
+  .teamTimelineItem {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
+
 .editorialCover {
   border-bottom: 1px solid var(--ruleLine);
 }

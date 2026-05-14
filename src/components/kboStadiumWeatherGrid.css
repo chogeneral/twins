@@ -266,20 +266,26 @@
 
 .kboWeatherStats {
   margin: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px 12px;
 }
 
-.kboWeatherStatRow {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 6px 10px;
+/* 기온·체감·바람·습도 — 한 줄 flex, 좁으면 줄바꿈 */
+.kboWeatherStatLine {
+  display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
+  column-gap: 10px;
+  row-gap: 6px;
   font-size: 0.8125rem;
 }
 
-.kboWeatherStatRow dt {
+.kboWeatherStatPair {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.kboWeatherStatPair dt {
   margin: 0;
   font-weight: 600;
   color: var(--textQuiet);
@@ -288,12 +294,19 @@
   letter-spacing: 0.06em;
 }
 
-.kboWeatherStatRow dd {
+.kboWeatherStatPair dd {
   margin: 0;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  text-align: right;
   color: var(--textPrimary);
+}
+
+.kboWeatherStatSep {
+  color: var(--textQuiet);
+  opacity: 0.45;
+  font-weight: 300;
+  user-select: none;
+  flex: 0 0 auto;
 }
 
 .kboWeatherObserved {

@@ -48,14 +48,18 @@
   max-width: 1320px;
   margin: 0 auto;
   padding: 18px clamp(18px, 4vw, 36px);
-  display: flex;
+  /* flex 대신 3열 그리드: 양쪽 1fr 이 동일 폭을 나눠 중앙 열(auto=내비)이 헤더 가로 중심에 오게 함 — 로고는 1열, 내비는 2열, 햄버거는 3열 */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: clamp(12px, 3vw, 28px);
 }
 
 .brandLockup {
+  grid-column: 1;
+  justify-self: start;
   display: flex;
-  gap:10px;
+  gap: 10px;
   align-items: center;
   text-decoration: none;
   color: var(--textPrimary);
@@ -113,8 +117,11 @@
   color: var(--textQuiet);
 }
 
+/* 2번째 열에 두고 justify-self:center 로 내비 블록 전체가 헤더 중앙에 오도록 함 */
 .desktopNav {
-  margin-left: auto;
+  grid-column: 2;
+  justify-self: center;
+  margin-left: 0;
 }
 
 .desktopNavList {
@@ -124,7 +131,7 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: center;
   gap: clamp(4px, 1.5vw, 10px);
 }
 
@@ -154,7 +161,9 @@
 }
 
 .menuToggle {
-  margin-left: auto;
+  grid-column: 3;
+  justify-self: end;
+  margin-left: 0;
   display: none;
   flex-direction: column;
   justify-content: center;
@@ -379,7 +388,124 @@
   color: var(--textQuiet);
 }
 
+/* bottom 을 넉넉히 두어 라벨·홈 인디케이터와 겹침을 줄이고, 사용자 요청으로 기본보다 더 위쪽에 붙입니다 */
+.siteQuickMenu {
+  position: fixed;
+  right: clamp(12px, 2.4vw, 24px);
+  bottom: clamp(40px, 5vw, 72px);
+  z-index: 45;
+  pointer-events: none;
+}
+
+.siteQuickMenuInner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: auto;
+  align-items: center;
+}
+
+/* 아이콘 원형 버튼 + 그 아래 설명 텍스트를 한 그룹으로 정렬합니다 */
+.siteQuickMenuItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+/* 한 줄에 들어가도록 짧은 캡션 — 과한 크기는 플로팅 UI를 덮지 않게 작게 둡니다 */
+.siteQuickMenuItemLabel {
+  margin: 0;
+  max-width: 4.75rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  text-align: center;
+  color: #000000;
+}
+
+/* 완전한 원형 터치 영역 — 아이콘 색은 사용자 요청에 따라 검정으로 통일(SVG·PNG 모두) */
+.siteQuickMenuFab {
+  box-sizing: border-box;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ruleLine);
+  border-radius: 50%;
+  background: var(--surfaceCard);
+  /* SVG stroke 는 currentColor 를 쓰므로 검정으로 고정 — 호버 시에도 아이콘 색은 바꾸지 않습니다 */
+  color: #000000;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+}
+
+.siteQuickMenuFab:hover {
+  border-color: var(--prideRed);
+  color: #000000;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+.siteQuickMenuFab:active {
+  transform: translateY(0);
+}
+
+.siteQuickMenuFab:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 3px;
+}
+
+.siteQuickMenuSvg {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+/* 구장 필드 SVG — 윤곽이 두드러지도록 문의·위로보다 크게(원형 버튼 48px 기준 여유 있게) */
+.siteQuickMenuSvgStadium {
+  width: 36px;
+  height: 36px;
+}
+
 @media (max-width: 840px) {
+  .siteQuickMenu {
+    /* 모바일도 동일하게 하단 여백을 키워 위로 올립니다 */
+    bottom: clamp(44px, 8vw, 72px);
+  }
+
+  .siteQuickMenuInner {
+    gap: 10px;
+  }
+
+  .siteQuickMenuItem {
+    gap: 4px;
+  }
+
+  .siteQuickMenuItemLabel {
+    font-size: 0.5625rem;
+    max-width: 4.25rem;
+  }
+
+  .siteQuickMenuFab {
+    width: 46px;
+    height: 46px;
+  }
+
+  .siteQuickMenuSvg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .siteQuickMenuSvgStadium {
+    width: 30px;
+    height: 30px;
+  }
+
   .desktopNav {
     display: none;
   }

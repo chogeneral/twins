@@ -7,9 +7,11 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AppShell } from './components/AppShell.jsx'
 import { HomePage } from './pages/HomePage.jsx'
 import { TeamPage } from './pages/TeamPage.jsx'
+import { TeamSongPage } from './pages/TeamSongPage.jsx'
 import { FreeBoardPage } from './pages/FreeBoardPage.jsx'
 import { ReviewBoardPage } from './pages/ReviewBoardPage.jsx'
 import { QuestionBoardPage } from './pages/QuestionBoardPage.jsx'
+import { StadiumInfoPage } from './pages/StadiumInfoPage.jsx'
 
 export default function App() {
   return (
@@ -18,6 +20,8 @@ export default function App() {
         <Route element={<AppShell />}>
           <Route index element={<HomePage />} />
           <Route path="team" element={<TeamPage />} />
+          <Route path="teamsong" element={<TeamSongPage />} />
+          <Route path="stadium-info" element={<StadiumInfoPage />} />
           <Route path="free-board" element={<FreeBoardPage />} />
           <Route path="reviews" element={<ReviewBoardPage />} />
           <Route path="qna" element={<QuestionBoardPage />} />
