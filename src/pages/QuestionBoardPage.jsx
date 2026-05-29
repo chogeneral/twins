@@ -378,7 +378,7 @@ export function QuestionBoardPage() {
           disabled={deletingPostId === post.id}
           onClick={() => void handleDeleteClick(post)}
         >
-          {deletingPostId === post.id ? '삭제 중…' : '삭제하기'}
+          {deletingPostId === post.id ? '삭제 중…' : '삭제'}
         </button>
       )}
     </>
