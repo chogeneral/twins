@@ -10,7 +10,7 @@ import './appShell.css'
  * - 사이트 전역에서는 본문에만 h1 을 두기 위해 로고 래퍼는 span 입니다(img alt 는 장식이라 비움 — 링크의 aria-label 이 역할 전달).
  * - 시각 레이아웃은 Dazed Korea(https://dazedkorea.com/)식 매거진 내비를 참고했고, 브랜드 PNG는 사용자 제공 에셋만 사용합니다.
  * - 내비는 링크 모음이라 ul/li 로 감싸 스크린리더가 목록 패턴으로 읽도록 했습니다.
- * - 우하단 퀵메뉴: 구장정보·문의는 /stadium-info(해시), 위로 스크롤. 라벨은 버튼 아래 한글 캡션.
+ * - 우하단 퀵메뉴: 구장정보 이동과 위로 스크롤을 제공합니다. 라벨은 버튼 아래 한글 캡션입니다.
  * - 840px 이하에서는 데스크톱 가로 내비를 숨기고 햄버거로 오른쪽 사이드 드로어(전면 딤 + 패널 슬라이드)를 엽니다.
  * - 같은 브레이크포인트에서 헤더 유틸(문의·로그인 등)은 드로어 상단 「계정 · 서비스」에만 두고 헤더에는 햄버거만 노출합니다.
  * - 로그인 시 드로어 상단 줄은 닉네임·문의·로그아웃을 한 줄에 두고, 줄 오른쪽 끝은 닫기(X)입니다.
@@ -30,22 +30,6 @@ function IconStadiumField() {
         d="M12 20 L17 14 L12 8 L7 14 Q12 5 17 14 L12 20"
       />
       <circle cx="12" cy="14" r="1" fill="none" stroke="currentColor" strokeWidth="1.75" />
-    </svg>
-  )
-}
-
-/** 퀵메뉴용 SVG(문의·위로) — currentColor 로 버튼과 동일하게 검정 선으로 맞춥니다. 문의는 말풍선 윤곽입니다. */
-function IconChatInquiry() {
-  return (
-    <svg className="siteQuickMenuSvg" viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"
-      />
     </svg>
   )
 }
@@ -74,11 +58,6 @@ function SiteQuickMenu() {
     navigate('/stadium-info')
   }
 
-  /* 같은 페이지 내 문의 블록 앵커로 스크롤 — StadiumInfoPage 가 해시를 처리합니다 */
-  const goStadiumInquiry = () => {
-    navigate({ pathname: '/stadium-info', hash: 'stadiumInquiry' })
-  }
-
   /* 긴 게시글 등에서 맨 위로 — main 에 포커스를 주어 키보드 사용자도 흐름을 이어 갑니다 */
   const goTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -101,19 +80,6 @@ function SiteQuickMenu() {
           </button>
           <span id="qmLabelStadium" className="siteQuickMenuItemLabel">
             구장정보
-          </span>
-        </div>
-        <div className="siteQuickMenuItem">
-          <button
-            type="button"
-            className="siteQuickMenuFab"
-            onClick={goStadiumInquiry}
-            aria-labelledby="qmLabelInquiry"
-          >
-            <IconChatInquiry />
-          </button>
-          <span id="qmLabelInquiry" className="siteQuickMenuItemLabel">
-            문의하기
           </span>
         </div>
         <div className="siteQuickMenuItem">
@@ -148,8 +114,9 @@ export function AppShell() {
     { to: '/team', label: 'Team' },
     { to: '/teamsong', label: '응원가' },
     { to: '/qna', label: '가입인사' },
-    { to: '/free-board', label: '무적 LG마당' },
+    { to: '/free-board', label: '무적LG마당' },
     { to: '/reviews', label: '승요인증' },
+    { to: '/stadium-tour', label: '구장투어' },
   ]
 
   const closeMobileNav = () => setMobileNavOpen(false)

@@ -10,6 +10,9 @@ import { TeamPage } from './pages/TeamPage.jsx'
 import { TeamSongPage } from './pages/TeamSongPage.jsx'
 import { FreeBoardPage } from './pages/FreeBoardPage.jsx'
 import { ReviewBoardPage } from './pages/ReviewBoardPage.jsx'
+import { StadiumTourBoardPage } from './pages/StadiumTourBoardPage.jsx'
+import { BoardWritePage } from './pages/BoardWritePage.jsx'
+import { BoardDetailPage } from './pages/BoardDetailPage.jsx'
 import { QuestionBoardPage } from './pages/QuestionBoardPage.jsx'
 import { StadiumInfoPage } from './pages/StadiumInfoPage.jsx'
 import { LoginPage } from './pages/LoginPage.jsx'
@@ -27,7 +30,17 @@ export default function App() {
           <Route path="teamsong" element={<TeamSongPage />} />
           <Route path="stadium-info" element={<StadiumInfoPage />} />
           <Route path="free-board" element={<FreeBoardPage />} />
+          <Route path="free-board/write" element={<BoardWritePage boardType="free" />} />
+          <Route path="free-board/:postId/edit" element={<BoardWritePage boardType="free" />} />
+          <Route path="free-board/:postId" element={<BoardDetailPage boardType="free" />} />
           <Route path="reviews" element={<ReviewBoardPage />} />
+          <Route path="reviews/write" element={<BoardWritePage boardType="review" />} />
+          <Route path="reviews/:postId/edit" element={<BoardWritePage boardType="review" />} />
+          <Route path="reviews/:postId" element={<BoardDetailPage boardType="review" />} />
+          <Route path="stadium-tour" element={<StadiumTourBoardPage />} />
+          <Route path="stadium-tour/write" element={<BoardWritePage boardType="stadiumTour" />} />
+          <Route path="stadium-tour/:postId/edit" element={<BoardWritePage boardType="stadiumTour" />} />
+          <Route path="stadium-tour/:postId" element={<BoardDetailPage boardType="stadiumTour" />} />
           <Route path="qna" element={<QuestionBoardPage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="signup" element={<SignupPage />} />

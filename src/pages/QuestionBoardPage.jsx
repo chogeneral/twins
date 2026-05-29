@@ -527,7 +527,7 @@ export function QuestionBoardPage() {
             </button>
           </div>
           <span id="signupWelcomeCharHint" className="signupWelcomeConfigHint">
-            최대 {maxContentLength.toLocaleString()}자 · 길이 초과 시 DB에서 거절될 수 있습니다.
+            최대 {maxContentLength.toLocaleString()}자이하로 입력해주세요
           </span>
           {submitError && (
             <p className="signupWelcomeError" role="alert">

@@ -1,12 +1,40 @@
 /**
- * 무적 LG 마당(구 자유게시판 경로 `/free-board`): 카테고리 제약이 없는 일반 소통 공간 안내·빈 상태 UI.
- * - 화면 제목·내비 라벨은 팬덤 네이밍「무적 LG 마당」으로 통일했습니다.
+ * 무적LG마당(구 자유게시판 경로 `/free-board`): 카테고리 제약이 없는 일반 소통 공간 안내·빈 상태 UI.
+ * - 화면 제목·내비 라벨은 팬덤 네이밍「무적LG마당」으로 통일했습니다.
  * - article 하나로 페이지 전체 맥락을 표현했고 목록 블록을 section+h2 레이블로 구획했습니다.
  */
 
+import { Navigate, useNavigate } from 'react-router-dom'
+import { BoardListTable } from '../components/BoardListTable'
+import { useAuth } from '../hooks/useAuth'
+import { getBoardPosts } from '../lib/boardPostStorage'
 import './boardPage.css'
 
+const freeBoardPath = '/free-board'
+
 export function FreeBoardPage() {
+  const navigate = useNavigate()
+  const { user, loading: authLoading } = useAuth()
+  const loginRedirectHref = `/login?redirect=${encodeURIComponent(freeBoardPath)}`
+
+  if (authLoading) {
+    return (
+      <article className="boardPage" aria-busy="true">
+        <header className="boardHeader">
+          <p lang="en" className="boardEyebrow">community</p>
+          <h1 className="boardTitle">무적LG마당</h1>
+          <p className="boardDescription">로그인 여부를 확인하는 중입니다.</p>
+        </header>
+      </article>
+    )
+  }
+
+  if (!user) {
+    return <Navigate to={loginRedirectHref} replace />
+  }
+
+  const freeBoardRows = getBoardPosts('freeBoard')
+
   return (
     <article className="boardPage">
       {/* 페이지 이름과 설명: 내비와 중복되는 짧은 식별을 위해 헤더 그룹으로 묶었습니다 */}
@@ -14,9 +42,9 @@ export function FreeBoardPage() {
         <p lang="en" className="boardEyebrow">
           community
         </p>
-        <h1 className="boardTitle">무적 LG 마당</h1>
+        <h1 className="boardTitle">무적LG마당</h1>
         <p className="boardDescription">
-          시즌 잡담, 밈, 중고 거래(정책 준수) 등 자유로운 이야기를 나누는 공간입니다.
+        무적LG마당은 무적LG팬들이 자유롭게 이야기를 나누는 공간입니다.
         </p>
       </header>
 
@@ -27,13 +55,16 @@ export function FreeBoardPage() {
         <h2 id="freeBoardListHeading" className="srOnly">
           게시글 목록
         </h2>
-        <div className="emptyState" aria-live="polite">
-          {/* 목록 블록이 비었을 때의 소제목을 h3으로 두어 헤더 트리를 유지했습니다 */}
-          <h3 className="emptyTitle">아직 등록된 글이 없습니다</h3>
-          <p className="emptyBody">
-            백엔드 또는 목 데이터를 연결하면 카드 형태 목록 컴포넌트가 이 영역을 채웁니다.
-          </p>
-        </div>
+        <BoardListTable
+          rows={freeBoardRows}
+          caption="무적LG마당 게시글 목록"
+          detailBasePath="/free-board"
+          bottomAction={(
+            <button type="button" className="boardWriteLinkBtn" onClick={() => navigate('/free-board/write')}>
+              글쓰기
+            </button>
+          )}
+        />
       </section>
     </article>
   )

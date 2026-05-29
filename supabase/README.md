@@ -78,11 +78,11 @@ Supabase CLI로 연결했다면 저장소 루트에서 `supabase db push` 로도
 
 ## Authentication — URL·프로바이더·메일 템플릿
 
-비밀번호 재설정은 프런트에서 **`redirectTo` 로 `현재 origin + /login`** 을 넘기도록 두었습니다. Supabase와 일치시켜야 링크가 열립니다.
+비밀번호 재설정은 프런트에서 **`redirectTo` 로 `현재 origin + /find-password?mode=reset`** 을 넘기도록 두었습니다. Supabase와 일치시켜야 링크가 열립니다.
 
 1. **Authentication → URL Configuration**
    - **Site URL**: 실제 서비스·스테이징 도메인(로컬이면 예: `http://localhost:5173`)
-   - **Redirect URLs**: `https://배포도메인/login`, 개발 시 `http://localhost:5173/login` 등 필요한 주소를 모두 등록
+   - **Redirect URLs**: `https://배포도메인/find-password?mode=reset`, 개발 시 `http://localhost:5173/find-password?mode=reset` 등 필요한 주소를 모두 등록
 2. **Authentication → Providers** 에서 **Email** 로그인을 사용합니다.
 3. **Authentication → 이메일**(또는 **Email Templates**) → **Reset Password**(Recover) 에서 제목·본문을 수정합니다.
 

@@ -282,10 +282,10 @@ revoke all on function public.signup_welcome_set_author_display() from public;
  * 6) 비밀번호 찾기 — DB 객체 없음 (Supabase Auth 이메일 링크)
  * =====================================================================
  *
- * 프런트: supabase.auth.resetPasswordForEmail(email, { redirectTo: .../login })
+ * 프런트: supabase.auth.resetPasswordForEmail(email, { redirectTo: .../find-password?mode=reset })
  *
  * 대시보드에서 설정:
- * · Authentication → URL Configuration (Site URL, Redirect URLs 에 /login 허용)
+ * · Authentication → URL Configuration (Site URL, Redirect URLs 에 /find-password?mode=reset 허용)
  * · Email Templates → Reset/Recover Password 에 {{ .ConfirmationURL }} 등 링크 포함
  *
  * 저장소 supabase/README.md 에 단계 요약이 있습니다.

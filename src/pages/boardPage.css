@@ -63,3 +63,1413 @@
   font-size: 0.895rem;
   line-height: 1.62;
 }
+
+.boardListWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.boardWriteLinkBtn {
+  padding: 10px 18px;
+  border: 1px solid var(--prideRed);
+  border-radius: 0;
+  background: var(--prideRed);
+  color: #fff;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.boardWriteLinkBtn:hover {
+  opacity: 0.9;
+}
+
+.boardWriteLinkBtn:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 2px;
+}
+
+.boardListTableScroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.boardListTable {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  border-top: 2px solid var(--textPrimary);
+  font-size: 0.9rem;
+}
+
+.boardListTable caption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.boardListTable th,
+.boardListTable td {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--ruleLineSoft);
+  vertical-align: middle;
+}
+
+.boardListTable th {
+  color: var(--textMuted);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+.boardListTable td {
+  color: var(--textPrimary);
+  text-align: center;
+}
+
+.boardListColNumber {
+  width: 72px;
+}
+
+.boardListColCategory {
+  width: 92px;
+}
+
+.boardListTable .boardListColTitle {
+  width: auto;
+  text-align: left;
+}
+
+.boardListColAuthor {
+  width: 140px;
+}
+
+.boardListColDate {
+  width: 132px;
+}
+
+.boardListColViews {
+  width: 90px;
+}
+
+.boardListCategoryCell {
+  color: var(--textMuted);
+}
+
+.boardListNumberCell {
+  color: var(--textMuted);
+  font-variant-numeric: tabular-nums;
+}
+
+.boardListTable .boardListTitleCell {
+  text-align: left;
+}
+
+.boardListTitleText {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--textPrimary);
+  font-weight: 600;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.boardListTitleText:hover {
+  color: var(--prideRed);
+}
+
+.boardListViewsCell {
+  font-variant-numeric: tabular-nums;
+}
+
+.boardListEmptyCell {
+  padding: clamp(30px, 5vw, 48px) 12px;
+  color: var(--textMuted);
+  font-weight: 700;
+  text-align: center;
+}
+
+.boardListFooter {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.boardListFooterSpacer {
+  min-width: 0;
+}
+
+.boardListBottomActions {
+  display: flex;
+  grid-column: 3;
+  justify-content: flex-end;
+  justify-self: stretch;
+}
+
+.boardPagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.boardPaginationBtn,
+.boardPaginationNumber {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--ruleLineSoft);
+  border-radius: 0;
+  background: transparent;
+  color: var(--textMuted);
+  font: inherit;
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.boardPaginationBtn:hover:not(:disabled),
+.boardPaginationNumber:hover {
+  border-color: var(--textPrimary);
+  color: var(--textPrimary);
+}
+
+.boardPaginationBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.boardPaginationNumberActive {
+  border-color: var(--prideRed);
+  background: var(--prideRed);
+  color: #fff;
+  font-weight: 700;
+}
+
+.boardPaginationBtn:focus-visible,
+.boardPaginationNumber:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .boardListTableScroll {
+    overflow-x: visible;
+  }
+
+  .boardListTable {
+    display: block;
+    min-width: 0;
+    border-top: none;
+  }
+
+  .boardListTable thead {
+    display: none;
+  }
+
+  .boardListTable tbody,
+  .boardListTable tr,
+  .boardListTable td {
+    display: block;
+  }
+
+  .boardListTable tr {
+    padding: 16px 0 18px;
+    border-top: 2px solid var(--textPrimary);
+    background: #fff;
+  }
+
+  .boardListTable tr:last-child {
+    border-bottom: 1px solid var(--ruleLineSoft);
+  }
+
+  .boardListTable td {
+    padding: 0;
+    border-bottom: none;
+    text-align: left;
+  }
+
+  .boardListViewsCell {
+    display: none;
+  }
+
+  .boardListNumberCell,
+  .boardListCategoryCell {
+    color: var(--textMuted);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+
+  .boardListNumberCell {
+    margin-bottom: 4px;
+  }
+
+  .boardListTable .boardListTitleCell {
+    margin-bottom: 8px;
+  }
+
+  .boardListTitleText {
+    display: block;
+    color: var(--textPrimary);
+    font-size: 0.9375rem;
+    font-weight: 800;
+    line-height: 1.4;
+    white-space: normal;
+  }
+
+  .boardListAuthorCell,
+  .boardListDateCell {
+    display: inline;
+    color: var(--textMuted);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+
+  .boardListAuthorCell::after {
+    content: ' · ';
+  }
+
+  .boardListEmptyCell {
+    padding: 28px 12px;
+    text-align: center;
+  }
+
+  .boardListFooter {
+    grid-template-columns: 1fr;
+    justify-items: stretch;
+  }
+
+  .boardListFooterSpacer {
+    display: none;
+  }
+
+  .boardListBottomActions {
+    grid-column: auto;
+    justify-content: flex-end;
+    width: 100%;
+  }
+}
+
+.boardWriteForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 720px;
+}
+
+.boardBlogWriteForm {
+  max-width: 100%;
+}
+
+.boardWriteField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.boardWriteLabel {
+  color: var(--textMuted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.boardWriteInput,
+.boardWriteSelect,
+.boardWriteTextarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid var(--ruleLine);
+  border-radius: 0;
+  background: transparent;
+  color: var(--textPrimary);
+  font: inherit;
+  font-size: 0.9375rem;
+  outline: none;
+}
+
+.boardWriteInput:focus,
+.boardWriteSelect:focus,
+.boardWriteTextarea:focus {
+  border-color: var(--textPrimary);
+}
+
+.boardWriteTextarea {
+  min-height: 220px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.boardBlogEditorField {
+  display: flex;
+  flex-direction: column;
+}
+
+.boardBlogEditor {
+  border: none;
+  border-radius: 0;
+  background: #fff;
+}
+
+.boardBlogToolbar {
+  /*
+   * 글쓰기 중 본문을 아래로 길게 작성해도 사진·링크·정렬 도구를 바로 쓸 수 있게 툴바를 고정합니다.
+   * 사이트 헤더가 이미 sticky 이므로 헤더 예상 높이만큼 top 을 내려 두어 서로 겹치지 않게 했습니다.
+   */
+  position: sticky;
+  top: calc(clamp(32px, 7.5vw, 46px) + 37px);
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 -1px;
+  padding: 14px 1px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(255, 255, 255, 0.9);
+  overflow: visible;
+}
+
+.boardBlogToolbarPhotoBtn {
+  min-width: 30px;
+  height: 30px;
+  border: none;
+  background: transparent;
+  color: var(--textMuted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+
+.boardBlogToolbarPhotoBtn input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+.boardBlogToolbarSelect {
+  min-width: 88px;
+  padding: 6px 8px;
+  border: none;
+  background: transparent;
+  color: var(--textMuted);
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+.boardBlogToolbarSize {
+  min-width: 62px;
+}
+
+.boardBlogToolbarBtn {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  border: none;
+  background: transparent;
+  color: var(--textMuted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.boardBlogAlignBtn {
+  width: 28px;
+  min-width: 28px;
+  padding: 0;
+  border-radius: 2px;
+}
+
+.boardBlogAlignBtn:hover,
+.boardBlogAlignBtn:focus-visible {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.boardBlogAlignBtn span {
+  position: relative;
+  display: block;
+  width: 16px;
+  height: 14px;
+  margin: 0 auto;
+}
+
+.boardBlogAlignBtn span::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 0;
+  width: 16px;
+  height: 1.5px;
+  background: currentColor;
+  box-shadow:
+    0 4px 0 currentColor,
+    0 8px 0 currentColor,
+    0 12px 0 currentColor;
+}
+
+/* 좌측 정렬: 긴 줄과 짧은 줄이 모두 왼쪽 기준으로 붙도록 아이콘을 분명하게 표시 */
+.boardBlogAlignBtn-alignLeft span::before {
+  left: 0;
+  width: 16px;
+  box-shadow:
+  3px 4px 0 currentColor,
+  0 8px 0 currentColor,
+  3px 12px 0 currentColor;
+}
+
+.boardBlogAlignBtn-alignCenter span::before {
+  left: 1px;
+  width: 14px;
+ 
+}
+
+.boardBlogAlignBtn-alignRight span::before {
+  left: auto;
+  right: 0;
+  width: 16px;
+  box-shadow:
+    4px 4px 0 currentColor,
+    0 8px 0 currentColor,
+    4px 12px 0 currentColor;
+}
+
+.boardBlogColorPicker {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.boardBlogColorPicker span {
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--ruleLineSoft);
+  border-radius: 999px;
+}
+
+.boardBlogColorPicker input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.boardBlogLineMenuWrap {
+  position: relative;
+}
+
+.boardBlogLineMenuBtn span {
+  display: block;
+  width: 16px;
+  height: 2px;
+  margin: 0 auto;
+  background: currentColor;
+}
+
+.boardBlogLineMenu {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 10px);
+  z-index: 30;
+  width: 180px;
+  padding: 18px;
+  border: 1px solid var(--ruleLineSoft);
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.boardBlogLineMenu::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: -7px;
+  width: 12px;
+  height: 12px;
+  border-top: 1px solid var(--ruleLineSoft);
+  border-left: 1px solid var(--ruleLineSoft);
+  background: #fff;
+  transform: rotate(-45deg);
+}
+
+.boardBlogLineOption {
+  position: relative;
+  width: 100%;
+  height: 30px;
+  margin: 2px 0 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.boardBlogLineOption:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.boardEditorLineDots::before,
+.boardEditorLineBold::before,
+.boardEditorLineWave::before,
+.boardEditorLineVertical::before,
+.boardEditorLineThin::before,
+.boardEditorLineSoft::before,
+.boardEditorLineDiamond::before,
+.boardEditorLineCircle::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.boardEditorLineDots::before {
+  height: 4px;
+  background: radial-gradient(circle, #555 2px, transparent 2px) center / 18px 4px repeat-x;
+}
+
+.boardEditorLineBold::before {
+  height: 3px;
+  background: #555;
+}
+
+.boardEditorLineWave::before {
+  height: 8px;
+  background: repeating-linear-gradient(135deg, transparent 0 5px, #aaa 5px 7px, transparent 7px 12px);
+}
+
+.boardEditorLineVertical::before {
+  left: 50%;
+  right: auto;
+  width: 1px;
+  height: 24px;
+  background: #bbb;
+}
+
+.boardEditorLineThin::before {
+  height: 1px;
+  background: #555;
+}
+
+.boardEditorLineSoft::before {
+  height: 1px;
+  background: #ddd;
+}
+
+.boardEditorLineDiamond::before {
+  height: 1px;
+  background: #ccc;
+}
+
+.boardEditorLineDiamond::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.boardEditorLineCircle::before {
+  height: 1px;
+  background: linear-gradient(to right, #ddd 0 38%, transparent 38% 62%, #ddd 62% 100%);
+}
+
+.boardEditorLineCircle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  background: #fff;
+  transform: translate(-50%, -50%);
+}
+
+.boardBlogMetaArea {
+  padding: 44px 0 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.boardBlogCategorySelect {
+  width: 170px;
+  padding: 11px 12px;
+  border: 1px solid var(--ruleLineSoft);
+  background: #fff;
+  color: var(--textMuted);
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+.boardBlogTitleInput {
+  display: block;
+  width: min(100%, 860px);
+ margin-top: 14px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--textPrimary);
+  font: inherit;
+  font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  outline: none;
+}
+
+.boardBlogTitleInput::placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.boardBlogEditorContent {
+  min-height: 420px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 28px 0 16px;
+  color: var(--textPrimary);
+  line-height: 1.7;
+}
+
+.boardBlogEditorProse {
+  min-height: 420px;
+  outline: none;
+}
+
+.boardBlogEditorProse p {
+  margin: 0 0 1em;
+}
+
+.boardBlogEditorProse p.is-editor-empty:first-child::before {
+  content: '내용을 입력해 주세요';
+  float: left;
+  height: 0;
+  color: rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.boardBlogEditorProse a,
+.boardPostContent a {
+  color: #1d4ed8;
+}
+
+.boardBlogLinkAddressList,
+.boardPostContent .boardBlogLinkAddressList {
+  margin: 0 0 14px;
+  color: #1d4ed8;
+  font-size: 1rem;
+  line-height: 1.8;
+  word-break: break-all;
+}
+
+.boardBlogLinkAddressList a,
+.boardPostContent .boardBlogLinkAddressList a {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.boardBlogEditorProse .boardBlogLinkAddressList,
+.boardPostContent .boardBlogLinkAddressList {
+  display: none;
+}
+
+.boardBlogEditorProse img {
+  display: block;
+  max-width: 100%;
+  margin: 18px auto;
+  border-radius: 6px;
+}
+
+.boardBlogEditorProse hr {
+  margin: 24px 0;
+  border: none;
+  border-top: 1px solid var(--ruleLineSoft);
+}
+
+.boardBlogEditorProse hr.boardEditorLineDots,
+.boardPostContent hr.boardEditorLineDots {
+  height: 4px;
+  border: none;
+  background: radial-gradient(circle, #555 2px, transparent 2px) center / 18px 4px repeat-x;
+}
+
+.boardBlogEditorProse hr.boardEditorLineBold,
+.boardPostContent hr.boardEditorLineBold {
+  border-top: 3px solid #555;
+}
+
+.boardBlogEditorProse hr.boardEditorLineWave,
+.boardPostContent hr.boardEditorLineWave {
+  height: 8px;
+  border: none;
+  background: repeating-linear-gradient(135deg, transparent 0 5px, #aaa 5px 7px, transparent 7px 12px);
+}
+
+.boardBlogEditorProse hr.boardEditorLineVertical,
+.boardPostContent hr.boardEditorLineVertical {
+  width: 1px;
+  height: 32px;
+  border: none;
+  background: #bbb;
+}
+
+.boardBlogEditorProse hr.boardEditorLineThin,
+.boardPostContent hr.boardEditorLineThin {
+  border-top: 1px solid #555;
+}
+
+.boardBlogEditorProse hr.boardEditorLineSoft,
+.boardPostContent hr.boardEditorLineSoft {
+  border-top: 1px solid #ddd;
+}
+
+.boardBlogEditorProse hr.boardEditorLineDiamond,
+.boardPostContent hr.boardEditorLineDiamond,
+.boardBlogEditorProse hr.boardEditorLineCircle,
+.boardPostContent hr.boardEditorLineCircle {
+  position: relative;
+  overflow: visible;
+  border-top: 1px solid #ccc;
+}
+
+.boardBlogEditorProse hr.boardEditorLineDiamond::after,
+.boardPostContent hr.boardEditorLineDiamond::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.boardBlogEditorProse hr.boardEditorLineCircle,
+.boardPostContent hr.boardEditorLineCircle {
+  border-top-color: transparent;
+  background: linear-gradient(to right, #ddd 0 38%, transparent 38% 62%, #ddd 62% 100%);
+  height: 1px;
+}
+
+.boardBlogEditorProse hr.boardEditorLineCircle::after,
+.boardPostContent hr.boardEditorLineCircle::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  background: #fff;
+  transform: translateX(-50%);
+}
+
+.boardBlogEditorProse ul,
+.boardBlogEditorProse ol {
+  padding-left: 1.5em;
+}
+
+.boardPostContent {
+  max-width: 900px;
+  color: var(--textPrimary);
+  line-height: 1.75;
+  word-break: break-word;
+}
+
+.boardPostContent p {
+  margin: 0 0 1em;
+}
+
+.boardPostContent img {
+  display: block;
+  max-width: 100%;
+  margin: 18px auto;
+  border-radius: 6px;
+}
+
+.boardBlogEditorProse .boardLinkPreview,
+.boardPostContent .boardLinkPreview {
+  color: inherit;
+  text-decoration: none;
+}
+
+.boardBlogEditorProse .boardLinkPreviewYoutube,
+.boardPostContent .boardLinkPreviewYoutube {
+  position: relative;
+  display: block;
+  width: min(100%, 900px);
+  margin: 18px auto 28px;
+  overflow: hidden;
+  border: 1px solid var(--ruleLineSoft);
+  background: #111;
+}
+
+.boardBlogEditorProse .boardLinkPreviewYoutubeImage,
+.boardPostContent .boardLinkPreviewYoutubeImage {
+  display: block;
+  width: 100%;
+  max-width: none;
+  aspect-ratio: 16 / 9;
+  margin: 0;
+  border-radius: 0;
+  object-fit: cover;
+}
+
+.boardBlogEditorProse .boardLinkPreviewYoutubeTitle,
+.boardPostContent .boardLinkPreviewYoutubeTitle {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  overflow: hidden;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+  white-space: nowrap;
+}
+
+.boardBlogEditorProse .boardLinkPreviewYoutubeUrl,
+.boardPostContent .boardLinkPreviewYoutubeUrl {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  overflow: hidden;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.88);
+  color: #1d4ed8;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.boardBlogEditorProse .boardLinkPreviewYoutubeUrl,
+.boardPostContent .boardLinkPreviewYoutubeUrl {
+  display: none;
+}
+
+.boardBlogEditorProse .boardLinkPreviewPlayIcon,
+.boardPostContent .boardLinkPreviewPlayIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 68px;
+  height: 48px;
+  border-radius: 12px;
+  background: #ff0033;
+  transform: translate(-50%, -50%);
+}
+
+.boardBlogEditorProse .boardLinkPreviewPlayIcon::before,
+.boardPostContent .boardLinkPreviewPlayIcon::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+  border-left: 19px solid #fff;
+  transform: translate(-38%, -50%);
+}
+
+.boardBlogEditorProse .boardLinkPreviewHomepage,
+.boardPostContent .boardLinkPreviewHomepage {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  width: min(100%, 450px);
+  min-height: 110px;
+  margin: 18px auto 28px;
+  border: 1px solid var(--ruleLineSoft);
+  background: #fff;
+  text-align: left;
+}
+
+.boardBlogEditorProse .boardLinkPreviewHomepageLogo,
+.boardPostContent .boardLinkPreviewHomepageLogo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #28a9df;
+}
+
+.boardBlogEditorProse .boardLinkPreviewHomepageLogo img,
+.boardPostContent .boardLinkPreviewHomepageLogo img {
+  width: 54px;
+  height: 54px;
+  max-width: none;
+  margin: 0;
+  border-radius: 0;
+  object-fit: contain;
+}
+
+.boardBlogEditorProse .boardLinkPreviewHomepageInfo,
+.boardPostContent .boardLinkPreviewHomepageInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: 16px 24px;
+  gap: 8px;
+}
+
+.boardBlogEditorProse .boardLinkPreviewHomepageInfo strong,
+.boardPostContent .boardLinkPreviewHomepageInfo strong {
+  overflow: hidden;
+  color: var(--textPrimary);
+  font-size: 0.9375rem;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.boardBlogEditorProse .boardLinkPreviewHomepageDescription,
+.boardPostContent .boardLinkPreviewHomepageDescription {
+  overflow: hidden;
+  color: var(--textMuted);
+  font-size: 0.875rem;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.boardBlogEditorProse .boardLinkPreviewHomepageUrl,
+.boardPostContent .boardLinkPreviewHomepageUrl {
+  overflow: hidden;
+  color: #1d4ed8;
+  font-size: 0.875rem;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.boardPostContent hr {
+  margin: 24px 0;
+  border: none;
+  border-top: 1px solid var(--ruleLineSoft);
+}
+
+.boardPostPlainContent {
+  margin: 0;
+  max-width: 900px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.75;
+}
+
+.boardPostTags {
+  margin: 28px 0 0;
+  color: var(--textMuted);
+  font-size: 0.9375rem;
+}
+
+.boardBlogFont-default {
+  font-family: 'Pretendard', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+.boardBlogFont-bonGothicRegular {
+  font-family: 'Noto Sans KR', 'Pretendard', 'Malgun Gothic', sans-serif;
+}
+
+.boardBlogFont-bonGothicLight {
+  font-family: 'Noto Sans KR', 'Pretendard', 'Malgun Gothic', sans-serif;
+  font-weight: 300;
+}
+
+.boardBlogFont-nanumGothic {
+  font-family: 'Nanum Gothic', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+}
+
+.boardBlogFont-bonMyeongjo {
+  font-family: 'Noto Serif KR', 'Batang', 'Times New Roman', serif;
+}
+
+.boardBlogFont-gungseo {
+  font-family: 'Gungsuh', '궁서', 'Batang', serif;
+}
+
+.boardBlogPhotoBtn,
+.boardBlogRemoveBtn {
+  padding: 9px 14px;
+  border: 1px solid var(--ruleLineSoft);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--textPrimary);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.boardBlogPhotoBtn input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+.boardBlogRemoveBtn {
+  color: var(--textMuted);
+}
+
+.boardBlogTagInput {
+  width: 100%;
+  padding: 18px 0 0;
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: transparent;
+  color: var(--textMuted);
+  font: inherit;
+  font-size: 0.9375rem;
+  outline: none;
+}
+
+.boardBlogTagInput::placeholder {
+  color: rgba(0, 0, 0, 0.38);
+}
+
+.boardBlogLinkModalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.boardBlogLinkModal {
+  position: relative;
+  width: min(100%, 510px);
+  box-sizing: border-box;
+  padding: 34px 30px 28px;
+  border: 1px solid var(--ruleLineSoft);
+  background: #fff;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.16);
+  text-align: center;
+}
+
+.boardBlogLinkModalClose {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--textMuted);
+  font: inherit;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.boardBlogLinkModalTitle {
+  margin: 0 0 24px;
+  color: var(--textPrimary);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.boardBlogLinkInputWrap {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.boardBlogLinkInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 44px 10px 12px;
+  border: 1px solid var(--ruleLine);
+  background: #fff;
+  color: var(--textPrimary);
+  font: inherit;
+  font-size: 0.9375rem;
+  outline: none;
+}
+
+.boardBlogLinkInput:focus {
+  border-color: var(--textPrimary);
+}
+
+.boardBlogLinkSearchIcon {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  width: 14px;
+  height: 14px;
+  border: 1.7px solid var(--textPrimary);
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+
+.boardBlogLinkSearchIcon::after {
+  content: '';
+  position: absolute;
+  right: -5px;
+  bottom: -4px;
+  width: 7px;
+  height: 1.7px;
+  background: var(--textPrimary);
+  transform: rotate(45deg);
+  transform-origin: left center;
+}
+
+.boardBlogLinkPreview {
+  position: relative;
+  margin: 0 auto 28px;
+  width: min(100%, 450px);
+  background: #111;
+}
+
+.boardBlogLinkPreviewImg {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.boardBlogLinkPreviewUrl {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  overflow: hidden;
+  padding: 7px 9px;
+  background: rgba(255, 255, 255, 0.88);
+  color: #1d4ed8;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.boardBlogLinkPreviewUrl {
+  display: none;
+}
+
+.boardBlogLinkPlayIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 46px;
+  height: 32px;
+  border-radius: 9px;
+  background: #ff0033;
+  transform: translate(-50%, -50%);
+}
+
+.boardBlogLinkPlayIcon::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 13px solid #fff;
+  transform: translate(-38%, -50%);
+}
+
+.boardBlogHomepagePreview {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  width: min(100%, 450px);
+  min-height: 110px;
+  margin: 0 auto 28px;
+  border: 1px solid var(--ruleLineSoft);
+  background: #fff;
+  text-align: left;
+}
+
+.boardBlogHomepageLogo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #28a9df;
+}
+
+.boardBlogHomepageLogo img {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+}
+
+.boardBlogHomepageInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: 16px 24px;
+  gap: 8px;
+}
+
+.boardBlogHomepageInfo strong {
+  overflow: hidden;
+  color: var(--textPrimary);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.boardBlogHomepageInfo span {
+  overflow: hidden;
+  color: var(--textMuted);
+  font-size: 0.875rem;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.boardBlogHomepageInfo a {
+  overflow: hidden;
+  color: #1d4ed8;
+  font-size: 0.875rem;
+  line-height: 1.35;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.boardBlogLinkConfirmBtn {
+  min-width: 110px;
+  padding: 12px 24px;
+  border: 1px solid var(--ruleLineSoft);
+  background: #fff;
+  color: #00b050;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.boardBlogLinkConfirmBtn span {
+  margin-right: 8px;
+  font-size: 1.2rem;
+}
+
+.boardBlogLinkConfirmBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.boardWriteError {
+  margin: 0;
+  padding: 12px 14px;
+  border-left: 3px solid var(--prideRed);
+  background: rgba(204, 0, 0, 0.08);
+  color: var(--prideRed);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.boardWriteActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--ruleLineSoft);
+}
+
+.boardDetailActions {
+  justify-content: space-between;
+}
+
+.boardWriteSubmitActions {
+  justify-content: space-between;
+}
+
+.boardDetailRightActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.boardWriteCancelBtn,
+.boardWriteDeleteBtn,
+.boardWriteEditBtn,
+.boardWriteSubmitBtn {
+  min-width: 88px;
+  padding: 12px 18px;
+  border-radius: 0;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.boardWriteCancelBtn {
+  border: 1px solid var(--ruleLine);
+  background: transparent;
+  color: var(--textMuted);
+}
+
+.boardWriteDeleteBtn {
+  border: 1px solid var(--prideRed);
+  background: var(--prideRed);
+  color: #fff;
+}
+
+.boardWriteEditBtn {
+  border: 1px solid #1d4ed8;
+  background: #1d4ed8;
+  color: #fff;
+}
+
+.boardWriteSubmitBtn {
+  border: 1px solid var(--prideRed);
+  background: var(--prideRed);
+  color: #fff;
+}
+
+.boardWriteCancelBtn:hover,
+.boardWriteDeleteBtn:hover,
+.boardWriteEditBtn:hover,
+.boardWriteSubmitBtn:hover {
+  opacity: 0.9;
+}
+
+.boardWriteCancelBtn:focus-visible,
+.boardWriteDeleteBtn:focus-visible,
+.boardWriteEditBtn:focus-visible,
+.boardWriteSubmitBtn:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 2px;
+}

@@ -1,11 +1,39 @@
 /**
  * 승요인증: 승리·현장 인증 등 팬들이 사진·글로 남기는 전용 탭입니다.
- * - 무적 LG 마당(`FreeBoardPage`)과 동일한 헤더/목록 뼈대로 일관된 문서 접근 패턴을 유지했습니다.
+ * - 무적LG마당(`FreeBoardPage`)과 동일한 헤더/목록 뼈대로 일관된 문서 접근 패턴을 유지했습니다.
  */
 
+import { Navigate, useNavigate } from 'react-router-dom'
+import { BoardListTable } from '../components/BoardListTable'
+import { useAuth } from '../hooks/useAuth'
+import { getBoardPosts } from '../lib/boardPostStorage'
 import './boardPage.css'
 
+const reviewBoardPath = '/reviews'
+
 export function ReviewBoardPage() {
+  const navigate = useNavigate()
+  const { user, loading: authLoading } = useAuth()
+  const loginRedirectHref = `/login?redirect=${encodeURIComponent(reviewBoardPath)}`
+
+  if (authLoading) {
+    return (
+      <article className="boardPage" aria-busy="true">
+        <header className="boardHeader">
+          <p lang="en" className="boardEyebrow">win proof</p>
+          <h1 className="boardTitle">승요인증</h1>
+          <p className="boardDescription">로그인 여부를 확인하는 중입니다.</p>
+        </header>
+      </article>
+    )
+  }
+
+  if (!user) {
+    return <Navigate to={loginRedirectHref} replace />
+  }
+
+  const reviewBoardRows = getBoardPosts('reviewBoard')
+
   return (
     <article className="boardPage">
       <header className="boardHeader">
@@ -25,12 +53,16 @@ export function ReviewBoardPage() {
         <h2 id="sungyoBoardListHeading" className="srOnly">
           승요인증 목록
         </h2>
-        <div className="emptyState" aria-live="polite">
-          <h3 className="emptyTitle">첫 번째 승요 인증을 남겨 주세요</h3>
-          <p className="emptyBody">
-            사진 업로드를 추가할 계획이라면 카드 높이를 고정하거나 비율 박스로 설계하면 안정적입니다.
-          </p>
-        </div>
+        <BoardListTable
+          rows={reviewBoardRows}
+          caption="승요인증 게시글 목록"
+          detailBasePath="/reviews"
+          bottomAction={(
+            <button type="button" className="boardWriteLinkBtn" onClick={() => navigate('/reviews/write')}>
+              글쓰기
+            </button>
+          )}
+        />
       </section>
     </article>
   )
