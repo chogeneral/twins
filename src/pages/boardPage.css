@@ -28,7 +28,7 @@
 
 .boardDescription {
   margin: 0;
-  max-width: 52ch;
+
   color: var(--textMuted);
   font-size: clamp(0.9375rem, 1.5vw, 1.02rem);
   line-height: 1.65;
@@ -58,7 +58,7 @@
 
 .emptyBody {
   margin: 0;
-  max-width: 54ch;
+
   color: var(--textMuted);
   font-size: 0.895rem;
   line-height: 1.62;

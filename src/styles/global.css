@@ -48,6 +48,17 @@
     url('/fonts/Pretendard-Bold.woff2') format('woff2');
 }
 
+@font-face {
+  font-family: 'PretendardBold';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src:
+    local('Pretendard Bold'),
+    local('Pretendard-Bold'),
+    url('/fonts/Pretendard-Bold.woff2') format('woff2');
+}
+
 :root {  /* DAZED 스타일의 화이트 베이스 매거진 톤 */
   --prideRed: #c0002f; /* 포인트 레드는 유지 */
   --inkBlack: #ffffff; /* 베이스 배경을 순백색으로 변경 (변수명 유지) */

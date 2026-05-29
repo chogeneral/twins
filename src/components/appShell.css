@@ -1,7 +1,8 @@
 /**
- * 헤더·푸터·메인 패딩입니다.
- * - 상단 헤더는 `--headerSurface` 연한 회색으로 본문(밝은 바닥)과 시각적으로만 구분했습니다.
- * - 모바일 내비 패널도 동일 배경이라 펼칠 때 끊김이 적습니다.
+ * 앱 껍데기 레이아웃입니다.
+ * - 헤더·본문(main)·푸터가 같은 max-width·좌우 clamp 를 공유해 전체 컨텐츠가 한 줄기로 정렬되도록 했습니다.
+ * - 모바일 드로어는 별도 블록으로 패널 안쪽 패딩만 유지합니다.
+ * - 상단 헤더는 `--surfaceCard` 로 본문과 구분합니다.
  * - 참고 레이아웃은 Dazed Korea 등 매거진식 내비 구조였으나 현재 플랫 연회색 헤더에 맞췄습니다.
  */
 
@@ -47,10 +48,12 @@
 .siteHeaderInner {
   max-width: 1320px;
   margin: 0 auto;
+  /* 본문·푸터와 같은 좌우 리듬으로 맞춰 한 앱처럼 보이게 함 */
   padding: 18px clamp(18px, 4vw, 36px);
   /* flex 대신 3열 그리드: 양쪽 1fr 이 동일 폭을 나눠 중앙 열(auto=내비)이 헤더 가로 중심에 오게 함 — 로고는 1열, 내비는 2열, 햄버거는 3열 */
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  /* minmax(0, 1fr): 1fr만 쓰면 기본 min-width가 auto라 flex 자식(로고+텍스트)이 줄지 못하고 가로 스크롤·로고 찌그러짐이 날 수 있어 0까지 허용 */
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: clamp(12px, 3vw, 28px);
 }
@@ -59,69 +62,84 @@
   grid-column: 1;
   justify-self: start;
   display: flex;
-  gap: 10px;
+  gap: clamp(6px, 2vw, 10px);
   align-items: center;
   text-decoration: none;
   color: var(--textPrimary);
   cursor: pointer;
+  /* 그리드 셀 폭이 줄어들 때 링크 안 콘텐츠가 셀 밖으로 밀려나지 않게 — min-width 미지정 시 flex 최소 크기가 intrinsic 이라 넘침 발생 */
+  min-width: 0;
+  max-width: 100%;
 }
-
-
 
 .brandLogoWrap {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 46px;
-  max-width: 118px;
-
+  justify-content: flex-start;
+  box-sizing: border-box;
+  /* 에셋(120×56) 비율을 유지한 채 뷰포트에 맞게 높이만 줄임 — width/height 중 한 축만 고정하고 object-fit 으로 비율 보존 */
+  height: clamp(32px, 7.5vw, 46px);
+  max-height: 46px;
+  max-width: min(118px, 30vw);
   border: none;
   background: transparent;
 }
 
 .brandLogoImg {
   display: block;
-  height: 100%;
   width: auto;
+  height: 100%;
   max-width: 100%;
+  max-height: 100%;
+  /* contain: 박스 안에 전부 들어오도록만 맞추고 가로세로 비율은 깨지지 않음 */
   object-fit: contain;
-}
-
-@media (max-width: 520px) {
-  .brandLogoWrap {
-    height: 40px;
-    max-width: 100px;
-  }
+  object-position: left center;
+  /* 브라우저 기본 스케일링(부드러운 보간) — 인위적 픽셀 보간은 굵은 외곽선이 깨져 보일 수 있어 auto 유지 */
+  image-rendering: auto;
 }
 
 .brandText {
   display: flex;
   flex-direction: column;
   line-height: 1.05;
+  /* 타이틀·서브타이틀이 길어도 부모가 줄어들 수 있게 해 말줄임/줄바꿈이 정상 동작 */
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 /* 워드마크는 한글 레터스페이싱 과하면 어색해 살짝만 조였습니다 */
+/* 가독성: 상단 브랜드 타이틀을 전체적으로 한 단계만 키워 모바일에서도 제목이 더 잘 읽히게 함 */
 .brandTitle {
   font-weight: 700;
-  font-size: clamp(1rem, 2.8vw, 1.125rem);
+  font-size: clamp(1.0625rem, 3vw, 1.25rem);
   letter-spacing: -0.02em;
 }
 
 .brandSubtitle {
   margin-top: 4px;
-  font-size: 0.6875rem;
+  /* 타이틀과 단계를 맞추기 위해 부제만 아주 조금 키워 시각적 균형 유지 */
+  font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--textQuiet);
 }
 
+@media (max-width: 420px) {
+  /* 극단적으로 좁을 때 긴 영문 부제가 두 줄로 밀려 로고 행 높이를 키우지 않도록 한 줄·말줄임 처리 */
+  .brandSubtitle {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+}
+
 /* 2번째 열에 두고 justify-self:center 로 내비 블록 전체가 헤더 중앙에 오도록 함 */
 .desktopNav {
   grid-column: 2;
   justify-self: center;
-  margin-left: 0;
 }
 
 .desktopNavList {
@@ -145,7 +163,8 @@
   color: var(--textMuted);
   padding: 6px 8px;
   font-weight: 500;
-  font-size: 0.6875rem;
+  /* 헤더 전체 타이포와 맞추기 위해 본문보다 작지만 이전보다 한 단계만 키움 */
+  font-size: 0.75rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   transition: color 0.15s ease;
@@ -160,13 +179,71 @@
   box-shadow: inset 0 -2px 0 var(--prideRed);
 }
 
-.menuToggle {
+/* 3열 오른쪽: 유틸리티 버튼(로그인 등) + 모바일 햄버거 버튼을 함께 묶는 컨테이너 */
+.headerUtils {
+  /* template 은 3열(1fr | auto | 1fr)뿐인데 5를 쓰면 암시적 열이 생기거나 배치가 어긋나 헤더·로고 정렬이 깨짐 */
   grid-column: 3;
   justify-self: end;
-  margin-left: 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  /* 문의하기·회원가입·로그인 등 텍스트 버튼이 붙어 보이지 않도록 간격을 넉넉히 둠 */
+  gap: clamp(14px, 2.5vw, 24px);
+}
+
+/* 오른쪽 데스크톱 묶음: 닉네임·문의 등을 한 줄에 두고 줄임 처리가 되게 min-width 허용 */
+.headerUtilsDesktopCluster {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+/* 데스크탑 로그인 버튼 — 텍스트 전용 */
+.headerLoginBtn {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 0;
+  border: none;
+  background: transparent;
+  color: var(--textMuted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.headerLoginBtn:hover {
+  color: var(--textPrimary);
+}
+
+.headerLoginBtn:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 2px;
+}
+
+/* 로그인 후 헤더 오른쪽 닉네임 — 클러스터 flex 안에서 줄어들며 길면 말줄임. 오른쪽 버튼과 붙어 보이지 않게 우측 패딩만 추가 */
+.headerWelcomeNickname {
+  flex: 0 1 auto;
+  min-width: 0;
+  padding-right: 10px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--textPrimary);
+}
+
+.menuToggle {
   display: none;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   gap: 7px;
   width: 48px;
   height: 48px;
@@ -180,36 +257,20 @@
   display: block;
   height: 1px;
   width: 18px;
-  margin: 0 auto;
   background: currentColor;
 }
 
 .mobileNavBackdrop {
   position: fixed;
   inset: 0;
-  z-index: 25;
+  /* 헤더·본문 위이면서 사이드 패널보다 아래 — 패널은 840px 이하에서만 z-index 를 더 높입니다 */
+  z-index: 49;
   border: none;
   background: rgba(0, 0, 0, 0.65);
 }
 
 .mobileNav {
-  position: fixed;
-  inset: auto 0 0 0;
-  top: 76px;
-  z-index: 30;
   display: none;
-  padding: 20px clamp(18px, 4vw, 36px) 28px;
-  max-height: min(560px, calc(100dvh - 76px));
-  overflow-y: auto;
-  /* 데스크톱 헤더와 톤을 맞춰 모바일 드롭 메뉴도 같은 연회색 계열을 썼습니다 */
-  background: var(--headerSurface);
-  border-bottom: 1px solid var(--ruleLine);
-  transform: translateY(-14px);
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
 }
 
 .mobileNavList {
@@ -225,18 +286,12 @@
   margin: 0;
 }
 
-.mobileNavOpen {
-  transform: translateY(0);
-  opacity: 1;
-  pointer-events: auto;
-  visibility: visible;
-}
-
 .mobileNavLink {
   display: block;
   text-decoration: none;
   color: var(--textMuted);
-  padding: 16px 0;
+  /* 세로 패딩으로 탭 타깃 확보 — 패널 좌우 패딩과 맞물려 누르기 적당한 행 높이가 됩니다 */
+  padding: 14px 0;
   border-bottom: 1px solid var(--ruleLineSoft);
   font-weight: 500;
   font-size: 0.8125rem;
@@ -257,12 +312,14 @@
   flex: 1;
   width: min(1320px, 100%);
   margin: 0 auto;
-  padding: clamp(32px, 5vw, 56px) clamp(18px, 4vw, 36px) clamp(72px, 10vw, 120px);
+  /* 상하·좌우 모두 헤더 inner 와 같은 clamp 를 써 페이지마다 들쭉날쭉하지 않게 함 */
+  padding: clamp(28px, 5vw, 52px) clamp(18px, 4vw, 36px) clamp(64px, 10vw, 112px);
+  box-sizing: border-box;
 }
 
 .siteFooter {
   border-top: 1px solid var(--ruleLine);
-  padding: clamp(36px, 5vw, 48px) clamp(18px, 4vw, 36px) clamp(28px, 4vw, 40px);
+  padding: clamp(32px, 5vw, 48px) clamp(18px, 4vw, 36px) clamp(24px, 4vw, 40px);
   /* 본문 순블랙과 살짝만 구분해 일반 홈페이지 푸터에서 흔한 배경 레이어를 만듭니다 */
   background: var(--surfaceCard);
 }
@@ -279,25 +336,32 @@
 }
 
 @media (min-width: 640px) {
+  /* 브랜드 | 메뉴 2열만 쓰면 세 번째 빈 열에 폭을 빼앗기지 않아 메뉴 열이 넓어짐 */
   .footerColumns {
-    grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(140px, 1fr));
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
     align-items: start;
+  }
+
+  /* 와이드에서 브랜드 열과 메뉴 열 사이 숨 통풍 */
+  .footerColumnBrand {
+    padding-right: clamp(0px, 3vw, 24px);
   }
 }
 
-.footerColumnBrand {
-  padding-right: clamp(0px, 3vw, 24px);
+/* 중간 폭 태블릿은 줄바꿈 유지 — 메뉴 라벨 합 폭을 고려해 넓은 PC 단계에서만 한 줄 고정 */
+@media (min-width: 1100px) {
+  .footerLinkList {
+    flex-wrap: nowrap;
+    row-gap: 0;
+  }
 }
 
-.footerColumnTitle {
-  margin: 0 0 14px;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: var(--textPrimary);
-}
-
+/* 메뉴 열 내비 — 폭이 좁으면 링크 줄바꿈으로 전부 노출, 가로 스크롤은 쓰지 않음 */
 .footerColumnNav {
-  display: block;
+  display: flex;
+  justify-content: flex-start;
+  max-width: 100%;
+  overflow: visible;
 }
 
 .footerSiteName {
@@ -325,14 +389,20 @@
   margin: 0;
   padding: 0;
   list-style: none;
+  display: flex;
+  flex-direction: row;
+  /* 한 줄에 다 안 들어가면 다음 줄로 넘겨 스크롤 없이 모든 메뉴 표시 */
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(8px, 1.6vw, 18px);
+  row-gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .footerLinkItem {
   margin: 0;
-}
-
-.footerLinkItem + .footerLinkItem {
-  margin-top: 8px;
+  flex-shrink: 0;
 }
 
 .footerPageLink {
@@ -340,6 +410,8 @@
   line-height: 1.45;
   color: var(--textMuted);
   text-decoration: none;
+  /* 줄바꿈 없이 한 줄 라벨 유지 — 긴 한글 라벨도 행이 두 줄로 갈라지지 않음 */
+  white-space: nowrap;
 }
 
 .footerPageLink:hover {
@@ -366,7 +438,7 @@
 
 .footerDivider {
   height: 1px;
-  margin: clamp(24px, 3vw, 32px) 0 clamp(18px, 2.5vw, 24px);
+  margin: clamp(22px, 3vw, 30px) 0 clamp(16px, 2.5vw, 22px);
   background: var(--ruleLineSoft);
   border: none;
 }
@@ -437,7 +509,6 @@
   border: 1px solid var(--ruleLine);
   border-radius: 50%;
   background: var(--surfaceCard);
-  /* SVG stroke 는 currentColor 를 쓰므로 검정으로 고정 — 호버 시에도 아이콘 색은 바꾸지 않습니다 */
   color: #000000;
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
@@ -506,6 +577,17 @@
     height: 30px;
   }
 
+  /* 드로어가 열릴 때 우하단 퀵메뉴와 겹치면 혼란스러워 숨김 — 닫히면 다시 표시 */
+  .appShellMobileNavOpen .siteQuickMenu {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  /* 좁은 폭에서 헤더 오른쪽은 햄버거만 두고 문의·로그인 등은 드로어로 옮김 — 타이틀과 겹침 방지 */
+  .headerUtilsDesktopCluster {
+    display: none;
+  }
+
   .desktopNav {
     display: none;
   }
@@ -514,14 +596,177 @@
     display: inline-flex;
   }
 
+  /* 우측 전체 높이 패널: 헤더 아래가 아니라 화면 오른쪽에서 슬라이드 — 햄버거 위치와 시각적으로 한 덩어리 */
   .mobileNav {
-    display: block;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: auto;
+    width: min(20rem, 88vw);
+    height: 100dvh;
+    max-height: none;
+    z-index: 50;
+    overflow: hidden;
+    background: var(--headerSurface);
+    border-left: 1px solid var(--ruleLine);
+    box-shadow: -10px 0 32px rgba(0, 0, 0, 0.2);
+    transform: translateX(100%);
+    opacity: 1;
+    pointer-events: none;
+    transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  .mobileNav.mobileNavOpen {
+    transform: translateX(0);
+    pointer-events: auto;
+    visibility: visible;
+    transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
   }
 
   .mobileNav:not(.mobileNavOpen) {
     visibility: hidden;
     pointer-events: none;
-    transform: translateY(-12px);
+    transition:
+      transform 0.26s cubic-bezier(0.32, 0.72, 0, 1),
+      visibility 0s linear 0.26s;
+  }
+
+  /* 첫 줄: 텍스트·유틸은 좌측 묶음, 닫기 버튼만 우측 끝(space-between) */
+  .mobileNavDrawerTopBar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    /* 노치 아래 숨 통풍 — 상단이 너무 붙으면 닫기 영역이 답답해 보입니다 */
+    padding-top: calc(10px + env(safe-area-inset-top, 0px));
+    padding-bottom: 12px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--ruleLineSoft);
+  }
+
+  /* 좌측: 비로그인·로그인·로딩 모두 같은 행 규칙 — 줄바꿈 없이 한 줄, 항목 사이 간격은 고정 10px */
+  .mobileNavDrawerTopBarMain {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+    justify-content: flex-start;
+    /* 아이디가 길 때 한 줄을 깨지 않게 하고 패널 안에서만 가로 스크롤 허용 */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* 상단 줄 인라인 유틸 — 좌우 패딩은 최소화하고 항목 간 간격은 부모 gap(10px)에 맡김 */
+  .mobileNavTopBarBtn {
+    flex-shrink: 0;
+    padding: 6px 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: var(--textMuted);
+    font-family: inherit;
+    font-weight: 500;
+    /* 데스크톱 헤더 유틸(`headerLoginBtn`)과 동일한 글자 크기로 맞춰 한 앱 타이포처럼 보이게 함 */
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.15s ease;
+  }
+
+  .mobileNavTopBarBtn:hover {
+    color: var(--textPrimary);
+  }
+
+  .mobileNavTopBarBtn:focus-visible {
+    outline: 2px solid var(--focusRing);
+    outline-offset: 2px;
+  }
+
+  /* 드로어 전용 닫기 — 상단 줄 우측 정렬, 터치 영역 유지 */
+  .mobileNavCloseBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: var(--textPrimary);
+    font-size: 1.625rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .mobileNavCloseBtn:hover {
+    color: var(--prideRed);
+  }
+
+  .mobileNavCloseBtn:focus-visible {
+    outline: 2px solid var(--focusRing);
+    outline-offset: 2px;
+  }
+
+  /* 목록만 세로 스크롤 — 패널 전체가 스크롤되면 헤더가 같이 밀려 UX 가 나빠져 분리 */
+  .mobileNavDrawerBody {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    /* 스크롤 영역 안쪽 여백 — 텍스트가 패널 세로 테두리에 붙지 않게 균등하게 둠 */
+    padding: 4px clamp(18px, 4vw, 22px) calc(20px + env(safe-area-inset-bottom, 0px));
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* 상단 줄 맨 앞에 두는 닉네임 — 우측에 문의·로그아웃이 붙으므로 아이디 오른쪽에만 살짝 여백 */
+  .mobileDrawerWelcome.mobileDrawerWelcomeInTopBar {
+    margin: 0;
+    flex: 0 1 auto;
+    min-width: 0;
+    padding-right: 10px;
+    text-align: left;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--textMuted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: normal;
+  }
+
+  .mobileDrawerWelcome.mobileDrawerWelcomeInTopBar strong {
+    color: var(--textPrimary);
+    font-weight: 700;
+  }
+
+  /* 드로어 전용 닉네임 행 — 긴 이메일형 ID 도 줄바꿈되게 함 */
+  .mobileDrawerWelcome {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--textMuted);
+    word-break: break-word;
+  }
+
+  .mobileDrawerWelcome strong {
+    color: var(--textPrimary);
+    font-weight: 700;
+  }
+}
+
+@media (max-width: 840px) and (prefers-reduced-motion: reduce) {
+  .mobileNav {
+    transition: none !important;
   }
 }

@@ -12,6 +12,10 @@ import { FreeBoardPage } from './pages/FreeBoardPage.jsx'
 import { ReviewBoardPage } from './pages/ReviewBoardPage.jsx'
 import { QuestionBoardPage } from './pages/QuestionBoardPage.jsx'
 import { StadiumInfoPage } from './pages/StadiumInfoPage.jsx'
+import { LoginPage } from './pages/LoginPage.jsx'
+import { SignupPage } from './pages/SignupPage.jsx'
+import { FindIdPage } from './pages/FindIdPage.jsx'
+import { FindPasswordPage } from './pages/FindPasswordPage.jsx'
 
 export default function App() {
   return (
@@ -25,6 +29,10 @@ export default function App() {
           <Route path="free-board" element={<FreeBoardPage />} />
           <Route path="reviews" element={<ReviewBoardPage />} />
           <Route path="qna" element={<QuestionBoardPage />} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="signup" element={<SignupPage />} />
+          <Route path="find-id" element={<FindIdPage />} />
+          <Route path="find-password" element={<FindPasswordPage />} />
           {/* 정의되지 않은 경로는 메인으로 돌려 첫 진입점을 통일했습니다 */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>

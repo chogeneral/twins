@@ -1,5 +1,6 @@
 /**
- * 자유게시판: 카테고리 제약이 없는 일반 소통 공간이라는 안내와 빈 상태 UI를 제공합니다.
+ * 무적 LG 마당(구 자유게시판 경로 `/free-board`): 카테고리 제약이 없는 일반 소통 공간 안내·빈 상태 UI.
+ * - 화면 제목·내비 라벨은 팬덤 네이밍「무적 LG 마당」으로 통일했습니다.
  * - article 하나로 페이지 전체 맥락을 표현했고 목록 블록을 section+h2 레이블로 구획했습니다.
  */
 
@@ -13,7 +14,7 @@ export function FreeBoardPage() {
         <p lang="en" className="boardEyebrow">
           community
         </p>
-        <h1 className="boardTitle">자유게시판</h1>
+        <h1 className="boardTitle">무적 LG 마당</h1>
         <p className="boardDescription">
           시즌 잡담, 밈, 중고 거래(정책 준수) 등 자유로운 이야기를 나누는 공간입니다.
         </p>

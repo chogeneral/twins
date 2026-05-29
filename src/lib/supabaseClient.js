@@ -13,24 +13,17 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
  * 로컬 개발: 프로젝트 루트에 .env 파일을 두고 아래 두 변수를 설정한 뒤 dev 서버를 재시작합니다.
  */
 if (!supabaseUrl || !supabaseAnonKey) {
-  // 빌드/런타임에서 누락 시 즉시 알 수 있도록 합니다. (프로덕션 배포 전에 반드시 설정)
   console.warn(
     '[Supabase] VITE_SUPABASE_URL 또는 VITE_SUPABASE_ANON_KEY가 비어 있습니다. .env를 확인하세요.',
   );
 }
 
-/**
- * 앱 전역에서 하나의 클라이언트만 쓰면 연결·옵션이 일관됩니다.
- * anon key로는 RLS를 통과한 행만 읽기/쓰기 가능합니다.
- */
-export const supabase = createClient(
-  supabaseUrl ?? '',
-  supabaseAnonKey ?? '',
-  {
-    auth: {
-      // 세션을 localStorage에 두어 새로고침 후에도 로그인 유지 (기본값과 동일하지만 의도를 명시)
-      persistSession: true,
-      autoRefreshToken: true,
-    },
-  },
-);
+/* 환경 변수 누락 시 createClient 호출 자체를 막아 런타임 에러를 방지합니다 */
+export const supabase = (supabaseUrl && supabaseAnonKey)
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+      },
+    })
+  : null;

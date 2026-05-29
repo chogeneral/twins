@@ -811,7 +811,7 @@ function championVideoModalPayload(r) {
   }
 }
 
-/* 영구결번 카드는 정보 표시만 하며, 박용택·이병규 클릭 시 통산 모달은 사용자 요청으로 제거했습니다(골든글러브 탭 모달은 그대로). */
+/* 영구결번 카드: 패널 상단 안내로 등번호 클릭 시 영상 안내 — 통산 모달은 제거된 상태이며, 영상은 추후 등번호·카드에 연결 가능 */
 const RETIRED_NUMBERS = [
   {
     number: '33',
@@ -834,7 +834,7 @@ const RETIRED_NUMBERS = [
     name: '이병규',
     pos: '외야수 · 지명타자',
     period: '1997–2016',
-    note: "'적토마' 이병규는 통산 2,043안타(타율 0.311), 30-30 클럽 가입, 그리고 10연타석 안타 입니다. LG 트윈스의 프랜차이즈 스타로 활약했습니다.",
+    note: "'적토마'이자, 압도적인 타격 능력으로 등번호 9번이 영구결번된 전설적인 프랜차이즈 스타입니다.",
     /* 사용자 제공 KBO 통산기록(타자) 이미지 수치 — 김용수 카드와 동일한 블록·표 스타일로 노출 */
     kboCareerBattingSummary: {
       sectionTitle: 'KBO 통산기록',
@@ -947,7 +947,9 @@ export function TeamPage() {
           aria-labelledby="tab-records"
           hidden={activeTab !== 'records'}
           className="teamTabPanel"
-        >
+        ><p className="teamTabNote">
+        우승 연도 클릭시 우승 당시 영상을 볼 수 있습니다.
+       </p>
           <div className="teamRecordTableWrap">
             <table className="teamRecordTable">
               <thead>
@@ -1044,9 +1046,7 @@ export function TeamPage() {
               </tbody>
             </table>
           </div>
-          <p className="teamTabNote">
-           우승 연도 클릭시 우승 당시 영상을 볼 수 있습니다.
-          </p>
+          
         </div>
 
         {/* 골든글러브 */}
@@ -1144,7 +1144,7 @@ export function TeamPage() {
           
         </div>
 
-        {/* 영구결번 */}
+        {/* 영구결번 — 카드별 등번호 클릭으로 선수 영상을 열 계획일 때 사용자 안내 */}
         <div
           id="panel-retired"
           role="tabpanel"
@@ -1152,6 +1152,7 @@ export function TeamPage() {
           hidden={activeTab !== 'retired'}
           className="teamTabPanel"
         >
+          <p className="teamTabNote">등번호 클릭 시 선수 영상을 볼 수 있습니다.</p>
           <ul className="teamRetiredGrid">
             {RETIRED_NUMBERS.map((p) => (
               <li

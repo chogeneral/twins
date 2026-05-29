@@ -134,15 +134,27 @@
   border-collapse: collapse;
 }
 
+/* 제목 행(연도·정규시즌 등)을 연한 회색 밴드로 본문과 구분 — tbody 와 따로 깔리도록 thead 에만 배경을 둡니다 */
+.teamRecordTable thead {
+  background: var(--surfaceCard);
+}
+
 .teamRecordTh {
-  padding: 10px 16px;
-  font-size: 0.625rem;
+  /* PretendardBold 패밀리 + 수치 굵게로 제목 행 가독성을 맞춤 */
+  font-family: 'PretendardBold', 'Pretendard', sans-serif;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  border-top: 1px solid var(--ruleLine);
+  padding: 20px 16px;
+  /* 기존 0.625rem(10px)대는 너무 작아 열 이름이 잘 안 읽혀 살짝 키움 */
+  font-size: clamp(0.8125rem, 1.5vw, 0.9375rem);
+
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--textQuiet);
+  /* 연한 회색 배경 위에서는 textQuiet 로는 대비가 부족해 본문에 가까운 색으로 둠 */
+  color: var(--textPrimary);
   text-align: left;
   border-bottom: 1px solid var(--ruleLine);
+  background: transparent;
 }
 
 .teamRecordThYear {
@@ -447,6 +459,11 @@
   min-width: 520px;
 }
 
+/* 투수 모달 — 평균자책점 열만 헤더·본문 가운데 정렬(제공 표 레이아웃과 맞춤) */
+.teamPhotoModalStatsPitcher .teamPhotoModalStatsEra {
+  text-align: center;
+}
+
 /* ── 골든글러브 ── */
 .teamGGList {
   margin: 0;
@@ -545,8 +562,10 @@
 
 .teamTabNote {
   margin: 16px 0 0;
+  /* 연도별 성적 표 바로 위 안내 문구 — 팀 레드로 눈에 띄게 하고 표와 숨통을 위해 아래만 약간 띄움 */
+  padding-bottom: 12px;
   font-size: 0.6875rem;
-  color: var(--textQuiet);
+  color: var(--prideRed);
   letter-spacing: 0.04em;
 }
 

@@ -1,0 +1,159 @@
+/* 로그인 카드와 동일한 리듬을 맞춰 통일감을 줍니다 */
+.findIdPage {
+  display: flex;
+  justify-content: center;
+  padding: clamp(32px, 6vw, 64px) clamp(18px, 4vw, 36px);
+}
+
+.findIdCard {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.findIdTitle {
+  margin: 0;
+  font-size: clamp(1.375rem, 4vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--textPrimary);
+}
+
+.findIdLead {
+  margin: -20px 0 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--textMuted);
+}
+
+.findIdForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.findIdField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.findIdLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--textMuted);
+}
+
+.findIdInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid var(--ruleLine);
+  border-radius: 0;
+  background: transparent;
+  color: var(--textPrimary);
+  font-size: 0.9375rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.findIdInput::placeholder {
+  color: var(--textQuiet);
+}
+
+.findIdInput:focus {
+  border-color: var(--textPrimary);
+}
+
+.findIdInput:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.findIdSubmitBtn {
+  margin-top: 4px;
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 0;
+  background: var(--prideRed);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.findIdSubmitBtn:hover {
+  opacity: 0.88;
+}
+
+.findIdSubmitBtn:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 2px;
+}
+
+.findIdSubmitBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.findIdServerError {
+  margin: 0;
+  padding: 12px 14px;
+  background: rgba(204, 0, 0, 0.08);
+  border-left: 3px solid var(--prideRed);
+  font-size: 0.8125rem;
+  color: var(--prideRed);
+  line-height: 1.5;
+}
+
+/* 조회 성공 시 마스킹된 이메일 안내 박스 */
+.findIdResultBox {
+  margin: 0;
+  padding: 14px 16px;
+  background: rgba(46, 125, 50, 0.08);
+  border-left: 3px solid #2e7d32;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--textPrimary);
+}
+
+.findIdResultEmail {
+  font-weight: 700;
+  word-break: break-all;
+}
+
+.findIdFooter {
+  display: flex;
+  justify-content: center;
+}
+
+.findIdBackBtn {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--textMuted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.findIdBackBtn:hover {
+  color: var(--textPrimary);
+}
+
+.findIdBackBtn:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 2px;
+}

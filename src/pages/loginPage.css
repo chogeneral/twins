@@ -1,0 +1,145 @@
+.loginPage {
+  display: flex;
+  justify-content: center;
+  padding: clamp(32px, 6vw, 64px) clamp(18px, 4vw, 36px);
+}
+
+.loginCard {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.loginTitle {
+  margin: 0;
+  font-size: clamp(1.375rem, 4vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--textPrimary);
+}
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.loginField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.loginLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--textMuted);
+}
+
+.loginInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid var(--ruleLine);
+  border-radius: 0;
+  background: transparent;
+  color: var(--textPrimary);
+  font-size: 0.9375rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.loginInput::placeholder {
+  color: var(--textQuiet);
+}
+
+.loginInput:focus {
+  border-color: var(--textPrimary);
+}
+
+.loginSubmitBtn {
+  margin-top: 4px;
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 0;
+  background: var(--prideRed);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.loginSubmitBtn:hover {
+  opacity: 0.88;
+}
+
+.loginSubmitBtn:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 2px;
+}
+
+/* 하단 링크 그룹 */
+.loginActions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.loginActionBtn {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--textMuted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.loginActionBtn:hover {
+  color: var(--textPrimary);
+}
+
+.loginActionBtn:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 2px;
+}
+
+/* 구분선 */
+.loginActionDivider {
+  display: block;
+  width: 1px;
+  height: 10px;
+  background: var(--ruleLine);
+}
+
+.loginSubmitBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.loginInput:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loginServerError {
+  margin: 0;
+  padding: 12px 14px;
+  background: rgba(204, 0, 0, 0.08);
+  border-left: 3px solid var(--prideRed);
+  font-size: 0.8125rem;
+  color: var(--prideRed);
+  line-height: 1.5;
+}
