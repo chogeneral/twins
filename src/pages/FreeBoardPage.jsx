@@ -39,12 +39,10 @@ export function FreeBoardPage() {
     <article className="boardPage">
       {/* 페이지 이름과 설명: 내비와 중복되는 짧은 식별을 위해 헤더 그룹으로 묶었습니다 */}
       <header className="boardHeader">
-        <p lang="en" className="boardEyebrow">
-          community
-        </p>
-        <h1 className="boardTitle">무적LG마당</h1>
+       
+        <h1 className="boardTitle">무적 LG마당</h1>
         <p className="boardDescription">
-        무적LG마당은 무적LG팬들이 자유롭게 이야기를 나누는 공간입니다.
+        무적 LG마당은 무적 LG팬들이 자유롭게 이야기를 나누는 공간입니다.
         </p>
       </header>
 

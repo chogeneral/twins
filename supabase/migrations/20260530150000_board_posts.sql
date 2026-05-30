@@ -7,7 +7,7 @@
  * SQL Editor 적용: `supabase/board_posts_sql_editor.sql` 내용을 실행
  *
  * 설계 이유:
- * - freeBoard(무적LG마당)와 reviewBoard(승요인증)는 화면 구조가 같아서
+ * - freeBoard(무적LG마당), reviewBoard(승요인증), stadiumTourBoard(구장투어), twinsNewsBoard(twins뉴스)는 화면 구조가 같아서
  *   테이블을 나누지 않고 board_key 컬럼으로 구분합니다.
  * - RLS 정책으로 로그인 사용자는 모두 조회 가능하고, 작성자 본인만
  *   글쓰기·수정·삭제가 가능하게 제한합니다.
@@ -30,7 +30,7 @@ create table if not exists public.board_posts (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint board_posts_board_key_check check (
-    board_key in ('freeBoard', 'reviewBoard')
+    board_key in ('freeBoard', 'reviewBoard', 'stadiumTourBoard', 'twinsNewsBoard')
   ),
   constraint board_posts_title_len_check check (
     char_length(trim(title)) > 0
@@ -47,8 +47,8 @@ create table if not exists public.board_posts (
   constraint board_posts_views_check check (views >= 0)
 );
 
-comment on table public.board_posts is '무적LG마당·승요인증 게시글';
-comment on column public.board_posts.board_key is 'freeBoard 또는 reviewBoard — 같은 게시글 구조를 게시판별로 구분';
+comment on table public.board_posts is '무적LG마당·승요인증·구장투어·twins뉴스 게시글';
+comment on column public.board_posts.board_key is 'freeBoard, reviewBoard, stadiumTourBoard, twinsNewsBoard — 같은 게시글 구조를 게시판별로 구분';
 comment on column public.board_posts.user_id is '작성자 auth.users.id — RLS에서 본인 글 수정·삭제 판단 기준';
 comment on column public.board_posts.html_content is 'TipTap 에디터 HTML — 이미지·링크 카드·라인 스타일을 보존';
 comment on column public.board_posts.author_display is '표시 닉네임 — INSERT 때 서버 트리거가 auth 메타데이터에서 채움';

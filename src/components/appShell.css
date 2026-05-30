@@ -228,7 +228,10 @@
 .headerWelcomeNickname {
   flex: 0 1 auto;
   min-width: 0;
-  padding-right: 10px;
+  padding: 0 10px 0 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
@@ -237,6 +240,16 @@
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--textPrimary);
+  font-family: inherit;
+}
+
+.headerWelcomeNickname:hover {
+  color: var(--prideRed);
+}
+
+.headerWelcomeNickname:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 2px;
 }
 
 .menuToggle {
@@ -263,7 +276,7 @@
 .mobileNavBackdrop {
   position: fixed;
   inset: 0;
-  /* 헤더·본문 위이면서 사이드 패널보다 아래 — 패널은 840px 이하에서만 z-index 를 더 높입니다 */
+  /* 헤더·본문 위이면서 사이드 패널보다 아래 — 패널은 1093px 이하에서만 z-index 를 더 높입니다 */
   z-index: 49;
   border: none;
   background: rgba(0, 0, 0, 0.65);
@@ -543,7 +556,7 @@
   height: 36px;
 }
 
-@media (max-width: 840px) {
+@media (max-width: 1093px) {
   .siteQuickMenu {
     /* 모바일도 동일하게 하단 여백을 키워 위로 올립니다 */
     bottom: clamp(44px, 8vw, 72px);
@@ -733,7 +746,10 @@
     margin: 0;
     flex: 0 1 auto;
     min-width: 0;
-    padding-right: 10px;
+    padding: 0 10px 0 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
     text-align: left;
     font-size: 0.8125rem;
     font-weight: 500;
@@ -743,6 +759,15 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     word-break: normal;
+  }
+
+  .mobileDrawerWelcome.mobileDrawerWelcomeInTopBar:hover {
+    color: var(--prideRed);
+  }
+
+  .mobileDrawerWelcome.mobileDrawerWelcomeInTopBar:focus-visible {
+    outline: 2px solid var(--focusRing);
+    outline-offset: 2px;
   }
 
   .mobileDrawerWelcome.mobileDrawerWelcomeInTopBar strong {
@@ -765,7 +790,7 @@
   }
 }
 
-@media (max-width: 840px) and (prefers-reduced-motion: reduce) {
+@media (max-width: 1093px) and (prefers-reduced-motion: reduce) {
   .mobileNav {
     transition: none !important;
   }

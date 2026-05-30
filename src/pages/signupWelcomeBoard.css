@@ -20,10 +20,10 @@
 
 .signupWelcomeLineRow {
   display: grid;
-  grid-template-columns: 40px minmax(0, 1fr) auto auto;
+  grid-template-columns: 40px minmax(0, 1fr) auto auto auto;
   grid-template-areas:
-    "avatar meta reply delete"
-    "avatar body body body";
+    "avatar meta reply edit delete"
+    "avatar body body body body";
   gap: 4px 10px;
   align-items: start;
   padding: 12px clamp(12px, 3vw, 16px);
@@ -78,6 +78,7 @@
 }
 
 .signupWelcomeReplyTextBtn,
+.signupWelcomeEditTextBtn,
 .signupWelcomeDeleteTextBtn {
   padding: 0;
   border: none;
@@ -117,17 +118,30 @@
   text-decoration: none;
 }
 
+.signupWelcomeEditTextBtn {
+  grid-area: edit;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  justify-self: end;
+
+  text-decoration: none;
+}
+
 .signupWelcomeReplyTextBtn:hover,
+.signupWelcomeEditTextBtn:hover,
 .signupWelcomeDeleteTextBtn:hover:not(:disabled) {
   color: var(--prideRed);
 }
 
 .signupWelcomeReplyTextBtn:focus-visible,
+.signupWelcomeEditTextBtn:focus-visible,
 .signupWelcomeDeleteTextBtn:focus-visible {
   outline: 2px solid var(--focusRing);
   outline-offset: 3px;
 }
 
+.signupWelcomeEditTextBtn:disabled,
 .signupWelcomeDeleteTextBtn:disabled {
   cursor: not-allowed;
   opacity: 0.5;
@@ -181,10 +195,10 @@
 
 .signupWelcomeReplyCard {
   display: grid;
-  grid-template-columns: 40px minmax(0, 1fr) auto auto;
+  grid-template-columns: 40px minmax(0, 1fr) auto auto auto;
   grid-template-areas:
-    "avatar meta reply delete"
-    "avatar body body body";
+    "avatar meta reply edit delete"
+    "avatar body body body body";
   gap: 4px 10px;
   align-items: start;
   padding: 10px 12px;

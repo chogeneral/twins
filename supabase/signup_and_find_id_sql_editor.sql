@@ -212,6 +212,7 @@ alter table public.signup_welcome_posts enable row level security;
 
 drop policy if exists signup_welcome_select_authenticated on public.signup_welcome_posts;
 drop policy if exists signup_welcome_insert_own on public.signup_welcome_posts;
+drop policy if exists signup_welcome_update_own on public.signup_welcome_posts;
 drop policy if exists signup_welcome_delete_own on public.signup_welcome_posts;
 
 create policy signup_welcome_select_authenticated
@@ -227,6 +228,17 @@ create policy signup_welcome_insert_own
   with check (auth.uid() = user_id);
 
 /*
+ * 수정 버튼용 정책입니다.
+ * 로그인 사용자가 본인이 작성한 가입인사/댓글의 내용만 수정할 수 있게 제한합니다.
+ */
+create policy signup_welcome_update_own
+  on public.signup_welcome_posts
+  for update
+  to authenticated
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+/*
  * 삭제하기 버튼용 정책입니다.
  * 로그인 사용자가 본인이 작성한 가입인사/댓글만 삭제할 수 있게 제한합니다.
  */
@@ -237,6 +249,7 @@ create policy signup_welcome_delete_own
   using (auth.uid() = user_id);
 
 grant select, insert, delete on table public.signup_welcome_posts to authenticated;
+grant update (content) on table public.signup_welcome_posts to authenticated;
 
 create or replace function public.signup_welcome_set_author_display()
 returns trigger

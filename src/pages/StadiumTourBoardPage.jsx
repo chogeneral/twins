@@ -37,17 +37,15 @@ export function StadiumTourBoardPage() {
   return (
     <article className="boardPage">
       <header className="boardHeader">
-        <p lang="en" className="boardEyebrow">
-          stadium tour
-        </p>
+      
         <h1 className="boardTitle">구장투어</h1>
         <p className="boardDescription">
-          각 구장에 여행 할곳, 호텔, 먹거리 정보를 공유하는 공간입니다.
+          각 구장에 여행 할 곳, 호텔, 먹거리 정보를 공유하는 공간입니다.
         </p>
       </header>
 
       <section
-        className="boardPanel"
+        className="boardPanel stadiumTourBoardPanel"
         aria-labelledby="stadiumTourBoardListHeading"
       >
         <h2 id="stadiumTourBoardListHeading" className="srOnly">

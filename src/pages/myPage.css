@@ -1,0 +1,79 @@
+.myPageCard {
+  gap: 24px;
+}
+
+.myPageHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.myPageHint {
+  margin: 0;
+  color: var(--textMuted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.myPageReadonlyInput {
+  background: rgba(148, 163, 184, 0.08);
+  color: var(--textMuted);
+}
+
+.myPageReadonlyInput:focus {
+  border-color: var(--ruleLine);
+}
+
+.myPageSuccess {
+  margin: 0;
+  padding: 12px 14px;
+  border-left: 3px solid #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+  color: #15803d;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.myPageActions {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 10px;
+}
+
+.myPageCancelBtn {
+  margin-top: 4px;
+  padding: 13px;
+  border: 1px solid var(--ruleLine);
+  background: transparent;
+  color: var(--textMuted);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.myPageCancelBtn:hover:not(:disabled) {
+  border-color: var(--textPrimary);
+  color: var(--textPrimary);
+}
+
+.myPageCancelBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.myPageCancelBtn:focus-visible {
+  outline: 2px solid var(--focusRing);
+  outline-offset: 2px;
+}
+
+.myPageSubmitBtn {
+  margin-top: 4px;
+}
+
+@media (max-width: 520px) {
+  .myPageActions {
+    grid-template-columns: 1fr;
+  }
+}

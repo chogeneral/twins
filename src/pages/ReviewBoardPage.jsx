@@ -20,7 +20,7 @@ export function ReviewBoardPage() {
     return (
       <article className="boardPage" aria-busy="true">
         <header className="boardHeader">
-          <p lang="en" className="boardEyebrow">win proof</p>
+          <p lang="en" className="boardEyebrow">승요인증</p>
           <h1 className="boardTitle">승요인증</h1>
           <p className="boardDescription">로그인 여부를 확인하는 중입니다.</p>
         </header>
@@ -37,9 +37,7 @@ export function ReviewBoardPage() {
   return (
     <article className="boardPage">
       <header className="boardHeader">
-        <p lang="en" className="boardEyebrow">
-          win proof
-        </p>
+       
         <h1 className="boardTitle">승요인증</h1>
         <p className="boardDescription">
           경기 승리 순간, 응원 현장, 기념 사진 등 승요 인증을 남기고 서로 공유해 주세요.
@@ -57,6 +55,7 @@ export function ReviewBoardPage() {
           rows={reviewBoardRows}
           caption="승요인증 게시글 목록"
           detailBasePath="/reviews"
+          variant="thumbnail"
           bottomAction={(
             <button type="button" className="boardWriteLinkBtn" onClick={() => navigate('/reviews/write')}>
               글쓰기

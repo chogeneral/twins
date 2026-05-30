@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { mergeAttributes, Node } from '@tiptap/core'
 import { Color } from '@tiptap/extension-color'
 import Image from '@tiptap/extension-image'
@@ -17,7 +17,7 @@ const boardWriteConfigs = {
   free: {
     boardKey: 'freeBoard',
     backPath: '/free-board',
-    eyebrow: 'community',
+    eyebrow: '무적LG마당',
     title: '무적LG마당 글쓰기',
     description: '시즌 이야기, 응원, 질문 등 자유로운 글을 남겨 주세요.',
     categories: ['자유게시판', '응원', '티켓양도', '정모', '나눔'],
@@ -25,18 +25,47 @@ const boardWriteConfigs = {
   review: {
     boardKey: 'reviewBoard',
     backPath: '/reviews',
-    eyebrow: 'win proof',
+    eyebrow: '승요인증',
     title: '승요인증 글쓰기',
     description: '승리 순간, 직관 후기, 응원 현장 인증을 남겨 주세요.',
-    categories: ['직관', '사진', '원정', '굿즈', '응원'],
+    defaultCategory: '승요인증',
+    showCategory: false,
   },
   stadiumTour: {
     boardKey: 'stadiumTourBoard',
     backPath: '/stadium-tour',
-    eyebrow: 'stadium tour',
+    eyebrow: '구장투어',
     title: '구장투어 글쓰기',
     description: '구장 방문 후기, 좌석 시야, 동선, 먹거리 정보를 남겨 주세요.',
-    categories: ['잠실', '원정', '좌석시야', '먹거리', '교통'],
+    categories: [
+      '잠실야구장',
+      '고척야구장',
+      '인천 SSG 랜더스필드',
+      '수원 KT 위즈파크',
+      '대전 한화생명 이글스파크',
+      '대구 삼성 라이온즈파크',
+      '사직야구장',
+      '창원 NC 파크',
+      '광주 기아 챔피언스 필드',
+    ],
+  },
+  twinsNews: {
+    boardKey: 'twinsNewsBoard',
+    backPath: '/twins-news',
+    eyebrow: 'twins뉴스',
+    title: 'twins뉴스 글쓰기',
+    description: 'LG 트윈스 관련 뉴스, 경기 소식, 인터뷰를 공유해 주세요.',
+    defaultCategory: '뉴스',
+    showCategory: false,
+  },
+  inquiry: {
+    boardKey: 'inquiryBoard',
+    backPath: '/inquiry',
+    eyebrow: '문의하기',
+    title: '문의하기 글쓰기',
+    description: '사이트 이용 문의나 개선 의견을 남겨 주세요.',
+    defaultCategory: '문의',
+    showCategory: false,
   },
 }
 
@@ -188,7 +217,10 @@ export function BoardWritePage({ boardType }) {
   const { user, loading: authLoading, nickname } = useAuth()
   const editingPost = postId ? getBoardPost(config.boardKey, postId) : null
   const isEditMode = Boolean(postId)
-  const [category, setCategory] = useState(editingPost?.category ?? config.categories[0])
+  const isInquiryBoard = boardType === 'inquiry'
+  const [category, setCategory] = useState(
+    editingPost?.category ?? config.defaultCategory ?? config.categories?.[0] ?? '',
+  )
   const [title, setTitle] = useState(editingPost?.title ?? '')
   const [content, setContent] = useState(editingPost?.content ?? '')
   const [editorFontFamily, setEditorFontFamily] = useState(editingPost?.fontFamily ?? 'default')
@@ -201,7 +233,20 @@ export function BoardWritePage({ boardType }) {
 
   const currentPath = isEditMode ? `${config.backPath}/${postId}/edit` : `${config.backPath}/write`
   const loginRedirectHref = `/login?redirect=${encodeURIComponent(currentPath)}`
-  const isFreeBoard = boardType === 'free'
+  const authorDisplay = nickname || user?.email?.split('@')[0] || 'member'
+  const isBlogBoard = ['free', 'review', 'stadiumTour', 'twinsNews', 'inquiry'].includes(boardType)
+  const shouldShowCategory = config.showCategory !== false
+  const isEditingPostOwner = Boolean(
+    (editingPost?.userId && editingPost.userId === user?.id)
+    || (!editingPost?.userId && editingPost?.author && editingPost.author === authorDisplay),
+  )
+  const shouldBlockInquiryEdit = Boolean(
+    isEditMode
+    && isInquiryBoard
+    && editingPost
+    && user
+    && !isEditingPostOwner,
+  )
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -221,7 +266,7 @@ export function BoardWritePage({ boardType }) {
         autolink: true,
       }),
     ],
-    content: isFreeBoard ? (editingPost?.htmlContent ?? '') : '',
+    content: isBlogBoard ? (editingPost?.htmlContent ?? '') : '',
     editorProps: {
       attributes: {
         class: 'boardBlogEditorProse',
@@ -231,6 +276,11 @@ export function BoardWritePage({ boardType }) {
       setError('')
     },
   })
+
+  useEffect(() => {
+    if (!shouldBlockInquiryEdit) return
+    window.alert('글쓴이만 수정할 수 있습니다.')
+  }, [shouldBlockInquiryEdit])
 
   if (authLoading) {
     return (
@@ -261,6 +311,10 @@ export function BoardWritePage({ boardType }) {
         </button>
       </article>
     )
+  }
+
+  if (shouldBlockInquiryEdit) {
+    return <Navigate to={config.backPath} replace />
   }
 
   const handleBlogImageChange = async (event) => {
@@ -304,12 +358,12 @@ export function BoardWritePage({ boardType }) {
       return
     }
 
-    if (isFreeBoard && !editorText && !editorHasImage && !editorHasLinkPreview) {
+    if (isBlogBoard && !editorText && !editorHasImage && !editorHasLinkPreview) {
       setError('내용을 입력해 주세요.')
       return
     }
 
-    if (!isFreeBoard && !trimmedContent) {
+    if (!isBlogBoard && !trimmedContent) {
       setError('내용을 입력해 주세요.')
       return
     }
@@ -317,11 +371,12 @@ export function BoardWritePage({ boardType }) {
     const nextPost = {
       category,
       title: trimmedTitle,
-      content: isFreeBoard ? editorText : trimmedContent,
-      htmlContent: isFreeBoard ? editorHtml : undefined,
-      fontFamily: isFreeBoard ? editorFontFamily : undefined,
-      fontSize: isFreeBoard ? editorFontSize : undefined,
-      author: nickname || user.email?.split('@')[0] || 'member',
+      content: isBlogBoard ? editorText : trimmedContent,
+      htmlContent: isBlogBoard ? editorHtml : undefined,
+      fontFamily: isBlogBoard ? editorFontFamily : undefined,
+      fontSize: isBlogBoard ? editorFontSize : undefined,
+      userId: user.id,
+      author: authorDisplay,
     }
 
     /*
@@ -334,7 +389,13 @@ export function BoardWritePage({ boardType }) {
       return
     }
 
-    addBoardPost(config.boardKey, nextPost)
+    const createdPost = addBoardPost(config.boardKey, nextPost)
+
+    if (isInquiryBoard) {
+      window.alert('문의가 등록되었습니다.')
+      navigate(`${config.backPath}/${createdPost.id}`)
+      return
+    }
 
     navigate(config.backPath)
   }
@@ -423,8 +484,16 @@ export function BoardWritePage({ boardType }) {
           {isEditMode ? '게시글 수정' : '게시글 작성'}
         </h2>
 
-        <form className={isFreeBoard ? 'boardWriteForm boardBlogWriteForm' : 'boardWriteForm'} onSubmit={handleSubmit} noValidate>
-          {isFreeBoard ? (
+        <form
+          className={[
+            'boardWriteForm',
+            isBlogBoard ? 'boardBlogWriteForm' : '',
+            boardType === 'stadiumTour' ? 'stadiumTourWriteForm' : '',
+          ].filter(Boolean).join(' ')}
+          onSubmit={handleSubmit}
+          noValidate
+        >
+          {isBlogBoard ? (
             <div className="boardBlogEditorField">
               <div className="boardBlogEditor">
                 <div className="boardBlogToolbar" aria-label="글 편집 도구">
@@ -564,22 +633,26 @@ export function BoardWritePage({ boardType }) {
                   </label>
                 </div>
 
-                <div className="boardBlogMetaArea">
-                  <label className="srOnly" htmlFor="boardBlogCategory">
-                    카테고리
-                  </label>
-                  <select
-                    id="boardBlogCategory"
-                    className="boardBlogCategorySelect"
-                    value={category}
-                    onChange={(event) => setCategory(event.target.value)}
-                  >
-                    {config.categories.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
+                <div className={['boardBlogMetaArea', shouldShowCategory ? '' : 'boardBlogMetaAreaNoCategory'].filter(Boolean).join(' ')}>
+                  {shouldShowCategory && (
+                    <>
+                      <label className="srOnly" htmlFor="boardBlogCategory">
+                        카테고리
+                      </label>
+                      <select
+                        id="boardBlogCategory"
+                        className="boardBlogCategorySelect"
+                        value={category}
+                        onChange={(event) => setCategory(event.target.value)}
+                      >
+                        {config.categories.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </>
+                  )}
 
                   <label className="srOnly" htmlFor="boardWriteTitle">
                     제목

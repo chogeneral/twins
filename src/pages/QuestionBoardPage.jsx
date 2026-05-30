@@ -91,6 +91,8 @@ export function QuestionBoardPage() {
   const [replyDraft, setReplyDraft] = useState('')
   const [replySubmitting, setReplySubmitting] = useState(false)
   const [replyError, setReplyError] = useState('')
+  const [updatingPostId, setUpdatingPostId] = useState('')
+  const [editError, setEditError] = useState('')
   const [deletingPostId, setDeletingPostId] = useState('')
   const [deleteError, setDeleteError] = useState('')
 
@@ -295,6 +297,56 @@ export function QuestionBoardPage() {
     void loadPosts()
   }
 
+  const handleEditClick = async (post) => {
+    if (!supabase || !user || !post) return
+
+    const nextContent = window.prompt('내용을 수정해 주세요.', post.content)
+    if (nextContent === null) return
+
+    const trimmed = nextContent.trim()
+    setEditError('')
+
+    if (!trimmed) {
+      setEditError('수정할 내용을 입력해 주세요.')
+      return
+    }
+
+    /*
+     * 가입인사 원글과 댓글은 같은 테이블을 쓰므로 content만 수정합니다.
+     * user_id 조건을 함께 걸어 본인 글이 아닐 때는 DB 정책 전에도 갱신 대상이 없도록 합니다.
+     */
+    setUpdatingPostId(post.id)
+    const { data: updatedPost, error } = await supabase
+      .from('signup_welcome_posts')
+      .update({ content: trimmed })
+      .eq('id', post.id)
+      .eq('user_id', user.id)
+      .select('id')
+      .maybeSingle()
+
+    setUpdatingPostId('')
+
+    if (error) {
+      if (isMissingSignupWelcomeTable(error)) {
+        setEditError(migrationHintMessage)
+        return
+      }
+      if (error.code === pgCheckViolation) {
+        setEditError(`글 길이는 공백 제외 내용 기준 최대 ${maxContentLength}자까지 입력할 수 있습니다.`)
+        return
+      }
+      setEditError('수정하지 못했습니다. 본인이 작성한 글인지 확인 후 다시 시도해 주세요.')
+      return
+    }
+
+    if (!updatedPost) {
+      setEditError('수정 권한 SQL이 아직 Supabase에 적용되지 않았습니다. update 정책 SQL을 실행해 주세요.')
+      return
+    }
+
+    void loadPosts()
+  }
+
   const handleDeleteClick = async (post) => {
     if (!supabase || !user || !post) return
 
@@ -372,14 +424,24 @@ export function QuestionBoardPage() {
         댓글
       </button>
       {post.user_id === user.id && (
-        <button
-          type="button"
-          className="signupWelcomeDeleteTextBtn"
-          disabled={deletingPostId === post.id}
-          onClick={() => void handleDeleteClick(post)}
-        >
-          {deletingPostId === post.id ? '삭제 중…' : '삭제'}
-        </button>
+        <>
+          <button
+            type="button"
+            className="signupWelcomeEditTextBtn"
+            disabled={updatingPostId === post.id}
+            onClick={() => void handleEditClick(post)}
+          >
+            {updatingPostId === post.id ? '수정 중…' : '수정'}
+          </button>
+          <button
+            type="button"
+            className="signupWelcomeDeleteTextBtn"
+            disabled={deletingPostId === post.id}
+            onClick={() => void handleDeleteClick(post)}
+          >
+            {deletingPostId === post.id ? '삭제 중…' : '삭제'}
+          </button>
+        </>
       )}
     </>
   )
@@ -449,6 +511,12 @@ export function QuestionBoardPage() {
         {deleteError && (
           <p className="signupWelcomeError" role="alert">
             {deleteError}
+          </p>
+        )}
+
+        {editError && (
+          <p className="signupWelcomeError" role="alert">
+            {editError}
           </p>
         )}
 

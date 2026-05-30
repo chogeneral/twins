@@ -11,12 +11,15 @@ import { TeamSongPage } from './pages/TeamSongPage.jsx'
 import { FreeBoardPage } from './pages/FreeBoardPage.jsx'
 import { ReviewBoardPage } from './pages/ReviewBoardPage.jsx'
 import { StadiumTourBoardPage } from './pages/StadiumTourBoardPage.jsx'
+import { TwinsNewsBoardPage } from './pages/TwinsNewsBoardPage.jsx'
+import { InquiryBoardPage } from './pages/InquiryBoardPage.jsx'
 import { BoardWritePage } from './pages/BoardWritePage.jsx'
 import { BoardDetailPage } from './pages/BoardDetailPage.jsx'
 import { QuestionBoardPage } from './pages/QuestionBoardPage.jsx'
 import { StadiumInfoPage } from './pages/StadiumInfoPage.jsx'
 import { LoginPage } from './pages/LoginPage.jsx'
 import { SignupPage } from './pages/SignupPage.jsx'
+import { MyPage } from './pages/MyPage.jsx'
 import { FindIdPage } from './pages/FindIdPage.jsx'
 import { FindPasswordPage } from './pages/FindPasswordPage.jsx'
 
@@ -41,9 +44,18 @@ export default function App() {
           <Route path="stadium-tour/write" element={<BoardWritePage boardType="stadiumTour" />} />
           <Route path="stadium-tour/:postId/edit" element={<BoardWritePage boardType="stadiumTour" />} />
           <Route path="stadium-tour/:postId" element={<BoardDetailPage boardType="stadiumTour" />} />
+          <Route path="twins-news" element={<TwinsNewsBoardPage />} />
+          <Route path="twins-news/write" element={<BoardWritePage boardType="twinsNews" />} />
+          <Route path="twins-news/:postId/edit" element={<BoardWritePage boardType="twinsNews" />} />
+          <Route path="twins-news/:postId" element={<BoardDetailPage boardType="twinsNews" />} />
+          <Route path="inquiry" element={<InquiryBoardPage />} />
+          <Route path="inquiry/write" element={<BoardWritePage boardType="inquiry" />} />
+          <Route path="inquiry/:postId/edit" element={<BoardWritePage boardType="inquiry" />} />
+          <Route path="inquiry/:postId" element={<BoardDetailPage boardType="inquiry" />} />
           <Route path="qna" element={<QuestionBoardPage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="signup" element={<SignupPage />} />
+          <Route path="mypage" element={<MyPage />} />
           <Route path="find-id" element={<FindIdPage />} />
           <Route path="find-password" element={<FindPasswordPage />} />
           {/* 정의되지 않은 경로는 메인으로 돌려 첫 진입점을 통일했습니다 */}

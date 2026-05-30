@@ -1,7 +1,12 @@
 const boardPostStoragePrefix = 'lgtwins.boardPosts.'
+const boardCommentStoragePrefix = 'lgtwins.boardComments.'
 
 function boardStorageKey(boardKey) {
   return `${boardPostStoragePrefix}${boardKey}`
+}
+
+function boardCommentStorageKey(boardKey, postId) {
+  return `${boardCommentStoragePrefix}${boardKey}.${postId}`
 }
 
 function formatToday() {
@@ -10,6 +15,16 @@ function formatToday() {
   const month = String(today.getMonth() + 1).padStart(2, '0')
   const day = String(today.getDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
+}
+
+function formatNow() {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  const hour = String(now.getHours()).padStart(2, '0')
+  const minute = String(now.getMinutes()).padStart(2, '0')
+  return `${year}-${month}-${day} ${hour}:${minute}`
 }
 
 function safeParsePosts(rawValue) {
@@ -67,6 +82,7 @@ export function updateBoardPost(boardKey, postId, post) {
 
     updatedPost = {
       ...row,
+      userId: row.userId ?? post.userId,
       category: post.category,
       title: post.title,
       content: post.content,
@@ -98,6 +114,7 @@ export function addBoardPost(boardKey, post) {
     fontFamily: post.fontFamily,
     fontSize: post.fontSize,
     tags: post.tags,
+    userId: post.userId,
     author: post.author,
     date: formatToday(),
     views: 0,
@@ -109,4 +126,78 @@ export function addBoardPost(boardKey, post) {
   )
 
   return nextPost
+}
+
+export function getBoardComments(boardKey, postId) {
+  const rows = safeParsePosts(window.localStorage.getItem(boardCommentStorageKey(boardKey, postId)))
+  return rows.filter((row) => row && typeof row.id === 'string')
+}
+
+export function addBoardComment(boardKey, postId, comment) {
+  const previousRows = getBoardComments(boardKey, postId)
+
+  /*
+   * 댓글은 서버 테이블 연결 전까지 게시글 id 단위로 분리 저장합니다.
+   * parentId가 있으면 대댓글이고, null이면 원 댓글입니다.
+   */
+  const nextComment = {
+    id: `${boardKey}-${postId}-comment-${Date.now()}`,
+    postId,
+    parentId: comment.parentId ?? null,
+    userId: comment.userId,
+    authorDisplay: comment.authorDisplay,
+    content: comment.content,
+    createdAt: formatNow(),
+    updatedAt: '',
+  }
+
+  window.localStorage.setItem(
+    boardCommentStorageKey(boardKey, postId),
+    JSON.stringify([...previousRows, nextComment]),
+  )
+
+  return nextComment
+}
+
+export function updateBoardComment(boardKey, postId, commentId, content) {
+  const previousRows = getBoardComments(boardKey, postId)
+  let updatedComment = null
+
+  const nextRows = previousRows.map((row) => {
+    if (row.id !== commentId) return row
+
+    updatedComment = {
+      ...row,
+      content,
+      updatedAt: formatNow(),
+    }
+    return updatedComment
+  })
+
+  window.localStorage.setItem(boardCommentStorageKey(boardKey, postId), JSON.stringify(nextRows))
+  return updatedComment
+}
+
+export function deleteBoardComment(boardKey, postId, commentId) {
+  const previousRows = getBoardComments(boardKey, postId)
+  const deleteIds = new Set([commentId])
+
+  /*
+   * 부모 댓글을 삭제하면 그 아래 대댓글도 함께 삭제합니다.
+   * 여러 단계 대댓글까지 안전하게 지우기 위해 삭제 대상이 더 이상 늘지 않을 때까지 순회합니다.
+   */
+  let changed = true
+  while (changed) {
+    changed = false
+    previousRows.forEach((row) => {
+      if (row.parentId && deleteIds.has(row.parentId) && !deleteIds.has(row.id)) {
+        deleteIds.add(row.id)
+        changed = true
+      }
+    })
+  }
+
+  const nextRows = previousRows.filter((row) => !deleteIds.has(row.id))
+  window.localStorage.setItem(boardCommentStorageKey(boardKey, postId), JSON.stringify(nextRows))
+  return nextRows.length !== previousRows.length
 }

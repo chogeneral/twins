@@ -11,7 +11,7 @@ import './appShell.css'
  * - 시각 레이아웃은 Dazed Korea(https://dazedkorea.com/)식 매거진 내비를 참고했고, 브랜드 PNG는 사용자 제공 에셋만 사용합니다.
  * - 내비는 링크 모음이라 ul/li 로 감싸 스크린리더가 목록 패턴으로 읽도록 했습니다.
  * - 우하단 퀵메뉴: 구장정보 이동과 위로 스크롤을 제공합니다. 라벨은 버튼 아래 한글 캡션입니다.
- * - 840px 이하에서는 데스크톱 가로 내비를 숨기고 햄버거로 오른쪽 사이드 드로어(전면 딤 + 패널 슬라이드)를 엽니다.
+ * - 1093px 이하에서는 데스크톱 가로 내비를 숨기고 햄버거로 오른쪽 사이드 드로어(전면 딤 + 패널 슬라이드)를 엽니다.
  * - 같은 브레이크포인트에서 헤더 유틸(문의·로그인 등)은 드로어 상단 「계정 · 서비스」에만 두고 헤더에는 햄버거만 노출합니다.
  * - 로그인 시 드로어 상단 줄은 닉네임·문의·로그아웃을 한 줄에 두고, 줄 오른쪽 끝은 닫기(X)입니다.
  */
@@ -105,6 +105,18 @@ export function AppShell() {
     navigate('/')
   }
 
+  const closeMobileNav = () => setMobileNavOpen(false)
+
+  const handleMyPageClick = () => {
+    navigate('/mypage')
+    closeMobileNav()
+  }
+
+  const handleInquiryClick = () => {
+    navigate('/inquiry')
+    closeMobileNav()
+  }
+
   const homePath = '/'
 
   /**
@@ -117,9 +129,8 @@ export function AppShell() {
     { to: '/free-board', label: '무적LG마당' },
     { to: '/reviews', label: '승요인증' },
     { to: '/stadium-tour', label: '구장투어' },
+    { to: '/twins-news', label: 'twins뉴스' },
   ]
-
-  const closeMobileNav = () => setMobileNavOpen(false)
 
   const menuExpandedLabel = mobileNavOpen ? '메뉴 닫기' : '메뉴 열기'
 
@@ -197,26 +208,33 @@ export function AppShell() {
           </nav>
 
           <div className="headerUtils">
-            {/* 840px 미만에서는 숨김(appShell.css) — 같은 내용은 모바일 드로어 mobileNavUtilsSection 에만 둡니다 */}
+            {/* 1093px 이하에서는 숨김(appShell.css) — 같은 내용은 모바일 드로어 mobileNavUtilsSection 에만 둡니다 */}
             <div className="headerUtilsDesktopCluster">
               {loading ? (
                 <button
                   type="button"
                   className="headerLoginBtn"
                   aria-label="문의하기"
-                  onClick={() => navigate('/stadium-info#stadiumInquiry')}
+                  onClick={handleInquiryClick}
                 >
                   문의하기
                 </button>
               ) : user ? (
                 <>
-                  {/* 로그인 상태: 오른쪽 유틸 앞에 닉네임만 표시 */}
-                  <strong className="headerWelcomeNickname">{nickname}</strong>
+                  {/* 닉네임은 로그인 사용자의 현재 계정 식별자라서, 클릭 시 본인 정보 수정 화면으로 이어지게 합니다 */}
+                  <button
+                    type="button"
+                    className="headerWelcomeNickname"
+                    onClick={handleMyPageClick}
+                    aria-label={`${nickname}님 마이페이지로 이동`}
+                  >
+                    {nickname}
+                  </button>
                   <button
                     type="button"
                     className="headerLoginBtn"
                     aria-label="문의하기"
-                    onClick={() => navigate('/stadium-info#stadiumInquiry')}
+                    onClick={handleInquiryClick}
                   >
                     문의하기
                   </button>
@@ -235,7 +253,7 @@ export function AppShell() {
                     type="button"
                     className="headerLoginBtn"
                     aria-label="문의하기"
-                    onClick={() => navigate('/stadium-info#stadiumInquiry')}
+                    onClick={handleInquiryClick}
                   >
                     문의하기
                   </button>
@@ -297,18 +315,20 @@ export function AppShell() {
               <div className="mobileNavDrawerTopBarMain">
                 {!loading && user ? (
                   <>
-                    {/* 모바일 드로어 상단: 닉네임만 표시 후 문의·로그아웃 */}
-                    <p className="mobileDrawerWelcome mobileDrawerWelcomeInTopBar">
-                      <strong>{nickname}</strong>
-                    </p>
+                    {/* 모바일에서도 같은 계정명 클릭 동선을 제공해 데스크톱과 사용 흐름을 맞춥니다 */}
+                    <button
+                      type="button"
+                      className="mobileDrawerWelcome mobileDrawerWelcomeInTopBar mobileDrawerWelcomeBtn"
+                      onClick={handleMyPageClick}
+                      aria-label={`${nickname}님 마이페이지로 이동`}
+                    >
+                      {nickname}
+                    </button>
                     <button
                       type="button"
                       className="mobileNavTopBarBtn"
                       aria-label="문의하기"
-                      onClick={() => {
-                        navigate('/stadium-info#stadiumInquiry')
-                        closeMobileNav()
-                      }}
+                      onClick={handleInquiryClick}
                     >
                       문의하기
                     </button>
@@ -329,10 +349,7 @@ export function AppShell() {
                     type="button"
                     className="mobileNavTopBarBtn"
                     aria-label="문의하기"
-                    onClick={() => {
-                      navigate('/stadium-info#stadiumInquiry')
-                      closeMobileNav()
-                    }}
+                    onClick={handleInquiryClick}
                   >
                     문의하기
                   </button>
@@ -342,10 +359,7 @@ export function AppShell() {
                       type="button"
                       className="mobileNavTopBarBtn"
                       aria-label="문의하기"
-                      onClick={() => {
-                        navigate('/stadium-info#stadiumInquiry')
-                        closeMobileNav()
-                      }}
+                      onClick={handleInquiryClick}
                     >
                       문의하기
                     </button>
