@@ -326,7 +326,7 @@
   width: min(1320px, 100%);
   margin: 0 auto;
   /* 상하·좌우 모두 헤더 inner 와 같은 clamp 를 써 페이지마다 들쭉날쭉하지 않게 함 */
-  padding: clamp(28px, 5vw, 52px) clamp(18px, 4vw, 36px) clamp(64px, 10vw, 112px);
+  padding: clamp(28px, 5vw, 52px) clamp(18px, 4vw, 36px) clamp(64px, 10vw, 40px);
   box-sizing: border-box;
 }
 

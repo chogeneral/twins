@@ -52,26 +52,62 @@ export function MyPage() {
   const [touched, setTouched] = useState({})
   const [errors, setErrors] = useState({})
   const [isSaving, setIsSaving] = useState(false)
+  const [profileLoading, setProfileLoading] = useState(false)
   const [serverError, setServerError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
 
   useEffect(() => {
     if (!user) return
+    let isMounted = true
 
-    /*
-     * 가입 시 저장한 auth 메타데이터를 폼의 기준값으로 사용합니다.
-     * member_accounts는 트리거 동기화용 테이블이라 화면에서는 로그인 세션이 가진 최신 값을 먼저 보여 줍니다.
-     */
-    setForm({
-      nickname: user.user_metadata?.nickname ?? '',
-      phone: user.user_metadata?.phone ?? '',
-      password: '',
-      passwordConfirm: '',
+    queueMicrotask(() => {
+      if (!isMounted) return
+
+      /*
+       * 먼저 세션 메타데이터로 화면을 빠르게 채우고, 아래 RPC에서 암호화 저장된 휴대폰 번호를 본인에게만 복호화해 다시 반영합니다.
+       * 기존 DB 마이그레이션을 아직 적용하지 않은 환경도 깨지지 않도록, RPC 실패 시에는 메타데이터 기반 표시를 그대로 유지합니다.
+       */
+      setForm({
+        nickname: user.user_metadata?.nickname ?? '',
+        phone: formatPhone(user.user_metadata?.phone ?? ''),
+        password: '',
+        passwordConfirm: '',
+      })
+      setTouched({})
+      setErrors({})
+      setServerError('')
+      setSuccessMessage('')
     })
-    setTouched({})
-    setErrors({})
-    setServerError('')
-    setSuccessMessage('')
+
+    const loadEncryptedContactProfile = async () => {
+      if (!supabase) return
+
+      setProfileLoading(true)
+      const { data, error } = await supabase.rpc('get_own_member_contact_profile')
+
+      if (!isMounted) return
+
+      setProfileLoading(false)
+
+      if (error) return
+
+      const profile = Array.isArray(data) ? data[0] : data
+      if (!profile) return
+
+      setForm((prev) => ({
+        ...prev,
+        nickname: profile.nickname ?? prev.nickname,
+        phone: formatPhone(profile.phone ?? prev.phone),
+        password: '',
+        passwordConfirm: '',
+      }))
+    }
+
+    loadEncryptedContactProfile()
+
+    return () => {
+      isMounted = false
+    }
   }, [user])
 
   const validate = (name, value, nextForm = form) => {
@@ -135,6 +171,10 @@ export function MyPage() {
     const nextMetadata = {
       ...(user.user_metadata ?? {}),
       nickname: form.nickname.trim(),
+      /*
+       * 수정 화면은 사용자가 입력한 휴대폰 번호를 그대로 검증합니다.
+       * 저장 직전 DB trigger가 phone을 암호화 메타데이터로 바꾸므로 클라이언트 세션에는 평문 저장을 의존하지 않습니다.
+       */
       phone: form.phone,
     }
     const updatePayload = {
@@ -216,7 +256,7 @@ export function MyPage() {
             onChange={handleChange}
             onBlur={handleBlur}
             autoComplete="username"
-            disabled={isSaving}
+            disabled={isSaving || profileLoading}
           />
 
           <MyPageField
@@ -231,7 +271,7 @@ export function MyPage() {
             onBlur={handleBlur}
             autoComplete="tel"
             inputMode="numeric"
-            disabled={isSaving}
+            disabled={isSaving || profileLoading}
           />
 
           <MyPageField
@@ -286,9 +326,9 @@ export function MyPage() {
             <button
               type="submit"
               className="signupSubmitBtn myPageSubmitBtn"
-              disabled={isSaving || !isFormValid()}
+              disabled={isSaving || profileLoading || !isFormValid()}
             >
-              {isSaving ? '수정 중...' : '정보 수정'}
+              {isSaving ? '수정 중...' : profileLoading ? '정보 확인 중...' : '정보 수정'}
             </button>
           </div>
         </form>

@@ -69,7 +69,7 @@ export function BoardDetailPage({ boardType }) {
     || (!post?.userId && post?.author && post.author === authorDisplay),
   )
   const canReadPost = !config.writerOnly || !post || isPostOwner || isInquiryAdmin
-  const canEditPost = !config.writerOnly || isPostOwner
+  const canEditPost = Boolean(user && isPostOwner)
 
   useEffect(() => {
     if (authLoading || !user || canReadPost) return
@@ -182,7 +182,7 @@ export function BoardDetailPage({ boardType }) {
   }
 
   const handleCommentEdit = (comment) => {
-    if (!postId || comment.userId !== user.id) return
+    if (!postId || !user || comment.userId !== user.id) return
 
     const nextContent = window.prompt('댓글을 수정해 주세요.', comment.content)
     if (nextContent === null) return
@@ -198,7 +198,7 @@ export function BoardDetailPage({ boardType }) {
   }
 
   const handleCommentDelete = (comment) => {
-    if (!postId || comment.userId !== user.id) return
+    if (!postId || !user || comment.userId !== user.id) return
 
     const confirmed = window.confirm('댓글을 삭제하시겠습니까? 달린 대댓글도 함께 삭제됩니다.')
     if (!confirmed) return
@@ -219,6 +219,10 @@ export function BoardDetailPage({ boardType }) {
         type="button"
         className="signupWelcomeReplyTextBtn"
         onClick={() => {
+          if (!user) {
+            navigate(loginRedirectHref)
+            return
+          }
           setReplyTarget(comment)
           setReplyDraft('')
           setReplyError('')
@@ -226,7 +230,7 @@ export function BoardDetailPage({ boardType }) {
       >
         댓글
       </button>
-      {comment.userId === user.id && (
+      {user && comment.userId === user.id && (
         <>
           <button
             type="button"
@@ -273,7 +277,7 @@ export function BoardDetailPage({ boardType }) {
     </li>
   )
 
-  if (authLoading) {
+  if (config.writerOnly && authLoading) {
     return (
       <article className="boardPage" aria-busy="true">
         <header className="boardHeader">
@@ -285,7 +289,7 @@ export function BoardDetailPage({ boardType }) {
     )
   }
 
-  if (!user) {
+  if (config.writerOnly && !user) {
     return <Navigate to={loginRedirectHref} replace />
   }
 
@@ -370,31 +374,40 @@ export function BoardDetailPage({ boardType }) {
             <p className="boardCommentEmpty">첫 댓글을 남겨 보세요.</p>
           )}
 
-          <div className="signupWelcomeComposerInner boardCommentComposer">
-            <div className="signupWelcomeComposerRow">
-              <label htmlFor="boardCommentDraft" className="srOnly">댓글 작성</label>
-              <textarea
-                id="boardCommentDraft"
-                className="signupWelcomeTextarea"
-                value={commentDraft}
-                maxLength={2000}
-                placeholder="댓글을 입력해 주세요."
-                onChange={(event) => {
-                  setCommentDraft(event.target.value)
-                  setCommentError('')
-                }}
-              />
-              <button
-                type="button"
-                className="signupWelcomeSubmitBtn"
-                disabled={!commentDraft.trim()}
-                onClick={handleCommentSubmit}
-              >
-                확인
+          {user ? (
+            <div className="signupWelcomeComposerInner boardCommentComposer">
+              <div className="signupWelcomeComposerRow">
+                <label htmlFor="boardCommentDraft" className="srOnly">댓글 작성</label>
+                <textarea
+                  id="boardCommentDraft"
+                  className="signupWelcomeTextarea"
+                  value={commentDraft}
+                  maxLength={2000}
+                  placeholder="댓글을 입력해 주세요."
+                  onChange={(event) => {
+                    setCommentDraft(event.target.value)
+                    setCommentError('')
+                  }}
+                />
+                <button
+                  type="button"
+                  className="signupWelcomeSubmitBtn"
+                  disabled={!commentDraft.trim()}
+                  onClick={handleCommentSubmit}
+                >
+                  확인
+                </button>
+              </div>
+              {commentError && <p className="signupWelcomeError" role="alert">{commentError}</p>}
+            </div>
+          ) : (
+            <div className="signupWelcomeComposerInner boardCommentComposer">
+              <p className="boardCommentEmpty">댓글 작성은 로그인 후 이용할 수 있습니다.</p>
+              <button type="button" className="signupWelcomeSubmitBtn" onClick={() => navigate(loginRedirectHref)}>
+                로그인
               </button>
             </div>
-            {commentError && <p className="signupWelcomeError" role="alert">{commentError}</p>}
-          </div>
+          )}
         </section>
 
         <div className="boardWriteActions boardDetailActions">

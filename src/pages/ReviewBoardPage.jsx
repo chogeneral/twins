@@ -3,35 +3,13 @@
  * - 무적LG마당(`FreeBoardPage`)과 동일한 헤더/목록 뼈대로 일관된 문서 접근 패턴을 유지했습니다.
  */
 
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { BoardListTable } from '../components/BoardListTable'
-import { useAuth } from '../hooks/useAuth'
 import { getBoardPosts } from '../lib/boardPostStorage'
 import './boardPage.css'
 
-const reviewBoardPath = '/reviews'
-
 export function ReviewBoardPage() {
   const navigate = useNavigate()
-  const { user, loading: authLoading } = useAuth()
-  const loginRedirectHref = `/login?redirect=${encodeURIComponent(reviewBoardPath)}`
-
-  if (authLoading) {
-    return (
-      <article className="boardPage" aria-busy="true">
-        <header className="boardHeader">
-          <p lang="en" className="boardEyebrow">승요인증</p>
-          <h1 className="boardTitle">승요인증</h1>
-          <p className="boardDescription">로그인 여부를 확인하는 중입니다.</p>
-        </header>
-      </article>
-    )
-  }
-
-  if (!user) {
-    return <Navigate to={loginRedirectHref} replace />
-  }
-
   const reviewBoardRows = getBoardPosts('reviewBoard')
 
   return (

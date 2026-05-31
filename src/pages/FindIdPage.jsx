@@ -5,7 +5,7 @@ import './findIdPage.css'
 
 /**
  * 회원가입(SignupPage)과 동일한 하이픈 규칙으로 입력값을 맞춥니다.
- * DB 의 raw_user_meta_data.phone 과 형식이 같아야 find_login_identifier RPC 가 매칭됩니다.
+ * DB에서는 휴대폰 원문을 저장하지 않고 같은 형식의 입력값을 HMAC 해시로 바꿔 find_login_identifier RPC가 비교합니다.
  */
 function formatPhone(raw) {
   const digits = raw.replace(/\D/g, '').slice(0, 11)

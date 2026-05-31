@@ -5,59 +5,72 @@
 .homePage {
   display: flex;
   flex-direction: column;
-  gap: clamp(20px, 6vw, 30px);
+  width: 100%;
+  gap: clamp(20px, 6vw, 40px);
 }
 
 .homeHero {
   display: grid;
-  gap:20px;
   align-items: center;
   grid-template-columns: 1fr;
-  padding-bottom: clamp(32px, 5vw, 48px);
+  overflow: hidden;
   border-bottom: 1px solid var(--ruleLineSoft);
 }
 
-@media (min-width: 768px) {
-  /* 로고 최대 폭(200px)과 동일하게 첫 칼럼을 맞춰 좌측 레일이 과하게 넓지 않게 했습니다 */
-  .homeHero {
-    grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
-  }
+.homeHero::after {
+  content: '';
+  /* 텍스트가 밝은 이미지 영역 위에서도 또렷하게 읽히도록, 같은 그리드 칸에 어두운 그라데이션 레이어를 겹쳤습니다 */
+  grid-column: 1 / -1;
+  grid-row: 1;
+  align-self: stretch;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.68), rgba(0, 0, 0, 0.28) 48%, rgba(0, 0, 0, 0.08));
 }
 
 .homeHeroFigure {
   margin: 0;
   width: 100%;
-  /* 모바일 1컬럼일 때 로고 블록이 셀 전체 너비를 쓰이므로 flex로 img를 가운데 둠 */
+  /* 데스크톱 2컬럼 그리드에서도 이미지가 왼쪽 칼럼에만 갇히지 않고 homePage article 전체 폭을 채우도록 전체 컬럼을 사용하게 했습니다 */
+  grid-column: 1 / -1;
+  grid-row: 1;
+  /* 모바일 1컬럼에서는 이미지가 셀 전체 너비를 쓰므로 flex로 가운데 정렬해 화면 양끝에 붙지 않게 했습니다 */
   display: flex;
   justify-content: center;
   justify-self: center;
 }
 
-@media (min-width: 768px) {
-  .homeHeroFigure {
-    justify-self: start;
-    justify-content: flex-start;
-  }
-}
-
-/* 로고 블록 최대 폭 200px — 초소형 화면에서는 부모폭까지 축소 */
+/* 이미지 원본 비율을 유지하면서 메인 비주얼이 부모 영역의 가로폭을 100% 채우도록 했습니다 */
 .homeHeroImg {
-  width: min(100%, 200px);
+  display: block;
+  width: 100%;
   height: auto;
   object-fit: contain;
 }
 
 .homeHeroContent {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  z-index: 2;
+  max-width: 59rem;
   min-width: 0;
+  padding: clamp(28px, 6vw, 72px);
+  color: #fff;
+  /* 이미지 위에 올라간 모든 문구가 배경 명암에 묻히지 않도록 기본 그림자를 먼저 깔았습니다 */
+  text-shadow: 0 3px 14px rgba(0, 0, 0, 0.72);
 }
 
 .homeKicker {
   margin: 0 0 12px;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.2em;
+  font-size: clamp(0.8125rem, 1.5vw, 1rem);
+  font-weight: 800;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: var(--textQuiet);
+  color: rgba(255, 255, 255, 0.94);
+  /* 작은 라벨도 메인 카피의 분위기를 따라가도록 굵기와 자간을 키우고, 가까운 그림자로 글자 윤곽을 또렷하게 잡았습니다 */
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 1),
+    0 5px 14px rgba(0, 0, 0, 0.78);
 }
 
 .homeKickerAccent {
@@ -66,18 +79,148 @@
 
 .homeTitle {
   margin: 0 0 14px;
-  font-weight: 700;
-  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  font-weight: 900;
+  font-size: clamp(2.375rem, 6vw, 2.5rem);
   line-height: 1.12;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.045em;
   font-family: 'Pretendard', sans-serif;
+  /* 메인 카피가 이미지 위에서 가장 강하게 보이도록 아주 짧은 진한 그림자와 넓게 퍼지는 그림자를 겹쳐 강조했습니다 */
+  text-shadow:
+    0 2px 3px rgba(0, 0, 0, 1),
+    0 8px 20px rgba(0, 0, 0, 0.86),
+    0 14px 34px rgba(0, 0, 0, 0.72);
 }
 
 .homeLead {
   margin: 0;
   max-width: 42rem;
-  font-size: clamp(0.9375rem, 1.8vw, 1.05rem);
+  font-size: clamp(1.0625rem, 2vw, 1.25rem);
+  font-weight: 700;
   line-height: 1.65;
+  color: rgba(255, 255, 255, 0.94);
+  /* 설명 문구도 선명도를 높이되 제목보다 한 단계 낮게 처리해 정보 위계가 무너지지 않게 했습니다 */
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.96),
+    0 7px 20px rgba(0, 0, 0, 0.72);
+}
+
+.homeLatestBoards {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 3vw, 24px);
+}
+
+.homeLatestBoardGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: start;
+  gap: clamp(28px, 4vw, 40px);
+}
+
+@media (min-width: 960px) {
+  .homeLatestBoardGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.homeLatestBoardCard {
+  min-width: 0;
+  padding: 0;
+}
+
+.homeLatestBoardCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  /* 게시판 제목 줄의 위·아래 여백을 동일하게 맞춰 목록과 간격이 한쪽으로 치우쳐 보이지 않게 했습니다 */
+  padding: 10px 0;
+  border-bottom: 1px solid var(--ruleLine);
+}
+
+.homeLatestBoardCardTitle {
+  margin: 0;
+  min-width: 0;
+  font-size: clamp(1rem, 1.8vw, 1.125rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--textPrimary);
+}
+
+.homeLatestBoardMoreLink {
+  flex: 0 0 auto;
+  font-size: 1.625rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--prideRed);
+  text-decoration: none;
+}
+
+
+
+.homeLatestPostList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.homeLatestPostItem {
+  border-bottom: 1px solid var(--ruleLineSoft);
+}
+
+.homeLatestPostItem:last-child {
+  border-bottom: none;
+}
+
+.homeLatestPostLink {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(12px, 2vw, 20px);
+  min-width: 0;
+  padding: 10px 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.homeLatestPostLink:hover .homeLatestPostTitle {
+  color: var(--prideRed);
+}
+
+.homeLatestPostTitle {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: clamp(0.8125rem, 1.4vw, 0.875rem);
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--textPrimary);
+  transition: color 0.15s ease;
+}
+
+.homeLatestPostMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  white-space: nowrap;
+  font-size: clamp(0.6875rem, 1.2vw, 0.75rem);
+  color: var(--textQuiet);
+}
+
+.homeLatestPostAuthor {
+  color: var(--textMuted);
+}
+
+.homeLatestPostDate {
+  color: var(--textQuiet);
+}
+
+.homeLatestPostEmpty {
+  margin: 0;
+  padding: 24px 0 8px;
+  font-size: 0.875rem;
+  line-height: 1.5;
   color: var(--textMuted);
 }
 

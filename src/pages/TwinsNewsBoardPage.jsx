@@ -3,35 +3,13 @@
  * - 기존 공통 게시판 목록 컴포넌트를 그대로 사용하되, 뉴스는 분류가 필요 없어서 구분 컬럼을 숨깁니다.
  */
 
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { BoardListTable } from '../components/BoardListTable'
-import { useAuth } from '../hooks/useAuth'
 import { getBoardPosts } from '../lib/boardPostStorage'
 import './boardPage.css'
 
-const twinsNewsBoardPath = '/twins-news'
-
 export function TwinsNewsBoardPage() {
   const navigate = useNavigate()
-  const { user, loading: authLoading } = useAuth()
-  const loginRedirectHref = `/login?redirect=${encodeURIComponent(twinsNewsBoardPath)}`
-
-  if (authLoading) {
-    return (
-      <article className="boardPage" aria-busy="true">
-        <header className="boardHeader">
-      
-          <h1 className="boardTitle">twins뉴스</h1>
-          <p className="boardDescription">로그인 여부를 확인하는 중입니다.</p>
-        </header>
-      </article>
-    )
-  }
-
-  if (!user) {
-    return <Navigate to={loginRedirectHref} replace />
-  }
-
   const twinsNewsRows = getBoardPosts('twinsNewsBoard')
 
   return (

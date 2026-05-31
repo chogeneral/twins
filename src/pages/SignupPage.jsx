@@ -110,6 +110,10 @@ export function SignupPage() {
       options: {
         data: {
           nickname: form.nickname,
+          /*
+           * 프런트에서는 Supabase Auth 가입 흐름을 유지하기 위해 검증된 원문을 전달합니다.
+           * DB의 before trigger가 저장 직전에 phone을 암호문과 마스킹 값으로 치환해 평문이 남지 않게 처리합니다.
+           */
           phone: form.phone,
         },
       },

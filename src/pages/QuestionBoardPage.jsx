@@ -4,16 +4,15 @@
  * - 목록·작성 저장은 Supabase `signup_welcome_posts` 테이블을 사용합니다(마이그레이션 필요).
  *
  * 접근 통제:
- * - 비로그인 사용자가 이 경로로 들오면 즉시 `/login?redirect=/qna` 로 보냅니다.
- *   로그인 성공 후 `LoginPage`가 같은 `redirect` 쿼리를 읽어 가입인사로 되돌아갑니다.
- * - 따라서 「내비에서 가입인사 클릭 → 로그인 → 자동으로 가입인사」 흐름이 자연스럽게 됩니다.
+ * - 검색엔진과 비로그인 사용자도 게시글 목록은 읽을 수 있게 열어 둡니다.
+ * - 작성·수정·삭제·답글은 로그인 사용자만 가능하게 버튼 동선에서 로그인 화면으로 보냅니다.
  *
  * 접근성: 다른 게시판과 동일한 article / section / h 계층을 유지하고,
  * 새 글 영역에는 스크린리더용 숨김 제목(srOnly)을 두었습니다.
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import './boardPage.css'
 import './signupWelcomeBoard.css'
@@ -79,8 +78,9 @@ const migrationHintMessage =
   + 'CLI 는 `npm run db:push` 후 페이지 새로 고침해 주세요.'
 
 export function QuestionBoardPage() {
-  const { user, loading: authLoading } = useAuth()
-  /** 로그인한 경우에만 Supabase 에서 채워지는 게시 목록입니다 */
+  const navigate = useNavigate()
+  const { user } = useAuth()
+  /** 검색엔진과 비로그인 사용자도 읽을 수 있도록 인증 여부와 관계없이 Supabase에서 채우는 게시 목록입니다 */
   const [posts, setPosts] = useState([])
   const [listLoading, setListLoading] = useState(true)
   const [draft, setDraft] = useState('')
@@ -141,7 +141,7 @@ export function QuestionBoardPage() {
   }, [])
 
   const loadPosts = useCallback(async () => {
-    if (!supabase || !user) {
+    if (!supabase) {
       setPosts([])
       setListLoading(false)
       return
@@ -173,16 +173,13 @@ export function QuestionBoardPage() {
     }
 
     setPosts(data ?? [])
-  }, [user])
+  }, [])
 
   /*
-   * 인증 상태가 사용자로 확정된 뒤에만 목록을 가져와,
-   * 비로그인 구간에서는 불필요한 호출과 깜박임을 줄였습니다.
+   * 목록 조회는 공개 읽기 영역이라 로그인 상태와 무관하게 실행합니다.
+   * 작성 계정 확인과 별개로 검색엔진이 게시판 내용을 볼 수 있어야 하므로 인증 완료를 기다리지 않습니다.
    */
   useEffect(() => {
-    if (authLoading) return
-    if (!user) return
-
     /*
      * React Hooks 린트가 effect 본문에서 곧바로 상태 갱신이 일어나는 호출을 제한합니다.
      * 짧은 타이머로 목록 로딩을 예약해 렌더 완료 뒤 외부 데이터 동기화가 시작되게 했습니다.
@@ -192,7 +189,7 @@ export function QuestionBoardPage() {
     }, 0)
 
     return () => window.clearTimeout(timerId)
-  }, [authLoading, user, loadPosts])
+  }, [loadPosts])
 
   useEffect(() => {
     if (!replyModalPost) return
@@ -388,42 +385,24 @@ export function QuestionBoardPage() {
     void loadPosts()
   }
 
-  if (authLoading) {
-    return (
-      <article className="boardPage" aria-busy="true">
-        <header className="boardHeader">
-          <p lang="en" className="boardEyebrow">
-            welcome
-          </p>
-          <h1 className="boardTitle">가입인사</h1>
-          <p className="boardDescription">
-            로그인 여부와 게시판 데이터를 불러오는 중입니다.
-          </p>
-        </header>
-        <p className="signupWelcomeLoading">잠시만 기다려 주세요…</p>
-      </article>
-    )
-  }
-
-  /*
-   * 비로그인 시 이 컴포넌트 내용 전체 대신 즉시 로그인 페이지로 치환합니다.
-   * `replace` 를 써 뒤로 가기 스택을 남겨 헷갈리지 않도록 했습니다.
-   */
-  if (!user) {
-    return <Navigate to={loginRedirectHref} replace />
-  }
-
   const renderPostActions = (post) => (
     <>
       <button
         type="button"
         className="signupWelcomeReplyTextBtn"
         aria-label={`${post.author_display}님 글에 답글달기`}
-        onClick={() => handleReplyClick(post)}
+        onClick={() => {
+          if (!user) {
+            navigate(loginRedirectHref)
+            return
+          }
+
+          handleReplyClick(post)
+        }}
       >
         댓글
       </button>
-      {post.user_id === user.id && (
+      {user && post.user_id === user.id && (
         <>
           <button
             type="button"
@@ -566,43 +545,52 @@ export function QuestionBoardPage() {
           </p>
         )}
 
-        {/* 텍스트 영역 오른쪽(좁은 폭에서는 아래 줄) 에 확인 버튼을 두어 한눈에 입력·등록 동선을 맞췄습니다 */}
-        <div className="signupWelcomeComposerInner">
-          <div className="signupWelcomeComposerRow">
-            <label htmlFor="signupWelcomeDraft" className="srOnly">
-              인사 글 작성
-            </label>
-            <textarea
-              id="signupWelcomeDraft"
-              className="signupWelcomeTextarea"
-              value={draft}
-              maxLength={maxContentLength}
-              disabled={!supabase || submitting}
-              placeholder="한 줄로 가볍게 인사를 적어 보세요."
-              aria-describedby="signupWelcomeCharHint"
-              onChange={(event) => {
-                setDraft(event.target.value)
-                setSubmitError('')
-              }}
-            />
-            <button
-              type="button"
-              className="signupWelcomeSubmitBtn"
-              disabled={!supabase || submitting || !draft.trim()}
-              onClick={() => void handleConfirmClick()}
-            >
-              {submitting ? '등록 중…' : '확인'}
+        {user ? (
+          /* 텍스트 영역 오른쪽(좁은 폭에서는 아래 줄) 에 확인 버튼을 두어 한눈에 입력·등록 동선을 맞췄습니다 */
+          <div className="signupWelcomeComposerInner">
+            <div className="signupWelcomeComposerRow">
+              <label htmlFor="signupWelcomeDraft" className="srOnly">
+                인사 글 작성
+              </label>
+              <textarea
+                id="signupWelcomeDraft"
+                className="signupWelcomeTextarea"
+                value={draft}
+                maxLength={maxContentLength}
+                disabled={!supabase || submitting}
+                placeholder="한 줄로 가볍게 인사를 적어 보세요."
+                aria-describedby="signupWelcomeCharHint"
+                onChange={(event) => {
+                  setDraft(event.target.value)
+                  setSubmitError('')
+                }}
+              />
+              <button
+                type="button"
+                className="signupWelcomeSubmitBtn"
+                disabled={!supabase || submitting || !draft.trim()}
+                onClick={() => void handleConfirmClick()}
+              >
+                {submitting ? '등록 중…' : '확인'}
+              </button>
+            </div>
+            <span id="signupWelcomeCharHint" className="signupWelcomeConfigHint">
+              최대 {maxContentLength.toLocaleString()}자이하로 입력해주세요
+            </span>
+            {submitError && (
+              <p className="signupWelcomeError" role="alert">
+                {submitError}
+              </p>
+            )}
+          </div>
+        ) : (
+          <div className="signupWelcomeComposerInner">
+            <p className="signupWelcomeConfigHint">가입인사 작성은 로그인 후 이용할 수 있습니다.</p>
+            <button type="button" className="signupWelcomeSubmitBtn" onClick={() => navigate(loginRedirectHref)}>
+              로그인
             </button>
           </div>
-          <span id="signupWelcomeCharHint" className="signupWelcomeConfigHint">
-            최대 {maxContentLength.toLocaleString()}자이하로 입력해주세요
-          </span>
-          {submitError && (
-            <p className="signupWelcomeError" role="alert">
-              {submitError}
-            </p>
-          )}
-        </div>
+        )}
       </section>
 
       {replyModalPost && (

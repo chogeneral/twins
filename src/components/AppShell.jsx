@@ -34,6 +34,23 @@ function IconStadiumField() {
   )
 }
 
+/** 퀵메뉴「응원가」— 음표 형태로 응원가 페이지 이동 목적을 직관적으로 드러냅니다. */
+function IconCheerSong() {
+  return (
+    <svg className="siteQuickMenuSvg" viewBox="0 0 24 24" aria-hidden="true">
+      {/* 음표 머리와 기둥을 한 번에 그려 작은 원형 버튼 안에서도 선명하게 보이게 했습니다 */}
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.85"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M9 18.5a2.5 2.5 0 1 1-1.4-2.25V6.5l9-2v9.75A2.5 2.5 0 1 1 15.2 12V7.35L9 8.72v9.78Z"
+      />
+    </svg>
+  )
+}
+
 /** 맨 위 스크롤 액션에 흔히 쓰는 위쪽 꺾쇠 형태입니다. */
 function IconChevronUp() {
   return (
@@ -58,6 +75,11 @@ function SiteQuickMenu() {
     navigate('/stadium-info')
   }
 
+  /* 퀵메뉴 — 응원가 목록으로 바로 이동해 자주 쓰는 메뉴 접근 단계를 줄입니다 */
+  const goTeamSong = () => {
+    navigate('/teamsong')
+  }
+
   /* 긴 게시글 등에서 맨 위로 — main 에 포커스를 주어 키보드 사용자도 흐름을 이어 갑니다 */
   const goTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -80,6 +102,19 @@ function SiteQuickMenu() {
           </button>
           <span id="qmLabelStadium" className="siteQuickMenuItemLabel">
             구장정보
+          </span>
+        </div>
+        <div className="siteQuickMenuItem">
+          <button
+            type="button"
+            className="siteQuickMenuFab"
+            onClick={goTeamSong}
+            aria-labelledby="qmLabelTeamSong"
+          >
+            <IconCheerSong />
+          </button>
+          <span id="qmLabelTeamSong" className="siteQuickMenuItemLabel">
+            응원가
           </span>
         </div>
         <div className="siteQuickMenuItem">

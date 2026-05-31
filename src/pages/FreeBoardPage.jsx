@@ -4,35 +4,13 @@
  * - article 하나로 페이지 전체 맥락을 표현했고 목록 블록을 section+h2 레이블로 구획했습니다.
  */
 
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { BoardListTable } from '../components/BoardListTable'
-import { useAuth } from '../hooks/useAuth'
 import { getBoardPosts } from '../lib/boardPostStorage'
 import './boardPage.css'
 
-const freeBoardPath = '/free-board'
-
 export function FreeBoardPage() {
   const navigate = useNavigate()
-  const { user, loading: authLoading } = useAuth()
-  const loginRedirectHref = `/login?redirect=${encodeURIComponent(freeBoardPath)}`
-
-  if (authLoading) {
-    return (
-      <article className="boardPage" aria-busy="true">
-        <header className="boardHeader">
-          <p lang="en" className="boardEyebrow">community</p>
-          <h1 className="boardTitle">무적LG마당</h1>
-          <p className="boardDescription">로그인 여부를 확인하는 중입니다.</p>
-        </header>
-      </article>
-    )
-  }
-
-  if (!user) {
-    return <Navigate to={loginRedirectHref} replace />
-  }
-
   const freeBoardRows = getBoardPosts('freeBoard')
 
   return (
