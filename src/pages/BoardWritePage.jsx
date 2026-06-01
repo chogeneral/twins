@@ -25,7 +25,7 @@ const boardWriteConfigs = {
     boardKey: 'freeBoard',
     backPath: '/free-board',
     eyebrow: '무적LG마당',
-    title: '무적LG마당 글쓰기',
+    title: '무적LG마당',
     description: '시즌 이야기, 응원, 질문 등 자유로운 글을 남겨 주세요.',
     categories: ['자유게시판', '응원', '티켓양도', '정모', '나눔'],
   },
@@ -33,7 +33,7 @@ const boardWriteConfigs = {
     boardKey: 'reviewBoard',
     backPath: '/reviews',
     eyebrow: '승요인증',
-    title: '승요인증 글쓰기',
+    title: '승요인증',
     description: '승리 순간, 직관 후기, 응원 현장 인증을 남겨 주세요.',
     defaultCategory: '승요인증',
     showCategory: false,
@@ -42,7 +42,7 @@ const boardWriteConfigs = {
     boardKey: 'stadiumTourBoard',
     backPath: '/stadium-tour',
     eyebrow: '구장투어',
-    title: '구장투어 글쓰기',
+    title: '구장투어',
     description: '구장 방문 후기, 좌석 시야, 동선, 먹거리 정보를 남겨 주세요.',
     categories: [
       '잠실야구장',
@@ -60,7 +60,7 @@ const boardWriteConfigs = {
     boardKey: 'twinsNewsBoard',
     backPath: '/twins-news',
     eyebrow: 'twins뉴스',
-    title: 'twins뉴스 글쓰기',
+    title: 'twins뉴스',
     description: 'LG 트윈스 관련 뉴스, 경기 소식, 인터뷰를 공유해 주세요.',
     defaultCategory: '뉴스',
     showCategory: false,
@@ -69,7 +69,7 @@ const boardWriteConfigs = {
     boardKey: 'inquiryBoard',
     backPath: '/inquiry',
     eyebrow: '문의하기',
-    title: '문의하기 글쓰기',
+    title: '문의하기',
     description: '사이트 이용 문의나 개선 의견을 남겨 주세요.',
     defaultCategory: '문의',
     showCategory: false,
@@ -531,13 +531,13 @@ export function BoardWritePage({ boardType }) {
     const videoId = getYoutubeVideoId(href)
     const preview = videoId
       ? {
-          kind: 'youtube',
-          href,
-          imageUrl: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-          title: 'YouTube 영상',
-          description: '',
-          displayUrl: href,
-        }
+        kind: 'youtube',
+        href,
+        imageUrl: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+        title: 'YouTube 영상',
+        description: '',
+        displayUrl: href,
+      }
       : getHomepagePreview(href)
 
     if (!preview) return
@@ -577,13 +577,13 @@ export function BoardWritePage({ boardType }) {
     <article className="boardPage">
       <header className="boardHeader">
         <p lang="en" className="boardEyebrow">{config.eyebrow}</p>
-        <h1 className="boardTitle">{isEditMode ? config.title.replace('글쓰기', '수정') : config.title}</h1>
+        <h1 className="boardTitle">{config.title}</h1>
         <p className="boardDescription">{config.description}</p>
       </header>
 
       <section className="boardPanel" aria-labelledby={`${boardType}BoardWriteHeading`}>
         <h2 id={`${boardType}BoardWriteHeading`} className="srOnly">
-          {isEditMode ? '게시글 수정' : '게시글 작성'}
+          게시글 작성
         </h2>
 
         <form
