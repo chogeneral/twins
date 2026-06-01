@@ -13,6 +13,11 @@
   display: grid;
   align-items: center;
   grid-template-columns: 1fr;
+  /*
+   * 사용자 요청에 따라 히어로 영역의 전체 높이값을 28.125rem(450px)의 명확한 고정 높이로 규정하였습니다.
+   * 전역 규칙인 clamp 배제 원칙을 엄격하게 지켰습니다.
+   */
+  height: 28.125rem;
   overflow: hidden;
   border-bottom: 1px solid var(--ruleLineSoft);
 }
@@ -31,6 +36,8 @@
 .homeHeroFigure {
   margin: 0;
   width: 100%;
+  /* 부모인 .homeHero의 고정 높이값을 100% 가득 채우도록 정의하였습니다. */
+  height: 100%;
   /* 데스크톱 2컬럼 그리드에서도 이미지가 왼쪽 칼럼에만 갇히지 않고 homePage article 전체 폭을 채우도록 전체 컬럼을 사용하게 했습니다 */
   grid-column: 1 / -1;
   grid-row: 1;
@@ -44,8 +51,12 @@
 .homeHeroImg {
   display: block;
   width: 100%;
-  height: auto;
-  object-fit: contain;
+  /* 
+   * 사용자 요청에 따라 .homeHeroImg 이미지 높이를 .homeHero의 높이(피규어의 100%)에 완벽하게 맞춥니다.
+   * 이미지가 납작해지거나 찌그러지지 않고 좌우 비율을 유지하며 꽉 차게 메우도록 object-fit: cover로 설정합니다.
+   */
+  height: 100%;
+  object-fit: cover;
 }
 
 .homeHeroContent {
@@ -54,9 +65,8 @@
   z-index: 2;
   max-width: 59rem;
   min-width: 0;
-  padding: clamp(28px, 6vw, 72px);
-  color: #fff;
-  /* 이미지 위에 올라간 모든 문구가 배경 명암에 묻히지 않도록 기본 그림자를 먼저 깔았습니다 */
+  padding: 0 4.5rem;
+  color: #ffffff;
   text-shadow: 0 3px 14px rgba(0, 0, 0, 0.72);
 }
 
@@ -310,4 +320,40 @@
   font-size: 0.8125rem;
   line-height: 1.5;
   color: var(--textMuted);
+}
+
+/*
+ * 모바일 디바이스 해상도(601px 이하)를 타겟으로 하여,
+ * 홈 히어로 영역의 메인 타이틀(#homeHeroTitle, .homeHeroTitle, .homeTitle)의 글자 크기와 하단 여백을 세련되게 오버라이드합니다.
+ * 좁은 화면에서도 폰트가 지나치게 비대해지지 않도록 글씨 크기를 25px(1.5625rem)로 조정하고,
+ * 하단 여백을 10px(0.625rem)로 압축하여 가독성을 높입니다.
+ * 전역 규칙에 따라 간격 설정에 clamp 대신 rem 단위를 일관되게 활용하였습니다.
+ */
+@media (max-width: 601px) {
+  .homeHero {
+    /*
+     * 모바일 기기(601px 이하) 해상도에서는 히어로 배너 컨테이너의 전체 높이를 15.625rem(250px)로 단정하게 줄여 
+     * 모바일 세로 뷰에서도 왜곡 없이 알맞은 공간감을 구현해냅니다.
+     */
+    height: 15.625rem !important;
+  }
+
+  .homeHeroContent {
+    /* 
+     * 모바일 화면 크기(601px 이하)에서는 좌우 패딩을 1.5rem(24px)으로 적용하여 
+     * 좁은 화면에서도 텍스트가 깨지지 않고 양 끝 여백이 정돈되어 노출되도록 제어합니다.
+     * 상하 패딩은 데스크톱 스타일과 동일하게 완전히 삭제(0)하였습니다.
+     */
+    padding: 0 1.5rem !important;
+  }
+
+  .homeTitle {
+    font-size: 1.5625rem !important;
+    margin-bottom: 0.625rem !important;
+  }
+
+  .homeLead {
+    font-size: 0.9375rem !important;
+    word-break: keep-all;
+  }
 }

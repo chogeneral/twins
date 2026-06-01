@@ -173,6 +173,118 @@ function SiteQuickMenu() {
   )
 }
 
+/**
+ * 모바일 해상도 전용 하단 고정 메뉴 컴포넌트입니다.
+ * - 사용자의 요청에 따라 8개 메뉴를 2줄 행 구조(bottomFixedMenuRow)로 나누어 마크업을 수립하였습니다.
+ * - CSS 반응형 다단 스케일링을 통해 1174px ~ 790px 에서는 1줄로 병합되고, 790px 이하 좁은 모바일 화면에서는 정갈하게 2줄로 접히도록 지원합니다.
+ * - 각 메뉴의 정체성에 부합하는 대표 이모지 아이콘을 수록하였습니다.
+ * - NavLink를 사용해 현재 머물고 있는 활성화된 메뉴 탭의 색상이 돋보이도록 처리하였습니다.
+ * - 전역 규칙에 따라 변수명과 스타일 컴포넌트 구조는 카멜 케이스(camelCase)를 준수합니다.
+ */
+function BottomFixedMenu() {
+  const [isVisible, setIsVisible] = useState(true)
+  const [lastScrollY, setLastScrollY] = useState(0)
+
+  useEffect(() => {
+    /**
+     * 사용자의 스크롤 조작에 따라 하단 메뉴바를 유기적으로 노출하거나 숨기기 위한 스크롤 핸들러 함수입니다.
+     * 스크롤 이벤트를 감지하여 현재 윈도우 스크롤 위치와 이전 위치값을 대조 분석합니다.
+     * 브라우저의 페인팅 성능 저하를 방지하기 위해 passive: true 옵션을 주어 렌더링 스레드의 부하를 줄였습니다.
+     */
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      // 브라우저 뷰포트 크기와 전체 문서 높이를 활용하여 최하단 스크롤 가능 한계점을 측정합니다.
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight
+
+      /**
+       * 사용자가 페이지 맨 위(10rem 이하 상당의 최상단 공간)에 도달해 있거나,
+       * 푸터가 완전히 노출되는 페이지 최하단(최대 스크롤 한계점 마진 10px 이내)에 진입한 경우에는
+       * 하단 고정 바가 화면 바깥으로 유실되지 않고 푸터 위나 원래 자리에 자연스럽게 고정되어 보이도록
+       * 강제적으로 메뉴 노출 상태를 활성화(isVisible = true) 해둡니다.
+       */
+      if (currentScrollY <= 10 || currentScrollY + 10 >= maxScroll) {
+        setIsVisible(true)
+      } else {
+        /**
+         * 이전 스크롤 측정치보다 현재 스크롤 좌표값이 더 커졌다면 화면을 아래로 내리는 동작(Down)으로 판단하고
+         * 모바일 뷰포트의 본문 가독성을 넓히기 위해 하단바를 스르륵 숨겨줍니다(isVisible = false).
+         * 반대로 현재 스크롤 좌표값이 작아졌다면 화면을 위로 올리는 동작(Up)으로 판단하고
+         * 언제든지 메뉴에 다시 빠르게 접근할 수 있도록 메뉴바를 즉각적으로 재노출시킵니다(isVisible = true).
+         */
+        if (currentScrollY > lastScrollY) {
+          setIsVisible(false)
+        } else {
+          setIsVisible(true)
+        }
+      }
+
+      /**
+       * 다음 번 스크롤 움직임이 발생했을 때 상하 방향을 올바르게 판별해낼 수 있도록
+       * 기준점이 되는 이전 스크롤 값 상태를 현재 최종 확인된 좌표값으로 계속해서 갱신 및 갱신 보존해 나갑니다.
+       */
+      setLastScrollY(currentScrollY)
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [lastScrollY])
+
+  const menuItems = [
+    { to: '/team', label: 'TEAM', icon: '⚾' },
+    { to: '/teamsong', label: '응원가', icon: '🎵' },
+    { to: '/stadium-info', label: '구장정보', icon: '🏟️' },
+    { to: '/qna', label: '가입인사', icon: '👋' },
+    { to: '/free-board', label: '무적LG마당', icon: '💬' },
+    { to: '/reviews', label: '승요인증', icon: '🏆' },
+    { to: '/stadium-tour', label: '구장투어', icon: '🚩' },
+    { to: '/twins-news', label: 'twins뉴스', icon: '📰' },
+  ]
+
+  return (
+    <nav
+      className={`bottomFixedMenu ${isVisible ? '' : 'bottomFixedMenuHidden'}`}
+      aria-label="모바일 하단 고정 메뉴"
+    >
+      <div className="bottomFixedMenuInner">
+        <div className="bottomFixedMenuRow">
+          {menuItems.slice(0, 4).map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                `bottomFixedMenuItem ${isActive ? 'bottomFixedMenuItemActive' : ''}`
+              }
+            >
+              <span className="bottomFixedMenuIcon" aria-hidden="true">
+                {item.icon}
+              </span>
+              <span className="bottomFixedMenuLabel">{item.label}</span>
+            </NavLink>
+          ))}
+        </div>
+        <div className="bottomFixedMenuRow">
+          {menuItems.slice(4, 8).map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                `bottomFixedMenuItem ${isActive ? 'bottomFixedMenuItemActive' : ''}`
+              }
+            >
+              <span className="bottomFixedMenuIcon" aria-hidden="true">
+                {item.icon}
+              </span>
+              <span className="bottomFixedMenuLabel">{item.label}</span>
+            </NavLink>
+          ))}
+        </div>
+      </div>
+    </nav>
+  )
+}
+
 export function AppShell() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const navigate = useNavigate()
@@ -502,6 +614,14 @@ export function AppShell() {
       <main className="mainSurface" id="mainContent" tabIndex={-1}>
         <Outlet />
       </main>
+
+      {/* 
+        스크롤을 맨 아래로 내렸을 때 푸터 영역과 고정 메뉴바가 겹쳐서 푸터를 가리는 오작동을 해결하기 위해
+        마크업 상에서 BottomFixedMenu 컴포넌트를 mainContent와 siteFooter의 정중앙 사이에 배치합니다.
+        이렇게 구조를 조율하고 CSS에서 position: sticky 속성을 활성화하면,
+        평상시에는 바닥에 고정(fixed)된 것처럼 보이다가 푸터가 드러나면 푸터 위에 자연스럽게 안착(sticky)하게 됩니다.
+      */}
+      <BottomFixedMenu />
 
       <footer className="siteFooter">
         <div className="footerShell">

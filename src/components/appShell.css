@@ -127,6 +127,7 @@
 }
 
 @media (max-width: 420px) {
+
   /* 극단적으로 좁을 때 긴 영문 부제가 두 줄로 밀려 로고 행 높이를 키우지 않도록 한 줄·말줄임 처리 */
   .brandSubtitle {
     overflow: hidden;
@@ -325,8 +326,11 @@
   flex: 1;
   width: min(1320px, 100%);
   margin: 0 auto;
-  /* 상하·좌우 모두 헤더 inner 와 같은 clamp 를 써 페이지마다 들쭉날쭉하지 않게 함 */
-  padding: clamp(28px, 5vw, 52px) clamp(18px, 4vw, 36px) clamp(64px, 10vw, 40px);
+  /*
+   * 본문 컨텐츠 영역의 데스크톱 기본 패딩을 rem 단위를 사용하여 가독성 있게 지정하였습니다.
+   * 전역 규칙인 clamp 배제 및 가독성 최우선 원칙을 엄격하게 지켰습니다.
+   */
+  padding: 3.25rem 2.25rem 4rem;
   box-sizing: border-box;
 }
 
@@ -349,6 +353,7 @@
 }
 
 @media (min-width: 640px) {
+
   /* 브랜드 | 메뉴 2열만 쓰면 세 번째 빈 열에 폭을 빼앗기지 않아 메뉴 열이 넓어짐 */
   .footerColumns {
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
@@ -558,8 +563,11 @@
 
 @media (max-width: 1174px) {
   .siteQuickMenu {
-    /* 모바일도 동일하게 하단 여백을 키워 위로 올립니다 */
-    bottom: clamp(44px, 8vw, 72px);
+    /* 
+     * 사용자 요청에 따라 모바일 해상도(1174px 이하) 환경에서 우하단 플로팅 퀵메뉴를 완전히 제거(숨김)합니다.
+     * 이를 통해 모바일 세로 뷰에서의 시각적 답답함과 복잡성을 지우고 컨텐츠 가독성을 향상시킵니다.
+     */
+    display: none !important;
   }
 
   .siteQuickMenuInner {
@@ -603,6 +611,11 @@
 
   .desktopNav {
     display: none;
+  }
+
+  /* 모바일 푸터 링크 목록 삭제 */
+  .footerColumnNav {
+    display: none !important;
   }
 
   .menuToggle {
@@ -793,5 +806,157 @@
 @media (max-width: 1174px) and (prefers-reduced-motion: reduce) {
   .mobileNav {
     transition: none !important;
+  }
+
+  .siteQuickMenu {
+    display: none;
+  }
+}
+
+/*
+ * 태블릿 및 모바일 기기 해상도(900px 이하)를 타겟으로 하여,
+ * 본문 컨텐츠 영역(.mainSurface)의 좌우 패딩을 정확히 2rem으로 조절해줍니다.
+ * 이를 통해 좁은 뷰포트 환경에서도 양옆 가장자리에 텍스트가 바짝 붙지 않고 미려하게 공백 여백이 보존됩니다.
+ * 전역 규칙에 따라 clamp 대신 rem 단위만을 일관되게 활용하였습니다.
+ */
+@media (max-width: 900px) {
+  .mainSurface {
+    padding-left: 2rem !important; /* 좌측 패딩을 사용자 요청 수치인 2rem으로 고정 규정하였습니다. */
+    padding-right: 2rem !important; /* 우측 패딩을 사용자 요청 수치인 2rem으로 고정 규정하였습니다. */
+  }
+}
+
+/* 모바일 하단 고정 메뉴 */
+.bottomFixedMenu {
+  display: none;
+}
+
+@media (max-width: 1174px) {
+  /* 모바일 하단 고정 메뉴 활성화 */
+  .bottomFixedMenu {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 48;
+    display: block;
+    background: #ffffff;
+    border-top: 1px solid #e8eaef;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+    padding-bottom: env(safe-area-inset-bottom, 0.5rem);
+    transform: translateY(0);
+    opacity: 1;
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.25s ease;
+  }
+
+  /* 모바일 하단 고정 메뉴 숨김 상태 */
+  .bottomFixedMenuHidden {
+    transform: translateY(100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* 모바일 하단 고정 메뉴 내부 */
+  .bottomFixedMenuInner {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    padding: 0.625rem 0.25rem;
+  }
+
+  /* 모바일 하단 고정 메뉴 개별 행: 790px 초과 시 양 옆 1줄로 배치 */
+  .bottomFixedMenuRow {
+    display: flex;
+    flex: 1;
+    justify-content: space-around;
+  }
+
+  /* 모바일 하단 고정 메뉴의 개별 탭 버튼 */
+  .bottomFixedMenuItem {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.1875rem;
+    text-decoration: none;
+    color: rgba(0, 0, 0, 0.58);
+    font-weight: 500;
+    transition: color 0.15s ease;
+  }
+
+  /* 모바일 하단 고정 메뉴의 탭 아이콘 */
+  .bottomFixedMenuIcon {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  /* 모바일 하단 고정 메뉴의 탭 글씨 라벨 */
+  .bottomFixedMenuLabel {
+    font-size: 0.625rem;
+    letter-spacing: -0.04em;
+    font-weight: 700;
+  }
+
+  /* 모바일 하단 고정 메뉴의 탭 활성화 색상 */
+  .bottomFixedMenuItemActive {
+    color: #c0002f !important;
+  }
+
+  /* 모바일 뷰에서의 메인 본문 바닥 여백 보정 */
+  .mainSurface {
+    padding-bottom: 3.5rem !important;
+  }
+
+  /* 모바일 뷰에서의 푸터 바닥 여백 보정 */
+  .siteFooter {
+    padding-bottom: 2.25rem !important;
+  }
+}
+
+/* 790px 이하 좁은 화면 2줄 스위칭 반응형 */
+@media (max-width: 790px) {
+  /* 790px 이하 세로 정렬 2줄 레이아웃 */
+  .bottomFixedMenuInner {
+    flex-direction: column;
+    padding: 0.5rem 0.25rem;
+  }
+
+  /* 790px 이하 100% 가로 채우기 */
+  .bottomFixedMenuRow {
+    width: 100%;
+    padding: 0.5rem 0;
+  }
+
+  /* 790px 이하 1번째 줄 하단 테두리 구분선 */
+  .bottomFixedMenuRow:first-child {
+    border-bottom: 1px solid #f3f3f3;
+  }
+
+  /* 790px 이하 개별 탭 여유 있는 간격 조정 */
+  .bottomFixedMenuItem {
+    gap: 0.25rem;
+  }
+
+  /* 790px 이하 시원한 대형 아이콘 크기 적용 */
+  .bottomFixedMenuIcon {
+    font-size: 1.4375rem;
+  }
+
+  /* 790px 이하 선명하고 큰 본문 폰트 적용 */
+  .bottomFixedMenuLabel {
+    font-size: 0.75rem;
+  }
+
+  /* 790px 이하 2줄 높이에 적합한 메인 본문 바닥 여백 확장 */
+  .mainSurface {
+    padding-bottom: 6.5rem !important;
+  }
+
+  /* 790px 이하 2줄 높이에 적합한 푸터 바닥 여백 확장 */
+  .siteFooter {
+    padding-bottom: 5rem !important;
   }
 }
