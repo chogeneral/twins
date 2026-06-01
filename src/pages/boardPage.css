@@ -1083,6 +1083,18 @@
   margin: 0 0 1em;
 }
 
+.boardPostContent p:empty {
+  /*
+   * 글쓰기/수정 화면에서 엔터로 만든 빈 문단은 HTML에 비어 있는 p 태그로 저장될 수 있습니다.
+   * 상세 화면에서도 사용자가 띄운 단락 간격이 사라지지 않도록 빈 문단에 한 줄 높이를 부여합니다.
+   */
+  min-height: 1.75em;
+}
+
+.boardPostContent p:empty::before {
+  content: '\00a0';
+}
+
 .boardPostContent img {
   display: block;
   max-width: 100%;
