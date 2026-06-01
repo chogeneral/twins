@@ -460,7 +460,6 @@
     display: none;
   }
 
-  .boardListNumberCell,
   .boardListCategoryCell {
     color: var(--textMuted);
     font-size: 0.8125rem;
@@ -468,7 +467,7 @@
   }
 
   .boardListNumberCell {
-    margin-bottom: 4px;
+    display: none;
   }
 
   .boardListTable .boardListTitleCell {
