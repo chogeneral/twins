@@ -64,7 +64,7 @@ const HISTORY = [
   },
   {
     year: '1994',
-    title: '신바람 야구의 정점',
+    title: '신바람 야구의 정점 - 2번쩨 우승',
     desc: '이광환 감독아래 자율야규가 정착되고 전설의 신인 3인방 등장으로 2번째째 우승을 차지했습니다.',
   },
   {
@@ -160,9 +160,9 @@ const GOLDEN_GLOVE = [
   {
     name: '김동수', pos: '포수', years: '1990 · 1993–95 · 1997', photo: dongsooImg,
     stats: [
-      { year: 1990, games: 110, hr: 13, rbi: 62, avg: '0.291',  },
+      { year: 1990, games: 110, hr: 13, rbi: 62, avg: '0.291', },
       { year: 1993, games: 116, hr: 10, rbi: 55, avg: '0.258' },
-      { year: 1994, games: 121, hr: 15, rbi: 63, avg: '0.280',  },
+      { year: 1994, games: 121, hr: 15, rbi: 63, avg: '0.280', },
       { year: 1995, games: 119, hr: 10, rbi: 56, avg: '0.264' },
       { year: 1997, games: 115, hr: 12, rbi: 54, avg: '0.279' },
     ],
@@ -892,10 +892,10 @@ const RETIRED_NUMBERS = [
 ]
 
 const TABS = [
-  { id: 'history',   label: 'History' },
-  { id: 'records',   label: '연도별 성적' },
+  { id: 'history', label: 'History' },
+  { id: 'records', label: '연도별 성적' },
   { id: 'goldglove', label: '골든글러브' },
-  { id: 'retired',   label: '영구결번' },
+  { id: 'retired', label: '영구결번' },
 ]
 
 export function TeamPage() {
@@ -973,8 +973,8 @@ export function TeamPage() {
           hidden={activeTab !== 'records'}
           className="teamTabPanel"
         ><p className="teamTabNote">
-        우승 연도 클릭시 우승 당시 영상을 볼 수 있습니다.
-       </p>
+            우승 연도 클릭시 우승 당시 영상을 볼 수 있습니다.
+          </p>
           <div className="teamRecordTableWrap">
             <table className="teamRecordTable">
               <thead>
@@ -1029,16 +1029,16 @@ export function TeamPage() {
                           .join(' ')}
                         {...(r.championYoutubeId
                           ? {
-                              tabIndex: 0,
-                              'aria-label': `${r.year}년 ${r.finalTone === 'champion' ? '우승 영상' : '영상'} 열기`,
-                              onClick: () => setChampionVideoModal(championVideoModalPayload(r)),
-                              onKeyDown: (e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                  e.preventDefault()
-                                  setChampionVideoModal(championVideoModalPayload(r))
-                                }
-                              },
-                            }
+                            tabIndex: 0,
+                            'aria-label': `${r.year}년 ${r.finalTone === 'champion' ? '우승 영상' : '영상'} 열기`,
+                            onClick: () => setChampionVideoModal(championVideoModalPayload(r)),
+                            onKeyDown: (e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault()
+                                setChampionVideoModal(championVideoModalPayload(r))
+                              }
+                            },
+                          }
                           : {})}
                       >
                         <td
@@ -1071,7 +1071,7 @@ export function TeamPage() {
               </tbody>
             </table>
           </div>
-          
+
         </div>
 
         {/* 골든글러브 */}
@@ -1090,29 +1090,29 @@ export function TeamPage() {
                 className={['teamGGItem', p.photo ? 'teamGGItemClickable' : ''].filter(Boolean).join(' ')}
                 {...(p.photo
                   ? {
-                      role: 'button',
-                      tabIndex: 0,
-                      'aria-label': `${p.name} 사진 보기`,
-                      /* 타자(stats)·투수(pitcherStats) 중 하나만 넘기면 모달에서 표 종류를 나눕니다 */
-                      onClick: () =>
+                    role: 'button',
+                    tabIndex: 0,
+                    'aria-label': `${p.name} 사진 보기`,
+                    /* 타자(stats)·투수(pitcherStats) 중 하나만 넘기면 모달에서 표 종류를 나눕니다 */
+                    onClick: () =>
+                      setPhotoModal({
+                        name: p.name,
+                        src: p.photo,
+                        stats: p.stats,
+                        pitcherStats: p.pitcherStats,
+                      }),
+                    onKeyDown: (e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
                         setPhotoModal({
                           name: p.name,
                           src: p.photo,
                           stats: p.stats,
                           pitcherStats: p.pitcherStats,
-                        }),
-                      onKeyDown: (e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault()
-                          setPhotoModal({
-                            name: p.name,
-                            src: p.photo,
-                            stats: p.stats,
-                            pitcherStats: p.pitcherStats,
-                          })
-                        }
-                      },
-                    }
+                        })
+                      }
+                    },
+                  }
                   : {})}
               >
                 <span className="teamGGName">{p.name}</span>
@@ -1132,29 +1132,29 @@ export function TeamPage() {
                 className={['teamGGItem', 'teamGGItemMbc', p.photo ? 'teamGGItemClickable' : ''].filter(Boolean).join(' ')}
                 {...(p.photo
                   ? {
-                      role: 'button',
-                      tabIndex: 0,
-                      'aria-label': `${p.name} 사진 보기`,
-                      /* LG 목록과 같은 photoModal 상태를 공유합니다 — 타자(stats)·투수(pitcherStats) 분기 동일 */
-                      onClick: () =>
+                    role: 'button',
+                    tabIndex: 0,
+                    'aria-label': `${p.name} 사진 보기`,
+                    /* LG 목록과 같은 photoModal 상태를 공유합니다 — 타자(stats)·투수(pitcherStats) 분기 동일 */
+                    onClick: () =>
+                      setPhotoModal({
+                        name: p.name,
+                        src: p.photo,
+                        stats: p.stats,
+                        pitcherStats: p.pitcherStats,
+                      }),
+                    onKeyDown: (e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
                         setPhotoModal({
                           name: p.name,
                           src: p.photo,
                           stats: p.stats,
                           pitcherStats: p.pitcherStats,
-                        }),
-                      onKeyDown: (e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault()
-                          setPhotoModal({
-                            name: p.name,
-                            src: p.photo,
-                            stats: p.stats,
-                            pitcherStats: p.pitcherStats,
-                          })
-                        }
-                      },
-                    }
+                        })
+                      }
+                    },
+                  }
                   : {})}
               >
                 <span className="teamGGName">{p.name}</span>
@@ -1166,7 +1166,7 @@ export function TeamPage() {
               </li>
             ))}
           </ol>
-          
+
         </div>
 
         {/* 영구결번 — 카드별 등번호 클릭으로 선수 영상을 열 계획일 때 사용자 안내 */}
@@ -1267,7 +1267,7 @@ export function TeamPage() {
               </li>
             ))}
           </ul>
-        
+
         </div>
       </div>
 
@@ -1342,96 +1342,96 @@ export function TeamPage() {
             </button>
             {photoModal.src
               ? (
-                  <img
-                    className="teamPhotoModalImg"
-                    src={photoModal.src}
-                    alt={photoModal.name}
-                  />
-                )
+                <img
+                  className="teamPhotoModalImg"
+                  src={photoModal.src}
+                  alt={photoModal.name}
+                />
+              )
               : null}
             {photoModal.pitcherStats
               ? (() => {
-                  /* 선수·연도마다 기록 항목이 다릅니다(선발형 완투·완봉 vs 마무리 세이브). 값이 있는 행이 하나라도 있으면 해당 열만 표시합니다 */
-                  const pitcherRows = photoModal.pitcherStats
-                  const pitcherShowSaves = pitcherRows.some((row) => row.saves != null)
-                  const pitcherShowCompleteGames = pitcherRows.some((row) => row.completeGames != null)
-                  const pitcherShowShutouts = pitcherRows.some((row) => row.shutouts != null)
-                  return (
-                    <div className="teamPhotoModalStatsScroll">
-                      <table className="teamPhotoModalStats teamPhotoModalStatsPitcher">
-                        <thead>
-                          <tr>
-                            <th>연도</th>
-                            <th>경기</th>
-                            <th>승</th>
-                            <th>패</th>
-                            {pitcherShowSaves ? <th>세이브</th> : null}
-                            <th>평균자책점</th>
-                            <th>이닝</th>
-                            <th>탈삼진</th>
-                            {pitcherShowCompleteGames ? <th>완투</th> : null}
-                            {pitcherShowShutouts ? <th>완봉</th> : null}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {pitcherRows.map((row) => (
-                            <tr key={row.year}>
-                              <td>{row.year}</td>
-                              <td>{row.games}</td>
-                              <td>{`${row.wins}승`}</td>
-                              <td>{`${row.losses}패`}</td>
-                              {pitcherShowSaves ? <td>{row.saves != null ? row.saves : '—'}</td> : null}
-                              <td>{row.era}</td>
-                              <td>{row.inningsDisplay}</td>
-                              <td>{row.strikeouts}</td>
-                              {pitcherShowCompleteGames ? (
-                                <td>{row.completeGames != null ? `${row.completeGames}완투` : '—'}</td>
-                              ) : null}
-                              {pitcherShowShutouts ? (
-                                <td>{row.shutouts != null ? `${row.shutouts}완봉` : '—'}</td>
-                              ) : null}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )
-                })()
-              : null}
-            {!photoModal.pitcherStats && photoModal.stats
-              ? (() => {
-                  /* 도루(sb)·안타(hits) 열은 해당 값이 한 행이라도 있을 때만 표시 — 선수별로 열 개수가 달라집니다 */
-                  const statsShowSb = photoModal.stats.some((s) => s.sb != null)
-                  const statsShowHits = photoModal.stats.some((s) => s.hits != null)
-                  return (
-                    <table className="teamPhotoModalStats">
+                /* 선수·연도마다 기록 항목이 다릅니다(선발형 완투·완봉 vs 마무리 세이브). 값이 있는 행이 하나라도 있으면 해당 열만 표시합니다 */
+                const pitcherRows = photoModal.pitcherStats
+                const pitcherShowSaves = pitcherRows.some((row) => row.saves != null)
+                const pitcherShowCompleteGames = pitcherRows.some((row) => row.completeGames != null)
+                const pitcherShowShutouts = pitcherRows.some((row) => row.shutouts != null)
+                return (
+                  <div className="teamPhotoModalStatsScroll">
+                    <table className="teamPhotoModalStats teamPhotoModalStatsPitcher">
                       <thead>
                         <tr>
                           <th>연도</th>
                           <th>경기</th>
-                          <th>홈런</th>
-                          {statsShowSb ? <th>도루</th> : null}
-                          {statsShowHits ? <th>안타</th> : null}
-                          <th>타점</th>
-                          <th>타율</th>
+                          <th>승</th>
+                          <th>패</th>
+                          {pitcherShowSaves ? <th>세이브</th> : null}
+                          <th>평균자책점</th>
+                          <th>이닝</th>
+                          <th>탈삼진</th>
+                          {pitcherShowCompleteGames ? <th>완투</th> : null}
+                          {pitcherShowShutouts ? <th>완봉</th> : null}
                         </tr>
                       </thead>
                       <tbody>
-                        {photoModal.stats.map((s) => (
-                          <tr key={s.year}>
-                            <td>{s.year}</td>
-                            <td>{s.games}</td>
-                            <td>{s.hr}</td>
-                            {statsShowSb ? <td>{s.sb != null ? s.sb : '—'}</td> : null}
-                            {statsShowHits ? <td>{s.hits != null ? s.hits : '—'}</td> : null}
-                            <td>{s.rbi}</td>
-                            <td>{s.avg}</td>
+                        {pitcherRows.map((row) => (
+                          <tr key={row.year}>
+                            <td>{row.year}</td>
+                            <td>{row.games}</td>
+                            <td>{`${row.wins}승`}</td>
+                            <td>{`${row.losses}패`}</td>
+                            {pitcherShowSaves ? <td>{row.saves != null ? row.saves : '—'}</td> : null}
+                            <td>{row.era}</td>
+                            <td>{row.inningsDisplay}</td>
+                            <td>{row.strikeouts}</td>
+                            {pitcherShowCompleteGames ? (
+                              <td>{row.completeGames != null ? `${row.completeGames}완투` : '—'}</td>
+                            ) : null}
+                            {pitcherShowShutouts ? (
+                              <td>{row.shutouts != null ? `${row.shutouts}완봉` : '—'}</td>
+                            ) : null}
                           </tr>
                         ))}
                       </tbody>
                     </table>
-                  )
-                })()
+                  </div>
+                )
+              })()
+              : null}
+            {!photoModal.pitcherStats && photoModal.stats
+              ? (() => {
+                /* 도루(sb)·안타(hits) 열은 해당 값이 한 행이라도 있을 때만 표시 — 선수별로 열 개수가 달라집니다 */
+                const statsShowSb = photoModal.stats.some((s) => s.sb != null)
+                const statsShowHits = photoModal.stats.some((s) => s.hits != null)
+                return (
+                  <table className="teamPhotoModalStats">
+                    <thead>
+                      <tr>
+                        <th>연도</th>
+                        <th>경기</th>
+                        <th>홈런</th>
+                        {statsShowSb ? <th>도루</th> : null}
+                        {statsShowHits ? <th>안타</th> : null}
+                        <th>타점</th>
+                        <th>타율</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {photoModal.stats.map((s) => (
+                        <tr key={s.year}>
+                          <td>{s.year}</td>
+                          <td>{s.games}</td>
+                          <td>{s.hr}</td>
+                          {statsShowSb ? <td>{s.sb != null ? s.sb : '—'}</td> : null}
+                          {statsShowHits ? <td>{s.hits != null ? s.hits : '—'}</td> : null}
+                          <td>{s.rbi}</td>
+                          <td>{s.avg}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )
+              })()
               : null}
           </div>
         </div>
