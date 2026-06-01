@@ -23,10 +23,13 @@ const RULES = {
 /* Supabase 에러 코드를 사용자 친화적 메시지로 변환 */
 function parseSupabaseError(error) {
   if (!error) return ''
-  if (error.message?.includes('User already registered')) return '이미 사용 중인 이메일입니다.'
-  if (error.message?.includes('Invalid email')) return '유효하지 않은 이메일입니다.'
-  if (error.message?.includes('Password should be')) return '비밀번호가 너무 짧습니다.'
-  if (error.message?.includes('rate limit')) return '잠시 후 다시 시도해 주세요.'
+  const message = error.message ?? ''
+  if (message === 'SIGNUP_TIMEOUT') return '회원가입 요청 시간이 길어지고 있습니다. 잠시 후 다시 시도해 주세요.'
+  if (message.includes('User already registered')) return '이미 사용 중인 이메일입니다.'
+  if (message.includes('Invalid email')) return '유효하지 않은 이메일입니다.'
+  if (message.includes('Password should be')) return '비밀번호가 너무 짧습니다.'
+  if (message.includes('rate limit')) return '잠시 후 다시 시도해 주세요.'
+  if (message.includes('Failed to fetch') || message.includes('NetworkError')) return '회원가입 서버에 연결하지 못했습니다. 배포 환경 변수를 확인해 주세요.'
   return '회원가입 중 오류가 발생했습니다. 다시 시도해 주세요.'
 }
 
@@ -36,6 +39,21 @@ function formatPhone(raw) {
   if (digits.length < 4) return digits
   if (digits.length < 8) return `${digits.slice(0, 3)}-${digits.slice(3)}`
   return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`
+}
+
+function withSignupTimeout(signupPromise) {
+  /*
+   * 배포 환경에서 Supabase 요청이 네트워크나 Auth 설정 문제로 끝나지 않으면 버튼이 계속 "가입 중..."으로 보입니다.
+   * 사용자가 멈춘 화면을 보지 않도록 일정 시간 뒤 명확한 안내 메시지로 복구합니다.
+   */
+  return Promise.race([
+    signupPromise,
+    new Promise((_, reject) => {
+      window.setTimeout(() => {
+        reject(new Error('SIGNUP_TIMEOUT'))
+      }, 20000)
+    }),
+  ])
 }
 
 export function SignupPage() {
@@ -101,32 +119,41 @@ export function SignupPage() {
     setErrors(allErrors)
     if (Object.values(allErrors).some((msg) => msg !== '')) return
 
-    setIsLoading(true)
-    setServerError('')
-
-    const { error } = await supabase.auth.signUp({
-      email: form.email,
-      password: form.password,
-      options: {
-        data: {
-          nickname: form.nickname,
-          /*
-           * 프런트에서는 Supabase Auth 가입 흐름을 유지하기 위해 검증된 원문을 전달합니다.
-           * DB의 before trigger가 저장 직전에 phone을 암호문과 마스킹 값으로 치환해 평문이 남지 않게 처리합니다.
-           */
-          phone: form.phone,
-        },
-      },
-    })
-
-    setIsLoading(false)
-
-    if (error) {
-      setServerError(parseSupabaseError(error))
+    if (!supabase) {
+      setServerError('회원가입 설정이 연결되지 않았습니다. Vercel 환경 변수를 확인해 주세요.')
       return
     }
 
-    setIsSuccess(true)
+    setIsLoading(true)
+    setServerError('')
+
+    try {
+      const { error } = await withSignupTimeout(supabase.auth.signUp({
+        email: form.email,
+        password: form.password,
+        options: {
+          data: {
+            nickname: form.nickname,
+            /*
+             * 프런트에서는 Supabase Auth 가입 흐름을 유지하기 위해 검증된 원문을 전달합니다.
+             * DB의 before trigger가 저장 직전에 phone을 암호문과 마스킹 값으로 치환해 평문이 남지 않게 처리합니다.
+             */
+            phone: form.phone,
+          },
+        },
+      }))
+
+      if (error) {
+        setServerError(parseSupabaseError(error))
+        return
+      }
+
+      setIsSuccess(true)
+    } catch (error) {
+      setServerError(parseSupabaseError(error))
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   if (isSuccess) {
