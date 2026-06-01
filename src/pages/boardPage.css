@@ -1069,6 +1069,8 @@
 }
 
 .boardPostContent {
+  width: min(100%, 900px);
+  margin: 0 auto;
   max-width: 900px;
   color: var(--textPrimary);
   line-height: 1.75;
@@ -1236,8 +1238,8 @@
 }
 
 .boardPostPlainContent {
-  margin: 0;
-  max-width: 900px;
+  width: min(100%, 900px);
+  margin: 0 auto;
   white-space: pre-wrap;
   word-break: break-word;
   line-height: 1.75;
