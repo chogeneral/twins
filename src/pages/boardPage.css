@@ -34,6 +34,56 @@
   line-height: 1.65;
 }
 
+.boardSeoGuide {
+  max-width: 860px;
+  padding: clamp(20px, 4vw, 30px) 0;
+  border-top: 1px solid var(--ruleLineSoft);
+  border-bottom: 1px solid var(--ruleLineSoft);
+}
+
+.boardSeoGuideTitle {
+  margin: 0 0 12px;
+  color: var(--textPrimary);
+  font-size: clamp(1.125rem, 2.4vw, 1.375rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.35;
+}
+
+.boardSeoGuideText {
+  margin: 0;
+  color: var(--textMuted);
+  font-size: clamp(0.9375rem, 1.5vw, 1rem);
+  line-height: 1.72;
+}
+
+.boardSeoGuideList {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--textMuted);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.boardSeoGuideList li {
+  position: relative;
+  padding-left: 16px;
+}
+
+.boardSeoGuideList li::before {
+  content: '';
+  position: absolute;
+  top: 0.72em;
+  left: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--prideRed);
+}
+
 .boardPanel {
   padding: clamp(28px, 5vw, 44px) 0;
   border-top: 1px solid var(--ruleLineSoft);

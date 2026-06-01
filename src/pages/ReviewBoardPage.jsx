@@ -22,6 +22,25 @@ export function ReviewBoardPage() {
         </p>
       </header>
 
+      {/*
+       * 승요인증 목록이 비어 있어도 페이지 자체의 주제가 검색엔진과 방문자에게 명확히 전달되도록,
+       * 인증 게시판에서 기대할 수 있는 콘텐츠 유형을 본문에 고정 안내로 노출합니다.
+       */}
+      <section className="boardSeoGuide" aria-labelledby="reviewBoardGuideHeading">
+        <h2 id="reviewBoardGuideHeading" className="boardSeoGuideTitle">
+          승요인증으로 기록하는 LG 트윈스 승리 순간
+        </h2>
+        <p className="boardSeoGuideText">
+          승요인증은 LG 트윈스 승리 경기의 직관 후기, 응원 사진, 현장 분위기,
+          함께 기억하고 싶은 장면을 팬들과 공유하는 게시판입니다.
+        </p>
+        <ul className="boardSeoGuideList">
+          <li>승리 경기 직관 후기와 인증 사진</li>
+          <li>응원석, 외야석, 원정석에서 느낀 현장 분위기</li>
+          <li>팬들이 함께 축하하는 LG 트윈스 승리 기록</li>
+        </ul>
+      </section>
+
       <section
         className="boardPanel"
         aria-labelledby="sungyoBoardListHeading"
