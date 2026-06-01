@@ -507,7 +507,7 @@
     content: ' · 조회 ';
   }
 
-  .boardListEmptyCell {
+  .boardListTable .boardListEmptyCell {
     padding: 28px 12px;
     text-align: center;
   }
