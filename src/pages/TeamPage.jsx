@@ -178,7 +178,7 @@ const GOLDEN_GLOVE = [
   {
     name: '한대화',
     pos: '3루수',
-    years: '1990 · 1994',
+    years: '1994',
     photo: daehwaImg,
     /* 수상 연도는 1990·1994 이지만 모달 표는 기존 사용자 제공 시즌(1994)만 유지했습니다 */
     stats: [{ year: 1994, games: 106, hr: 10, rbi: 67, avg: '0.297' }],
@@ -211,10 +211,13 @@ const GOLDEN_GLOVE = [
   {
     name: '김재현',
     pos: '외야수',
-    years: '1993 · 1994',
+    years: '1994 · 1998',
     photo: jaehyunImg,
-    /* 명단은 1993·1994 수상 — 모달에는 사용자 제공 1994 시즌만 두었습니다 */
-    stats: [{ year: 1994, games: 126, hr: 21, sb: 21, hits: 115, rbi: 80, avg: '0.289' }],
+    /* 골든글러브 1994·1998 수상 — 모달에 사용자 제공 두 시즌 성적을 모두 표시합니다 */
+    stats: [
+      { year: 1994, games: 126, hr: 21, sb: 21, hits: 115, rbi: 80, avg: '0.289' },
+      { year: 1998, games: 122, hr: 16, sb: 8, hits: 142, rbi: 76, avg: '0.295' },
+    ],
   },
   {
     name: '이상훈',
