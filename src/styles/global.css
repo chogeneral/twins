@@ -23,7 +23,7 @@
   src:
     local('Pretendard-SemiBold'),
     local('Pretendard-SemiBold'),
-    url('/fonts/Pretendard-SemiBold') format('woff2');
+    url('/fonts/Pretendard-SemiBold.woff2') format('woff2');
 }
 
 @font-face {
