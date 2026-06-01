@@ -51,6 +51,31 @@ function IconCheerSong() {
   )
 }
 
+/** 퀵메뉴「TEAM」— 야구선수 실루엣과 배트를 단순화해 팀 페이지 성격을 직관적으로 보여줍니다. */
+function IconTeam() {
+  return (
+    <svg className="siteQuickMenuSvg" viewBox="0 0 24 24" aria-hidden="true">
+      {/* 머리·몸통·배트를 최소 선으로 표현해 작은 퀵메뉴 버튼 안에서도 야구선수로 읽히게 했습니다 */}
+      <circle cx="10" cy="6" r="2.2" fill="none" stroke="currentColor" strokeWidth="1.75" />
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M10 8.4v4.1l-2.8 3.3M10.2 12.2l3 3.7M7.8 10.4l-2.6 1.8M11.4 9.8l3 1.8M15.2 3.8l4.4 7.6"
+      />
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        d="M6.2 19h4.2M12.8 19h4.4"
+      />
+    </svg>
+  )
+}
+
 /** 맨 위 스크롤 액션에 흔히 쓰는 위쪽 꺾쇠 형태입니다. */
 function IconChevronUp() {
   return (
@@ -80,6 +105,11 @@ function SiteQuickMenu() {
     navigate('/teamsong')
   }
 
+  /* 퀵메뉴 — 팀 소개와 기록 페이지로 바로 이동합니다 */
+  const goTeam = () => {
+    navigate('/team')
+  }
+
   /* 긴 게시글 등에서 맨 위로 — main 에 포커스를 주어 키보드 사용자도 흐름을 이어 갑니다 */
   const goTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -91,17 +121,16 @@ function SiteQuickMenu() {
     <nav className="siteQuickMenu" aria-label="퀵 메뉴">
       <div className="siteQuickMenuInner">
         <div className="siteQuickMenuItem">
-          {/* aria-labelledby 로 보이는 라벨과 버튼 역할을 스크린리더가 한 덩어리로 읽게 합니다 */}
           <button
             type="button"
             className="siteQuickMenuFab"
-            onClick={goStadiumVenue}
-            aria-labelledby="qmLabelStadium"
+            onClick={goTeam}
+            aria-labelledby="qmLabelTeam"
           >
-            <IconStadiumField />
+            <IconTeam />
           </button>
-          <span id="qmLabelStadium" className="siteQuickMenuItemLabel">
-            구장정보
+          <span id="qmLabelTeam" className="siteQuickMenuItemLabel">
+            TEAM
           </span>
         </div>
         <div className="siteQuickMenuItem">
@@ -115,6 +144,20 @@ function SiteQuickMenu() {
           </button>
           <span id="qmLabelTeamSong" className="siteQuickMenuItemLabel">
             응원가
+          </span>
+        </div>
+        <div className="siteQuickMenuItem">
+          {/* aria-labelledby 로 보이는 라벨과 버튼 역할을 스크린리더가 한 덩어리로 읽게 합니다 */}
+          <button
+            type="button"
+            className="siteQuickMenuFab"
+            onClick={goStadiumVenue}
+            aria-labelledby="qmLabelStadium"
+          >
+            <IconStadiumField />
+          </button>
+          <span id="qmLabelStadium" className="siteQuickMenuItemLabel">
+            구장정보
           </span>
         </div>
         <div className="siteQuickMenuItem">
@@ -155,11 +198,12 @@ export function AppShell() {
   const homePath = '/'
 
   /**
-   * 주요 메뉴 순서 — TEAM 직후「응원가」, 이어서 신규 유입용「가입인사」를 둡니다.
+   * 주요 메뉴 순서 — 응원가 옆에 자주 찾는 구장정보를 배치해 경기장 정보 접근 동선을 줄였습니다.
    */
   const navItems = [
     { to: '/team', label: 'Team' },
     { to: '/teamsong', label: '응원가' },
+    { to: '/stadium-info', label: '구장정보' },
     { to: '/qna', label: '가입인사' },
     { to: '/free-board', label: '무적LG마당' },
     { to: '/reviews', label: '승요인증' },
