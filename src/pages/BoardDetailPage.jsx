@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { cleanBoardHtmlContent } from '../lib/boardHtmlSanitizer'
 import {
   addBoardComment,
   deleteBoardComment,
@@ -59,6 +60,10 @@ export function BoardDetailPage({ boardType }) {
   const [commentDraft, setCommentDraft] = useState('')
   const [commentError, setCommentError] = useState('')
   const [replyTarget, setReplyTarget] = useState(null)
+  const cleanedPostHtmlContent = useMemo(
+    () => cleanBoardHtmlContent(post?.htmlContent ?? ''),
+    [post?.htmlContent],
+  )
   const [replyDraft, setReplyDraft] = useState('')
   const [replyError, setReplyError] = useState('')
   const loginRedirectHref = `/login?redirect=${encodeURIComponent(`${config.listPath}/${postId ?? ''}`)}`
@@ -334,7 +339,7 @@ export function BoardDetailPage({ boardType }) {
           <div
             className={detailClassName}
             style={post.fontSize ? { fontSize: `${post.fontSize}px` } : undefined}
-            dangerouslySetInnerHTML={{ __html: post.htmlContent }}
+            dangerouslySetInnerHTML={{ __html: cleanedPostHtmlContent }}
           />
         ) : (
           <p className="boardPostPlainContent">{post.content}</p>

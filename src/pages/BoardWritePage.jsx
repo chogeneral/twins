@@ -10,6 +10,7 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { cleanBoardHtmlContent } from '../lib/boardHtmlSanitizer'
 import { addBoardPost, getBoardPost, updateBoardPost } from '../lib/boardPostStorage'
 import './boardPage.css'
 
@@ -175,8 +176,10 @@ const LinkPreview = Node.create({
           'data-display-url': displayUrl,
         }),
         ['img', { class: 'boardLinkPreviewYoutubeImage', src: imageUrl, alt: title }],
-        ['span', { class: 'boardLinkPreviewYoutubeTitle' }, title],
-        ['span', { class: 'boardLinkPreviewYoutubeUrl' }, displayUrl || href],
+        /*
+         * 유튜브 카드는 이미지와 재생 아이콘만 저장합니다.
+         * 제목·URL 보조 텍스트를 HTML 안에 남기면 수정/상세 화면에서 이미지 로드 실패나 중복 링크 파싱 시 검은 텍스트 줄로 보일 수 있습니다.
+         */
         ['span', { class: 'boardLinkPreviewPlayIcon', 'aria-hidden': 'true' }],
       ]
     }
@@ -266,7 +269,7 @@ export function BoardWritePage({ boardType }) {
         autolink: true,
       }),
     ],
-    content: isBlogBoard ? (editingPost?.htmlContent ?? '') : '',
+    content: isBlogBoard ? cleanBoardHtmlContent(editingPost?.htmlContent ?? '') : '',
     editorProps: {
       attributes: {
         class: 'boardBlogEditorProse',
@@ -363,7 +366,7 @@ export function BoardWritePage({ boardType }) {
     const trimmedTitle = title.trim()
     const trimmedContent = content.trim()
     const editorText = editor?.getText().trim() ?? ''
-    const editorHtml = editor?.getHTML() ?? ''
+    const editorHtml = cleanBoardHtmlContent(editor?.getHTML() ?? '')
     const editorHasImage = editorHtml.includes('<img')
     const editorHasLinkPreview = editorHtml.includes('data-link-preview')
 

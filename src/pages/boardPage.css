@@ -1089,10 +1089,21 @@
   position: relative;
   display: block;
   width: min(100%, 900px);
-  margin: 18px auto 28px;
+  margin: 18px auto;
   overflow: hidden;
   border: 1px solid var(--ruleLineSoft);
   background: #111;
+}
+
+.boardBlogEditorProse .boardLinkPreviewYoutube:not(:has(.boardLinkPreviewYoutubeImage)),
+.boardBlogEditorProse .boardLinkPreviewYoutube:has(.boardLinkPreviewYoutubeImage[src='']),
+.boardPostContent .boardLinkPreviewYoutube:not(:has(.boardLinkPreviewYoutubeImage)),
+.boardPostContent .boardLinkPreviewYoutube:has(.boardLinkPreviewYoutubeImage[src='']) {
+  /*
+   * 예전 저장 글이나 수정 중인 글에서 이미지 없는 유튜브 미리보기 앵커가 남으면 검은 막대처럼 보입니다.
+   * 정상 미리보기 카드는 이미지가 있으므로 그대로 보이고, 카드 없이 텍스트만 남은 줄만 숨깁니다.
+   */
+  display: none;
 }
 
 .boardBlogEditorProse .boardLinkPreviewYoutubeImage,
@@ -1108,35 +1119,7 @@
 
 .boardBlogEditorProse .boardLinkPreviewYoutubeTitle,
 .boardPostContent .boardLinkPreviewYoutubeTitle {
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  right: 14px;
-  overflow: hidden;
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 800;
-  line-height: 1.35;
-  text-overflow: ellipsis;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
-  white-space: nowrap;
-}
-
-.boardBlogEditorProse .boardLinkPreviewYoutubeUrl,
-.boardPostContent .boardLinkPreviewYoutubeUrl {
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: 14px;
-  overflow: hidden;
-  padding: 8px 10px;
-  background: rgba(255, 255, 255, 0.88);
-  color: #1d4ed8;
-  font-size: 0.875rem;
-  font-weight: 700;
-  line-height: 1.35;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: none;
 }
 
 .boardBlogEditorProse .boardLinkPreviewYoutubeUrl,
@@ -1174,7 +1157,7 @@
   grid-template-columns: 110px 1fr;
   width: min(100%, 450px);
   min-height: 110px;
-  margin: 18px auto 28px;
+  margin: 18px auto;
   border: 1px solid var(--ruleLineSoft);
   background: #fff;
   text-align: left;

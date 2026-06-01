@@ -142,7 +142,7 @@
   margin: 0;
   min-width: 0;
   font-size: clamp(1rem, 1.8vw, 1.125rem);
-  font-weight: 900;
+  font-weight: 400;
   letter-spacing: -0.03em;
   color: var(--textPrimary);
 }
@@ -193,7 +193,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: clamp(0.8125rem, 1.4vw, 0.875rem);
-  font-weight: 500;
   line-height: 1.45;
   color: var(--textPrimary);
   transition: color 0.15s ease;
