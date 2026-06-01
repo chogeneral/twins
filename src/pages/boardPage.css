@@ -34,6 +34,14 @@
   line-height: 1.65;
 }
 
+.boardDetailHeader {
+  /*
+   * 상세 화면의 제목과 작성 정보는 글쓰기 에디터 본문이 아니어서 정렬 버튼의 영향을 받지 않습니다.
+   * 본문을 가운데 정렬한 글과 화면 흐름이 어긋나지 않도록 상세 글 헤더만 별도로 가운데 정렬합니다.
+   */
+  text-align: center;
+}
+
 .boardSeoGuide {
   max-width: 860px;
   padding: clamp(20px, 4vw, 30px) 0;

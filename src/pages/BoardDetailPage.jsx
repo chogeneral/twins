@@ -326,7 +326,7 @@ export function BoardDetailPage({ boardType }) {
 
   return (
     <article className="boardPage">
-      <header className="boardHeader">
+      <header className="boardHeader boardDetailHeader">
         <p lang="en" className="boardEyebrow">{config.eyebrow}</p>
         <h1 className="boardTitle">{post.title}</h1>
         <p className="boardDescription">
