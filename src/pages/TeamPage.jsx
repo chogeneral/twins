@@ -811,6 +811,14 @@ function championVideoModalPayload(r) {
   }
 }
 
+function retiredNumberVideoModalPayload(player) {
+  return {
+    videoId: player.retiredYoutubeId,
+    videoStart: player.retiredYoutubeStart,
+    title: `${player.name} 하이라이트`,
+  }
+}
+
 /* 영구결번 카드: 패널 상단 안내로 등번호 클릭 시 영상 안내 — 통산 모달은 제거된 상태이며, 영상은 추후 등번호·카드에 연결 가능 */
 const RETIRED_NUMBERS = [
   {
@@ -828,6 +836,12 @@ const RETIRED_NUMBERS = [
       hits: 2504,
       homeRuns: 213,
     },
+    /*
+     * 33번 등번호 영역 클릭 시 바로 박용택 영구결번 관련 영상을 보여주기 위한 값입니다.
+     * 사용자가 준 YouTube 주소의 t=83s를 iframe start=83으로 변환해 원하는 지점부터 자동재생되게 했습니다.
+     */
+    retiredYoutubeId: 'HCpCEiFKrkc',
+    retiredYoutubeStart: 83,
   },
   {
     number: '9',
@@ -844,6 +858,11 @@ const RETIRED_NUMBERS = [
       hits: 2043,
       homeRuns: 161,
     },
+    /*
+     * 9번 등번호 영역 클릭 시 이병규 하이라이트 영상을 보여줍니다.
+     * 사용자 제공 YouTube 주소의 watch?v 값만 iframe 임베드 ID로 저장합니다.
+     */
+    retiredYoutubeId: 'u5Xjx-Vt0Vo',
   },
   {
     number: '41',
@@ -863,6 +882,12 @@ const RETIRED_NUMBERS = [
       era: '2.98',
       strikeouts: 1146,
     },
+    /*
+     * 41번 등번호 영역 클릭 시 김용수 하이라이트 영상을 보여줍니다.
+     * 사용자 제공 YouTube 주소의 t=376s를 iframe start=376으로 변환했습니다.
+     */
+    retiredYoutubeId: 'CIYpXsNB2gQ',
+    retiredYoutubeStart: 376,
   },
 ]
 
@@ -1159,9 +1184,20 @@ export function TeamPage() {
                 key={p.number}
                 className="teamRetiredCard"
               >
-                <span className="teamRetiredNumber" aria-label={`${p.number}번`}>
-                  {p.number}
-                </span>
+                {p.retiredYoutubeId ? (
+                  <button
+                    type="button"
+                    className="teamRetiredNumber teamRetiredNumberButton"
+                    aria-label={`${p.name} ${p.number}번 영구결번 영상 열기`}
+                    onClick={() => setChampionVideoModal(retiredNumberVideoModalPayload(p))}
+                  >
+                    {p.number}
+                  </button>
+                ) : (
+                  <span className="teamRetiredNumber" aria-label={`${p.number}번`}>
+                    {p.number}
+                  </span>
+                )}
                 <div className="teamRetiredInfo">
                   <strong className="teamRetiredName">{p.name}</strong>
                   <span className="teamRetiredPos">{p.pos}</span>
@@ -1251,7 +1287,7 @@ export function TeamPage() {
           >
             <div className="teamChampionModalHeader">
               <h2 id="teamChampionModalTitle" className="teamChampionModalTitle">
-                {championVideoModal.year}년 {championVideoModal.titleSuffix}
+                {championVideoModal.title ?? `${championVideoModal.year}년 ${championVideoModal.titleSuffix}`}
               </h2>
               <button
                 type="button"
@@ -1269,8 +1305,8 @@ export function TeamPage() {
                   playsinline=1 은 모바일(iOS 등)에서 전체화면 강제 전환 없이 인라인 재생을 돕기 위한 옵션입니다. */}
               <iframe
                 className="teamChampionModalIframe"
-                title={`${championVideoModal.year}년 ${championVideoModal.titleSuffix}`}
-                src={`https://www.youtube.com/embed/${championVideoModal.videoId}?autoplay=1&playsinline=1`}
+                title={championVideoModal.title ?? `${championVideoModal.year}년 ${championVideoModal.titleSuffix}`}
+                src={`https://www.youtube.com/embed/${championVideoModal.videoId}?autoplay=1&playsinline=1${championVideoModal.videoStart ? `&start=${championVideoModal.videoStart}` : ''}`}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
               />

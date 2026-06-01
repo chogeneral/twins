@@ -18,6 +18,14 @@
   flex-direction: column;
 }
 
+.signupWelcomePagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: clamp(22px, 4vw, 30px);
+}
+
 .signupWelcomeLineRow {
   display: grid;
   grid-template-columns: 40px minmax(0, 1fr) auto auto auto;

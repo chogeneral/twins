@@ -24,6 +24,7 @@ const qnaBoardPath = '/qna'
 
 /** DB check 제약(길이)과 동일하게 맞춰 입력 상한 안내용 */
 const maxContentLength = 2000
+const postsPerPage = 10
 
 /**
  * 표시 포맷: 한국어 로컬에 맞춰 짧게 날짜·시간을 붙였습니다.
@@ -95,6 +96,7 @@ export function QuestionBoardPage() {
   const [editError, setEditError] = useState('')
   const [deletingPostId, setDeletingPostId] = useState('')
   const [deleteError, setDeleteError] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
 
   const loginRedirectHref = useMemo(
     () => `/login?redirect=${encodeURIComponent(qnaBoardPath)}`,
@@ -133,6 +135,22 @@ export function QuestionBoardPage() {
     rootPosts.forEach((post) => sortReplies(post.replies))
     return rootPosts
   }, [posts])
+
+  const totalPages = Math.max(1, Math.ceil(topLevelPosts.length / postsPerPage))
+  const pagedTopLevelPosts = useMemo(() => {
+    const pageStartIndex = (currentPage - 1) * postsPerPage
+    return topLevelPosts.slice(pageStartIndex, pageStartIndex + postsPerPage)
+  }, [currentPage, topLevelPosts])
+
+  useEffect(() => {
+    /*
+     * 삭제나 새로고침으로 총 페이지 수가 줄어든 경우 빈 페이지에 머물지 않도록 마지막 페이지로 보정합니다.
+     * 반대로 새 글이 추가되어도 최신순 목록의 첫 페이지 동선을 유지할 수 있게 별도 리셋은 등록 성공 시점에서만 합니다.
+     */
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages)
+    }
+  }, [currentPage, totalPages])
 
   const handleReplyModalClose = useCallback(() => {
     setReplyModalPost(null)
@@ -243,6 +261,7 @@ export function QuestionBoardPage() {
 
     /* 성공 후 입력 필드 초기화 + 목록 갱신 — 사용자가 즉시 본인 글을 확인하도록 했음 */
     setDraft('')
+    setCurrentPage(1)
     void loadPosts()
   }
 
@@ -508,7 +527,7 @@ export function QuestionBoardPage() {
 
         {topLevelPosts.length > 0 && (
           <ul className="signupWelcomeLineList" aria-busy={listLoading ? 'true' : 'false'}>
-            {topLevelPosts.map((row) => (
+            {pagedTopLevelPosts.map((row) => (
               <li key={row.id} className="signupWelcomeLineItem">
                 <div className="signupWelcomeLineRow">
                   {renderAvatar(row.author_display)}
@@ -530,6 +549,43 @@ export function QuestionBoardPage() {
               </li>
             ))}
           </ul>
+        )}
+        {topLevelPosts.length > postsPerPage && (
+          <nav className="signupWelcomePagination" aria-label="가입인사 페이지">
+            <button
+              type="button"
+              className="boardPaginationBtn"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+            >
+              이전
+            </button>
+            {Array.from({ length: totalPages }, (_, index) => {
+              const pageNumber = index + 1
+              return (
+                <button
+                  key={pageNumber}
+                  type="button"
+                  className={[
+                    'boardPaginationNumber',
+                    currentPage === pageNumber ? 'boardPaginationNumberActive' : '',
+                  ].filter(Boolean).join(' ')}
+                  aria-current={currentPage === pageNumber ? 'page' : undefined}
+                  onClick={() => setCurrentPage(pageNumber)}
+                >
+                  {pageNumber}
+                </button>
+              )
+            })}
+            <button
+              type="button"
+              className="boardPaginationBtn"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+            >
+              다음
+            </button>
+          </nav>
         )}
       </section>
 
