@@ -917,7 +917,7 @@
   box-sizing: border-box;
   padding: 28px 0 16px;
   color: var(--textPrimary);
-  line-height: 1.7;
+  line-height: 1.5;
 }
 
 .boardBlogEditorProse {
@@ -926,7 +926,7 @@
 }
 
 .boardBlogEditorProse p {
-  margin: 0 0 1em;
+  margin: 0 0 0.7em;
 }
 
 .boardBlogEditorProse p.is-editor-empty:first-child::before {

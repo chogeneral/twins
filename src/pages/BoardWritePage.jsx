@@ -271,6 +271,20 @@ export function BoardWritePage({ boardType }) {
       attributes: {
         class: 'boardBlogEditorProse',
       },
+      handleClick: (_view, _pos, event) => {
+        /*
+         * 글쓰기 화면은 링크를 "편집 대상"으로 다루는 곳이라 클릭 즉시 외부 페이지로 이동하면 작성 중인 내용이 끊깁니다.
+         * 저장되는 HTML의 href는 그대로 유지하되, 에디터 내부 클릭만 막아 상세페이지에서만 실제 링크 이동이 가능하게 합니다.
+         */
+        const clickedLink = event.target instanceof Element
+          ? event.target.closest('a[href]')
+          : null
+
+        if (!clickedLink) return false
+
+        event.preventDefault()
+        return true
+      },
     },
     onUpdate: () => {
       setError('')
@@ -807,9 +821,9 @@ export function BoardWritePage({ boardType }) {
                   <div className="boardBlogHomepageInfo">
                     <strong>{homepagePreview.title}</strong>
                     <span>{homepagePreview.description}</span>
-                    <a href={normalizeLinkUrl(linkUrl)} target="_blank" rel="noreferrer">
+                    <span className="boardBlogHomepagePreviewUrl">
                       {homepagePreview.displayUrl}
-                    </a>
+                    </span>
                   </div>
                 </div>
               )}
