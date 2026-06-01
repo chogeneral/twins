@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { mergeAttributes, Node } from '@tiptap/core'
 import { Color } from '@tiptap/extension-color'
 import Image from '@tiptap/extension-image'
@@ -233,6 +233,7 @@ export function BoardWritePage({ boardType }) {
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false)
   const [linkUrl, setLinkUrl] = useState('')
   const [error, setError] = useState('')
+  const lineMenuRef = useRef(null)
 
   const currentPath = isEditMode ? `${config.backPath}/${postId}/edit` : `${config.backPath}/write`
   const loginRedirectHref = `/login?redirect=${encodeURIComponent(currentPath)}`
@@ -298,6 +299,26 @@ export function BoardWritePage({ boardType }) {
     if (!shouldBlockInquiryEdit) return
     window.alert('글쓴이만 수정할 수 있습니다.')
   }, [shouldBlockInquiryEdit])
+
+  useEffect(() => {
+    if (!isLineMenuOpen) return undefined
+
+    const closeLineMenuOnOutsidePointerDown = (event) => {
+      /*
+       * 라인 선택 메뉴는 툴바 위에 떠 있는 팝업이라, 사용자가 다른 편집 영역을 누르면 즉시 닫히는 편이 자연스럽습니다.
+       * 메뉴 버튼과 옵션 내부 클릭은 유지하고, 감싸는 영역 밖에서 시작된 포인터 입력만 닫힘으로 처리합니다.
+       */
+      if (lineMenuRef.current?.contains(event.target)) return
+
+      setIsLineMenuOpen(false)
+    }
+
+    document.addEventListener('pointerdown', closeLineMenuOnOutsidePointerDown)
+
+    return () => {
+      document.removeEventListener('pointerdown', closeLineMenuOnOutsidePointerDown)
+    }
+  }, [isLineMenuOpen])
 
   if (authLoading) {
     return (
@@ -586,7 +607,7 @@ export function BoardWritePage({ boardType }) {
                       {item.label}
                     </button>
                   ))}
-                  <div className="boardBlogLineMenuWrap">
+                  <div className="boardBlogLineMenuWrap" ref={lineMenuRef}>
                     <button
                       type="button"
                       className="boardBlogToolbarBtn boardBlogLineMenuBtn"
