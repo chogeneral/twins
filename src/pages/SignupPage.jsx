@@ -72,6 +72,7 @@ export function SignupPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [serverError, setServerError] = useState('')
   const [isSuccess, setIsSuccess] = useState(false)
+  const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false)
 
   const validate = (name, value, currentForm) => {
     if (name === 'passwordConfirm') {
@@ -128,7 +129,7 @@ export function SignupPage() {
     setServerError('')
 
     try {
-      const { error } = await withSignupTimeout(supabase.auth.signUp({
+      const { data, error } = await withSignupTimeout(supabase.auth.signUp({
         email: form.email,
         password: form.password,
         options: {
@@ -148,6 +149,11 @@ export function SignupPage() {
         return
       }
 
+      /*
+       * Supabase에서 이메일 확인을 끄면 signUp 직후 session이 내려오므로 가입 완료로 안내합니다.
+       * 이메일 확인이 켜져 있으면 session 없이 user만 생성되어 인증 메일 확인 안내가 필요합니다.
+       */
+      setNeedsEmailConfirmation(!data?.session)
       setIsSuccess(true)
     } catch (error) {
       setServerError(parseSupabaseError(error))
@@ -162,11 +168,20 @@ export function SignupPage() {
         <div className="signupCard">
           <div className="signupSuccessBox">
             <p className="signupSuccessIcon" aria-hidden="true">✉</p>
-            <h1 className="signupSuccessTitle">인증 메일을 보냈습니다</h1>
-            <p className="signupSuccessDesc">
-              <strong>{form.email}</strong>로 발송된 인증 링크를 클릭하면 가입이 완료됩니다.
-              스팸함도 확인해 주세요.
-            </p>
+            <h1 className="signupSuccessTitle">
+              {needsEmailConfirmation ? '인증 메일을 보냈습니다' : '회원가입이 완료되었습니다'}
+            </h1>
+            {needsEmailConfirmation ? (
+              <p className="signupSuccessDesc">
+                <strong>{form.email}</strong>로 발송된 인증 링크를 클릭하면 가입이 완료됩니다.
+                스팸함도 확인해 주세요.
+              </p>
+            ) : (
+              <p className="signupSuccessDesc">
+                <strong>{form.email}</strong> 계정으로 가입이 완료되었습니다.
+                이제 로그인해서 유광 잠바 서비스를 이용할 수 있습니다.
+              </p>
+            )}
             <button
               type="button"
               className="signupSubmitBtn"
