@@ -46,7 +46,6 @@
   max-width: 860px;
   padding: clamp(20px, 4vw, 30px) 0;
   border-top: 1px solid var(--ruleLineSoft);
-  border-bottom: 1px solid var(--ruleLineSoft);
 }
 
 .boardSeoGuideTitle {
@@ -606,12 +605,16 @@
   z-index: 35;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* 툴바 내 두 개 그룹을 양끝으로 균형감 있게 정렬하기 위해 사용합니다. */
-  gap: 0.625rem; /* 10px 간격을 rem 단위로 변환해 작성하여 전역 규칙을 충실히 준수합니다. */
+  justify-content: space-between;
+  /* 툴바 내 두 개 그룹을 양끝으로 균형감 있게 정렬하기 위해 사용합니다. */
+  gap: 0.625rem;
+  /* 10px 간격을 rem 단위로 변환해 작성하여 전역 규칙을 충실히 준수합니다. */
   margin: 0 -1px;
-  padding: 0.875rem 0.0625rem; /* 기존 14px 1px을 rem 단위로 명확하게 대체하여 반응형 레이아웃에 유연성을 더합니다. */
+  padding: 0.875rem 0.0625rem;
+  /* 기존 14px 1px을 rem 단위로 명확하게 대체하여 반응형 레이아웃에 유연성을 더합니다. */
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  background: #ffffff; /* 전역 컬러 hex 코드 규칙을 준수하여 작성합니다. */
+  background: #ffffff;
+  /* 전역 컬러 hex 코드 규칙을 준수하여 작성합니다. */
   box-shadow: 0 8px 18px rgba(255, 255, 255, 0.9);
   overflow: visible;
 }
@@ -623,7 +626,8 @@
    */
   display: flex;
   align-items: center;
-  gap: 0.625rem; /* 10px 간격을 rem 단위로 정밀하게 정의하였습니다. */
+  gap: 0.625rem;
+  /* 10px 간격을 rem 단위로 정밀하게 정의하였습니다. */
 }
 
 .toolbarSecondGroup {
@@ -633,7 +637,8 @@
    */
   display: flex;
   align-items: center;
-  gap: 0.625rem; /* 10px 간격을 rem 단위로 정밀하게 정의하였습니다. */
+  gap: 0.625rem;
+  /* 10px 간격을 rem 단위로 정밀하게 정의하였습니다. */
 }
 
 /*
@@ -645,53 +650,67 @@
   .boardBlogToolbar {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.75rem; /* 12px 세로 간격을 rem 단위로 깔끔하게 구성하여 전역 규칙을 충실히 지켰습니다. */
-    padding: 0.75rem 0.5rem; /* 반응형 화면에서 상하 12px, 좌우 8px 여백을 rem 단위를 사용하여 가독성을 높였습니다. */
+    gap: 0.75rem;
+    /* 12px 세로 간격을 rem 단위로 깔끔하게 구성하여 전역 규칙을 충실히 지켰습니다. */
+    padding: 0.75rem 0.5rem;
+    /* 반응형 화면에서 상하 12px, 좌우 8px 여백을 rem 단위를 사용하여 가독성을 높였습니다. */
   }
 
   .toolbarFirstGroup,
   .toolbarSecondGroup {
     width: 100%;
     flex-wrap: wrap;
-    gap: 0.5rem; /* 8px 반응형 간격을 rem 단위로 작성하여 깔끔하게 줄바꿈 되도록 돕습니다. */
+    gap: 0.5rem;
+    /* 8px 반응형 간격을 rem 단위로 작성하여 깔끔하게 줄바꿈 되도록 돕습니다. */
   }
 
   /* 모바일/반응형 환경에서 라인스타일 메뉴 팝업이 화면 밖으로 탈출하는 것을 방지하기 위해 위치를 툴바 버튼 하단으로 유연하게 내립니다. */
   .boardBlogLineMenu {
-    top: calc(100% + 0.5rem); /* 아래로 내려오게 설정하며 8px 간격을 rem 단위로 표현하였습니다. */
-    left: 0.0625rem; /* 1px 오차를 rem 단위로 정밀하게 보정하였습니다. */
-    width: 11.25rem; /* 180px 너비를 rem 단위로 직관적으로 정의하였습니다. */
+    top: calc(100% + 0.5rem);
+    /* 아래로 내려오게 설정하며 8px 간격을 rem 단위로 표현하였습니다. */
+    left: 0.0625rem;
+    /* 1px 오차를 rem 단위로 정밀하게 보정하였습니다. */
+    width: 11.25rem;
+    /* 180px 너비를 rem 단위로 직관적으로 정의하였습니다. */
   }
 
   /* 팝업이 아래로 떨어지므로, 말꼬리 화살표의 방향을 기존 좌측에서 상단 방향으로 자연스럽게 수정합니다. */
   .boardBlogLineMenu::before {
-    top: -0.375rem; /* 위쪽 6px 위치를 rem 단위를 사용하여 가독성을 높였습니다. */
-    left: 0.875rem; /* 왼쪽 14px 위치를 rem 단위를 사용하여 가독성을 높였습니다. */
-    border-top: 1px solid rgba(0, 0, 0, 0.08); /* hex 및 rgba 조작을 통해 일관된 선 스타일을 제공합니다. */
+    top: -0.375rem;
+    /* 위쪽 6px 위치를 rem 단위를 사용하여 가독성을 높였습니다. */
+    left: 0.875rem;
+    /* 왼쪽 14px 위치를 rem 단위를 사용하여 가독성을 높였습니다. */
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    /* hex 및 rgba 조작을 통해 일관된 선 스타일을 제공합니다. */
     border-left: 1px solid rgba(0, 0, 0, 0.08);
     border-bottom: none;
     border-right: none;
-    transform: rotate(45deg); /* 위쪽 삼각형이 되도록 45도 정밀 회전시킵니다. */
+    transform: rotate(45deg);
+    /* 위쪽 삼각형이 되도록 45도 정밀 회전시킵니다. */
   }
 
   /* 일반 게시판 글쓰기 제목 입력 필드의 모바일 글씨 크기를 키워 시인성을 향상시킵니다. */
   .boardWriteInput {
-    font-size: 1.0625rem; /* 기존 0.9375rem에서 모바일 시인성을 위해 약 17px로 키웠습니다. */
+    font-size: 1.0625rem;
+    /* 기존 0.9375rem에서 모바일 시인성을 위해 약 17px로 키웠습니다. */
   }
 
   /* 일반 게시판 글쓰기 본문 영역의 모바일 글씨 크기를 키워 읽고 쓰기 편하게 개선합니다. */
   .boardWriteTextarea {
-    font-size: 1rem; /* 기존 0.9375rem에서 모바일 가독성을 위해 약 16px로 키웠습니다. */
+    font-size: 1rem;
+    /* 기존 0.9375rem에서 모바일 가독성을 위해 약 16px로 키웠습니다. */
   }
 
   /* 블로그형 에디터 제목 입력 필드의 모바일 글씨 크기를 키워 제목이 강조되도록 합니다. */
   .boardBlogTitleInput {
-    font-size: 1.1875rem !important; /* 모바일에서 clamp 하한선을 극복하고 약 19px로 시원하게 키워 강조합니다. */
+    font-size: 1.1875rem !important;
+    /* 모바일에서 clamp 하한선을 극복하고 약 19px로 시원하게 키워 강조합니다. */
   }
 
   /* 블로그형 에디터 본문 글씨 크기를 모바일 해상도에서 1.0625rem(약 17px)로 확대하여 쾌적한 가독성을 제공합니다. */
   .boardBlogEditorContent {
-    font-size: 1.0625rem !important; /* 리액트의 인라인 스타일 덮어쓰기를 방지하고 모바일 가독성을 보장하기 위해 !important를 적용합니다. */
+    font-size: 1.0625rem !important;
+    /* 리액트의 인라인 스타일 덮어쓰기를 방지하고 모바일 가독성을 보장하기 위해 !important를 적용합니다. */
   }
 }
 
@@ -786,15 +805,15 @@
   left: 0;
   width: 16px;
   box-shadow:
-  3px 4px 0 currentColor,
-  0 8px 0 currentColor,
-  3px 12px 0 currentColor;
+    3px 4px 0 currentColor,
+    0 8px 0 currentColor,
+    3px 12px 0 currentColor;
 }
 
 .boardBlogAlignBtn-alignCenter span::before {
   left: 1px;
   width: 14px;
- 
+
 }
 
 .boardBlogAlignBtn-alignRight span::before {

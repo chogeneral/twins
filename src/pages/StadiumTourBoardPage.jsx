@@ -15,7 +15,7 @@ export function StadiumTourBoardPage() {
   return (
     <article className="boardPage">
       <header className="boardHeader">
-      
+
         <h1 className="boardTitle">구장투어</h1>
         <p className="boardDescription">
           각 구장에 여행 할 곳, 호텔, 먹거리 정보를 공유하는 공간입니다.
@@ -35,7 +35,6 @@ export function StadiumTourBoardPage() {
           주변 맛집과 숙소 정보를 LG 트윈스 팬들이 함께 정리하는 게시판입니다.
         </p>
         <ul className="boardSeoGuideList">
-          <li>잠실야구장과 원정 구장 좌석 시야 후기</li>
           <li>대중교통, 주차, 입장 동선 등 방문 팁</li>
           <li>구장 주변 먹거리, 숙소, 여행 정보</li>
         </ul>
