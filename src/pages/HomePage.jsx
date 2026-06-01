@@ -1,6 +1,7 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import mainVisualImage from '../assets/main_visul.jpg'
-import { getBoardPosts } from '../lib/boardPostStorage'
+import { fetchBoardPosts, getBoardPosts } from '../lib/boardPostStorage'
 import './homePage.css'
 
 const latestBoardSections = [
@@ -34,7 +35,46 @@ function getLatestBoardPosts(boardKey) {
   return getBoardPosts(boardKey).slice(0, 5)
 }
 
+function getInitialLatestPosts() {
+  return Object.fromEntries(
+    latestBoardSections.map((section) => [
+      section.boardKey,
+      getLatestBoardPosts(section.boardKey),
+    ]),
+  )
+}
+
 export function HomePage() {
+  const [latestPostsByBoard, setLatestPostsByBoard] = useState(getInitialLatestPosts)
+
+  useEffect(() => {
+    let ignore = false
+
+    async function loadLatestPosts() {
+      const entries = await Promise.all(
+        latestBoardSections.map(async (section) => {
+          try {
+            const rows = await fetchBoardPosts(section.boardKey)
+            return [section.boardKey, rows.slice(0, 5)]
+          }
+          catch {
+            return [section.boardKey, getLatestBoardPosts(section.boardKey)]
+          }
+        }),
+      )
+
+      if (!ignore) {
+        setLatestPostsByBoard(Object.fromEntries(entries))
+      }
+    }
+
+    loadLatestPosts()
+
+    return () => {
+      ignore = true
+    }
+  }, [])
+
   return (
     <article className="homePage" aria-labelledby="homeHeroTitle">
       <section className="homeHero">
@@ -65,7 +105,7 @@ export function HomePage() {
 
         <div className="homeLatestBoardGrid">
           {latestBoardSections.map((section) => {
-            const latestPosts = getLatestBoardPosts(section.boardKey)
+            const latestPosts = latestPostsByBoard[section.boardKey] ?? []
 
             return (
               <section key={section.boardKey} className="homeLatestBoardCard" aria-labelledby={`${section.boardKey}Title`}>

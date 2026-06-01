@@ -3,13 +3,16 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { cleanBoardHtmlContent } from '../lib/boardHtmlSanitizer'
 import {
-  addBoardComment,
-  deleteBoardComment,
-  deleteBoardPost,
+  createBoardComment,
+  fetchBoardPost,
+  fetchBoardComments,
   getBoardComments,
   getBoardPost,
-  increaseBoardPostViews,
-  updateBoardComment,
+  incrementBoardPostViews,
+  isSharedBoardKey,
+  removeBoardComment,
+  removeBoardPost,
+  saveBoardComment,
 } from '../lib/boardPostStorage'
 import './boardPage.css'
 import './signupWelcomeBoard.css'
@@ -56,9 +59,11 @@ export function BoardDetailPage({ boardType }) {
   const navigate = useNavigate()
   const { user, loading: authLoading, nickname } = useAuth()
   const [post, setPost] = useState(null)
+  const [postLoading, setPostLoading] = useState(Boolean(postId && isSharedBoardKey(config.boardKey)))
   const [comments, setComments] = useState([])
   const [commentDraft, setCommentDraft] = useState('')
   const [commentError, setCommentError] = useState('')
+  const [commentsLoading, setCommentsLoading] = useState(Boolean(postId && isSharedBoardKey(config.boardKey)))
   const [replyTarget, setReplyTarget] = useState(null)
   const cleanedPostHtmlContent = useMemo(
     () => cleanBoardHtmlContent(post?.htmlContent ?? ''),
@@ -86,15 +91,41 @@ export function BoardDetailPage({ boardType }) {
 
     /*
      * 상세 페이지에 들어왔을 때 조회수를 1 올리고, 갱신된 글을 화면에 표시합니다.
-     * 현재는 로컬 저장소 기반이라 서버 호출 없이 즉시 반영됩니다.
+     * 공용 게시판은 Supabase에서 조회수를 올리고, 문의하기처럼 로컬 저장소 기반인 게시판은 기존 저장소를 사용합니다.
      */
-    const timerId = window.setTimeout(() => {
-      const updatedPost = increaseBoardPostViews(config.boardKey, postId)
-      setPost(updatedPost ?? getBoardPost(config.boardKey, postId))
-      setComments(getBoardComments(config.boardKey, postId))
+    let ignore = false
+    const timerId = window.setTimeout(async () => {
+      setPostLoading(isSharedBoardKey(config.boardKey))
+      setCommentsLoading(isSharedBoardKey(config.boardKey))
+
+      try {
+        const updatedPost = await incrementBoardPostViews(config.boardKey, postId)
+        const nextPost = updatedPost ?? await fetchBoardPost(config.boardKey, postId)
+        if (!ignore) setPost(nextPost)
+      }
+      catch {
+        if (!ignore) setPost(getBoardPost(config.boardKey, postId))
+      }
+      finally {
+        if (!ignore) setPostLoading(false)
+      }
+
+      try {
+        const nextComments = await fetchBoardComments(config.boardKey, postId)
+        if (!ignore) setComments(nextComments)
+      }
+      catch {
+        if (!ignore) setComments(getBoardComments(config.boardKey, postId))
+      }
+      finally {
+        if (!ignore) setCommentsLoading(false)
+      }
     }, 0)
 
-    return () => window.clearTimeout(timerId)
+    return () => {
+      ignore = true
+      window.clearTimeout(timerId)
+    }
   }, [config.boardKey, postId])
 
   const detailClassName = useMemo(() => (
@@ -125,12 +156,24 @@ export function BoardDetailPage({ boardType }) {
     return rootComments
   }, [comments])
 
-  const refreshComments = () => {
+  const refreshComments = async () => {
     if (!postId) return
-    setComments(getBoardComments(config.boardKey, postId))
+
+    setCommentsLoading(isSharedBoardKey(config.boardKey))
+
+    try {
+      const nextComments = await fetchBoardComments(config.boardKey, postId)
+      setComments(nextComments)
+    }
+    catch {
+      setComments(getBoardComments(config.boardKey, postId))
+    }
+    finally {
+      setCommentsLoading(false)
+    }
   }
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = async () => {
     if (!postId) return
 
     /*
@@ -140,11 +183,16 @@ export function BoardDetailPage({ boardType }) {
     const confirmed = window.confirm('글을 삭제하시겠습니까?')
     if (!confirmed) return
 
-    deleteBoardPost(config.boardKey, postId)
-    navigate(config.listPath)
+    try {
+      await removeBoardPost(config.boardKey, postId)
+      navigate(config.listPath)
+    }
+    catch (deleteError) {
+      window.alert(deleteError.message ?? '글을 삭제하지 못했습니다.')
+    }
   }
 
-  const handleCommentSubmit = () => {
+  const handleCommentSubmit = async () => {
     if (!postId || !user) return
 
     const trimmed = commentDraft.trim()
@@ -155,16 +203,21 @@ export function BoardDetailPage({ boardType }) {
       return
     }
 
-    addBoardComment(config.boardKey, postId, {
-      userId: user.id,
-      authorDisplay,
-      content: trimmed,
-    })
-    setCommentDraft('')
-    refreshComments()
+    try {
+      await createBoardComment(config.boardKey, postId, {
+        userId: user.id,
+        authorDisplay,
+        content: trimmed,
+      })
+      setCommentDraft('')
+      await refreshComments()
+    }
+    catch (submitError) {
+      setCommentError(submitError.message ?? '댓글을 등록하지 못했습니다.')
+    }
   }
 
-  const handleReplySubmit = () => {
+  const handleReplySubmit = async () => {
     if (!postId || !user || !replyTarget) return
 
     const trimmed = replyDraft.trim()
@@ -175,18 +228,23 @@ export function BoardDetailPage({ boardType }) {
       return
     }
 
-    addBoardComment(config.boardKey, postId, {
-      parentId: replyTarget.id,
-      userId: user.id,
-      authorDisplay,
-      content: trimmed,
-    })
-    setReplyTarget(null)
-    setReplyDraft('')
-    refreshComments()
+    try {
+      await createBoardComment(config.boardKey, postId, {
+        parentId: replyTarget.id,
+        userId: user.id,
+        authorDisplay,
+        content: trimmed,
+      })
+      setReplyTarget(null)
+      setReplyDraft('')
+      await refreshComments()
+    }
+    catch (submitError) {
+      setReplyError(submitError.message ?? '대댓글을 등록하지 못했습니다.')
+    }
   }
 
-  const handleCommentEdit = (comment) => {
+  const handleCommentEdit = async (comment) => {
     if (!postId || !user || comment.userId !== user.id) return
 
     const nextContent = window.prompt('댓글을 수정해 주세요.', comment.content)
@@ -198,18 +256,28 @@ export function BoardDetailPage({ boardType }) {
       return
     }
 
-    updateBoardComment(config.boardKey, postId, comment.id, trimmed)
-    refreshComments()
+    try {
+      await saveBoardComment(config.boardKey, postId, comment.id, trimmed)
+      await refreshComments()
+    }
+    catch (updateError) {
+      window.alert(updateError.message ?? '댓글을 수정하지 못했습니다.')
+    }
   }
 
-  const handleCommentDelete = (comment) => {
+  const handleCommentDelete = async (comment) => {
     if (!postId || !user || comment.userId !== user.id) return
 
     const confirmed = window.confirm('댓글을 삭제하시겠습니까? 달린 대댓글도 함께 삭제됩니다.')
     if (!confirmed) return
 
-    deleteBoardComment(config.boardKey, postId, comment.id)
-    refreshComments()
+    try {
+      await removeBoardComment(config.boardKey, postId, comment.id)
+      await refreshComments()
+    }
+    catch (deleteError) {
+      window.alert(deleteError.message ?? '댓글을 삭제하지 못했습니다.')
+    }
   }
 
   const renderAvatar = (displayName) => (
@@ -302,6 +370,18 @@ export function BoardDetailPage({ boardType }) {
     return <Navigate to={config.listPath} replace />
   }
 
+  if (postLoading) {
+    return (
+      <article className="boardPage" aria-busy="true">
+        <header className="boardHeader">
+          <p lang="en" className="boardEyebrow">{config.eyebrow}</p>
+          <h1 className="boardTitle">{config.fallbackTitle}</h1>
+          <p className="boardDescription">게시글을 불러오는 중입니다.</p>
+        </header>
+      </article>
+    )
+  }
+
   if (!post) {
     return (
       <article className="boardPage">
@@ -376,7 +456,9 @@ export function BoardDetailPage({ boardType }) {
               ))}
             </ul>
           ) : (
-            <p className="boardCommentEmpty">첫 댓글을 남겨 보세요.</p>
+            <p className="boardCommentEmpty">
+              {commentsLoading ? '댓글을 불러오는 중입니다.' : '첫 댓글을 남겨 보세요.'}
+            </p>
           )}
 
           {user ? (

@@ -11,7 +11,13 @@ import StarterKit from '@tiptap/starter-kit'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { cleanBoardHtmlContent } from '../lib/boardHtmlSanitizer'
-import { addBoardPost, getBoardPost, updateBoardPost } from '../lib/boardPostStorage'
+import {
+  createBoardPost,
+  fetchBoardPost,
+  getBoardPost,
+  isSharedBoardKey,
+  saveBoardPost,
+} from '../lib/boardPostStorage'
 import './boardPage.css'
 
 const boardWriteConfigs = {
@@ -218,7 +224,10 @@ export function BoardWritePage({ boardType }) {
   const navigate = useNavigate()
   const { postId } = useParams()
   const { user, loading: authLoading, nickname } = useAuth()
-  const editingPost = postId ? getBoardPost(config.boardKey, postId) : null
+  const isSharedBoard = isSharedBoardKey(config.boardKey)
+  const localEditingPost = postId ? getBoardPost(config.boardKey, postId) : null
+  const [editingPost, setEditingPost] = useState(localEditingPost)
+  const [editLoading, setEditLoading] = useState(Boolean(postId && isSharedBoard))
   const isEditMode = Boolean(postId)
   const isInquiryBoard = boardType === 'inquiry'
   const [category, setCategory] = useState(
@@ -233,6 +242,7 @@ export function BoardWritePage({ boardType }) {
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false)
   const [linkUrl, setLinkUrl] = useState('')
   const [error, setError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
   const lineMenuRef = useRef(null)
 
   const currentPath = isEditMode ? `${config.backPath}/${postId}/edit` : `${config.backPath}/write`
@@ -301,6 +311,47 @@ export function BoardWritePage({ boardType }) {
   }, [shouldBlockInquiryEdit])
 
   useEffect(() => {
+    if (!postId || !isSharedBoard) return undefined
+
+    let ignore = false
+
+    async function loadEditingPost() {
+      setEditLoading(true)
+      setError('')
+
+      try {
+        const nextPost = await fetchBoardPost(config.boardKey, postId)
+        if (ignore) return
+
+        setEditingPost(nextPost)
+
+        if (!nextPost) return
+
+        setCategory(nextPost.category ?? config.defaultCategory ?? config.categories?.[0] ?? '')
+        setTitle(nextPost.title ?? '')
+        setContent(nextPost.content ?? '')
+        setEditorFontFamily(nextPost.fontFamily ?? 'default')
+        setEditorFontSize(String(nextPost.fontSize ?? '16'))
+        editor?.commands.setContent(cleanBoardHtmlContent(nextPost.htmlContent ?? ''))
+      }
+      catch (loadError) {
+        if (!ignore) {
+          setError(loadError.message ?? '수정할 글을 불러오지 못했습니다.')
+        }
+      }
+      finally {
+        if (!ignore) setEditLoading(false)
+      }
+    }
+
+    loadEditingPost()
+
+    return () => {
+      ignore = true
+    }
+  }, [config.boardKey, config.categories, config.defaultCategory, editor, isSharedBoard, postId])
+
+  useEffect(() => {
     if (!isLineMenuOpen) return undefined
 
     const closeLineMenuOnOutsidePointerDown = (event) => {
@@ -320,13 +371,15 @@ export function BoardWritePage({ boardType }) {
     }
   }, [isLineMenuOpen])
 
-  if (authLoading) {
+  if (authLoading || editLoading) {
     return (
       <article className="boardPage" aria-busy="true">
         <header className="boardHeader">
           <p lang="en" className="boardEyebrow">{config.eyebrow}</p>
           <h1 className="boardTitle">{config.title}</h1>
-          <p className="boardDescription">로그인 여부를 확인하는 중입니다.</p>
+          <p className="boardDescription">
+            {authLoading ? '로그인 여부를 확인하는 중입니다.' : '수정할 글을 불러오는 중입니다.'}
+          </p>
         </header>
       </article>
     )
@@ -381,8 +434,9 @@ export function BoardWritePage({ boardType }) {
     setError('')
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
+    if (submitting) return
 
     const trimmedTitle = title.trim()
     const trimmedContent = content.trim()
@@ -421,21 +475,31 @@ export function BoardWritePage({ boardType }) {
      * 새 글은 맨 위에 추가하고, 수정 글은 기존 id·조회수를 유지한 채 내용만 덮어씁니다.
      * 이렇게 해야 상세 페이지 URL이 바뀌지 않고 목록에서도 같은 글이 그대로 갱신됩니다.
      */
-    if (isEditMode && postId) {
-      updateBoardPost(config.boardKey, postId, nextPost)
-      navigate(`${config.backPath}/${postId}`)
-      return
+    setSubmitting(true)
+
+    try {
+      if (isEditMode && postId) {
+        const updatedPost = await saveBoardPost(config.boardKey, postId, nextPost)
+        navigate(`${config.backPath}/${updatedPost?.id ?? postId}`)
+        return
+      }
+
+      const createdPost = await createBoardPost(config.boardKey, nextPost)
+
+      if (isInquiryBoard) {
+        window.alert('문의가 등록되었습니다.')
+        navigate(`${config.backPath}/${createdPost.id}`)
+        return
+      }
+
+      navigate(config.backPath)
     }
-
-    const createdPost = addBoardPost(config.boardKey, nextPost)
-
-    if (isInquiryBoard) {
-      window.alert('문의가 등록되었습니다.')
-      navigate(`${config.backPath}/${createdPost.id}`)
-      return
+    catch (saveError) {
+      setError(saveError.message ?? '게시글을 저장하지 못했습니다.')
     }
-
-    navigate(config.backPath)
+    finally {
+      setSubmitting(false)
+    }
   }
 
   const insertLineStyle = (lineClassName) => {
@@ -534,141 +598,151 @@ export function BoardWritePage({ boardType }) {
           {isBlogBoard ? (
             <div className="boardBlogEditorField">
               <div className="boardBlogEditor">
+                {/* 
+                  683px 미만일 때 글 편집 도구가 자연스럽고 깔끔하게 2줄로 배치될 수 있도록
+                  HTML 구조상에서 도구들을 두 개의 그룹(toolbarFirstGroup, toolbarSecondGroup)으로 나누어 감싸주었습니다.
+                  이러한 그룹화를 통해 각 줄의 정렬 및 간격을 모바일 환경에서도 효율적으로 제어할 수 있습니다.
+                  css 클래스명은 카멜케이스(camelCase) 규칙을 엄격히 준수하여 명명하였습니다.
+                */}
                 <div className="boardBlogToolbar" aria-label="글 편집 도구">
-                  <label className="boardBlogToolbarPhotoBtn" title="사진 첨부">
-                    ▧
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={handleBlogImageChange}
-                    />
-                  </label>
-                  <select
-                    className="boardBlogToolbarSelect"
-                    aria-label="글꼴"
-                    value={editorFontFamily}
-                    onChange={(event) => setEditorFontFamily(event.target.value)}
-                  >
-                    <option value="default">기본서체</option>
-                    <option value="bonGothicRegular">본고딕 R</option>
-                    <option value="bonGothicLight">본고딕 L</option>
-                    <option value="nanumGothic">나눔고딕</option>
-                    <option value="bonMyeongjo">본명조</option>
-                    <option value="gungseo">궁서</option>
-                  </select>
-                  <select
-                    className="boardBlogToolbarSelect boardBlogToolbarSize"
-                    aria-label="글자 크기"
-                    value={editorFontSize}
-                    onChange={(event) => setEditorFontSize(event.target.value)}
-                  >
-                    <option value="13">13</option>
-                    <option value="15">15</option>
-                    <option value="16">16</option>
-                    <option value="18">18</option>
-                    <option value="20">20</option>
-                    <option value="24">24</option>
-                    <option value="28">28</option>
-                  </select>
-                  {[
-                    { label: 'B', command: () => editor?.chain().focus().toggleBold().run() },
-                    { label: '/', command: () => editor?.chain().focus().toggleItalic().run() },
-                    { label: 'U', command: () => editor?.chain().focus().toggleUnderline().run() },
-                    { label: 'T', command: () => editor?.chain().focus().toggleStrike().run() },
-                    { label: 'alignLeft', ariaLabel: '왼쪽 정렬', command: () => editor?.chain().focus().setTextAlign('left').run() },
-                    { label: 'alignCenter', ariaLabel: '가운데 정렬', command: () => editor?.chain().focus().setTextAlign('center').run() },
-                    { label: 'alignRight', ariaLabel: '오른쪽 정렬', command: () => editor?.chain().focus().setTextAlign('right').run() },
-                  ].map((item) => (
-                    <button
-                      key={item.label}
-                      type="button"
-                      className={[
-                        'boardBlogToolbarBtn',
-                        item.label.startsWith('align') ? `boardBlogAlignBtn boardBlogAlignBtn-${item.label}` : '',
-                      ].filter(Boolean).join(' ')}
-                      aria-label={item.ariaLabel}
-                      tabIndex={-1}
-                      onClick={item.command}
+                  <div className="toolbarFirstGroup">
+                    <label className="boardBlogToolbarPhotoBtn" title="사진 첨부">
+                      ▧
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleBlogImageChange}
+                      />
+                    </label>
+                    <select
+                      className="boardBlogToolbarSelect"
+                      aria-label="글꼴"
+                      value={editorFontFamily}
+                      onChange={(event) => setEditorFontFamily(event.target.value)}
                     >
-                      {item.label.startsWith('align') ? <span aria-hidden="true" /> : item.label}
-                    </button>
-                  ))}
-                  {[
-                    { label: '•', command: () => editor?.chain().focus().toggleBulletList().run() },
-                  ].map((item) => (
-                    <button
-                      key={item.label}
-                      type="button"
-                      className="boardBlogToolbarBtn"
-                      tabIndex={-1}
-                      onClick={item.command}
+                      <option value="default">기본서체</option>
+                      <option value="bonGothicRegular">본고딕 R</option>
+                      <option value="bonGothicLight">본고딕 L</option>
+                      <option value="nanumGothic">나눔고딕</option>
+                      <option value="bonMyeongjo">본명조</option>
+                      <option value="gungseo">궁서</option>
+                    </select>
+                    <select
+                      className="boardBlogToolbarSelect boardBlogToolbarSize"
+                      aria-label="글자 크기"
+                      value={editorFontSize}
+                      onChange={(event) => setEditorFontSize(event.target.value)}
                     >
-                      {item.label}
-                    </button>
-                  ))}
-                  <div className="boardBlogLineMenuWrap" ref={lineMenuRef}>
-                    <button
-                      type="button"
-                      className="boardBlogToolbarBtn boardBlogLineMenuBtn"
-                      aria-label="라인 스타일 선택"
-                      aria-expanded={isLineMenuOpen}
-                      onClick={() => setIsLineMenuOpen((prev) => !prev)}
-                    >
-                      <span aria-hidden="true" />
-                    </button>
-                    {isLineMenuOpen && (
-                      <div className="boardBlogLineMenu" role="menu" aria-label="라인 스타일">
-                        {[
-                          { className: 'boardEditorLineDots', label: '점 라인' },
-                          { className: 'boardEditorLineBold', label: '굵은 라인' },
-                          { className: 'boardEditorLineWave', label: '물결 라인' },
-                          { className: 'boardEditorLineVertical', label: '세로 라인' },
-                          { className: 'boardEditorLineThin', label: '얇은 라인' },
-                          { className: 'boardEditorLineSoft', label: '연한 라인' },
-                          { className: 'boardEditorLineDiamond', label: '다이아몬드 라인' },
-                          { className: 'boardEditorLineCircle', label: '원 라인' },
-                        ].map((line) => (
-                          <button
-                            key={line.className}
-                            type="button"
-                            role="menuitem"
-                            className={`boardBlogLineOption ${line.className}`}
-                            aria-label={line.label}
-                            onClick={() => insertLineStyle(line.className)}
-                          />
-                        ))}
-                      </div>
-                    )}
+                      <option value="13">13</option>
+                      <option value="15">15</option>
+                      <option value="16">16</option>
+                      <option value="18">18</option>
+                      <option value="20">20</option>
+                      <option value="24">24</option>
+                      <option value="28">28</option>
+                    </select>
                   </div>
-                  {[
-                    {
-                      label: '🔗',
-                      command: openLinkModal,
-                    },
-                  ].map((item) => (
-                    <button
-                      key={item.label}
-                      type="button"
-                      className="boardBlogToolbarBtn"
-                      tabIndex={-1}
-                      onClick={item.command}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                  <label className="boardBlogColorPicker" title="글자색 변경">
-                    <span style={{ backgroundColor: editorColor }} />
-                    <input
-                      type="color"
-                      value={editorColor}
-                      onChange={(event) => {
-                        const nextColor = event.target.value
-                        setEditorColor(nextColor)
-                        editor?.chain().focus().setColor(nextColor).run()
-                      }}
-                    />
-                  </label>
+                  <div className="toolbarSecondGroup">
+                    {[
+                      { label: 'B', command: () => editor?.chain().focus().toggleBold().run() },
+                      { label: '/', command: () => editor?.chain().focus().toggleItalic().run() },
+                      { label: 'U', command: () => editor?.chain().focus().toggleUnderline().run() },
+                      { label: 'T', command: () => editor?.chain().focus().toggleStrike().run() },
+                      { label: 'alignLeft', ariaLabel: '왼쪽 정렬', command: () => editor?.chain().focus().setTextAlign('left').run() },
+                      { label: 'alignCenter', ariaLabel: '가운데 정렬', command: () => editor?.chain().focus().setTextAlign('center').run() },
+                      { label: 'alignRight', ariaLabel: '오른쪽 정렬', command: () => editor?.chain().focus().setTextAlign('right').run() },
+                    ].map((item) => (
+                      <button
+                        key={item.label}
+                        type="button"
+                        className={[
+                          'boardBlogToolbarBtn',
+                          item.label.startsWith('align') ? `boardBlogAlignBtn boardBlogAlignBtn-${item.label}` : '',
+                        ].filter(Boolean).join(' ')}
+                        aria-label={item.ariaLabel}
+                        tabIndex={-1}
+                        onClick={item.command}
+                      >
+                        {item.label.startsWith('align') ? <span aria-hidden="true" /> : item.label}
+                      </button>
+                    ))}
+                    {[
+                      { label: '•', command: () => editor?.chain().focus().toggleBulletList().run() },
+                    ].map((item) => (
+                      <button
+                        key={item.label}
+                        type="button"
+                        className="boardBlogToolbarBtn"
+                        tabIndex={-1}
+                        onClick={item.command}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                    <div className="boardBlogLineMenuWrap" ref={lineMenuRef}>
+                      <button
+                        type="button"
+                        className="boardBlogToolbarBtn boardBlogLineMenuBtn"
+                        aria-label="라인 스타일 선택"
+                        aria-expanded={isLineMenuOpen}
+                        onClick={() => setIsLineMenuOpen((prev) => !prev)}
+                      >
+                        <span aria-hidden="true" />
+                      </button>
+                      {isLineMenuOpen && (
+                        <div className="boardBlogLineMenu" role="menu" aria-label="라인 스타일">
+                          {[
+                            { className: 'boardEditorLineDots', label: '점 라인' },
+                            { className: 'boardEditorLineBold', label: '굵은 라인' },
+                            { className: 'boardEditorLineWave', label: '물결 라인' },
+                            { className: 'boardEditorLineVertical', label: '세로 라인' },
+                            { className: 'boardEditorLineThin', label: '얇은 라인' },
+                            { className: 'boardEditorLineSoft', label: '연한 라인' },
+                            { className: 'boardEditorLineDiamond', label: '다이아몬드 라인' },
+                            { className: 'boardEditorLineCircle', label: '원 라인' },
+                          ].map((line) => (
+                            <button
+                              key={line.className}
+                              type="button"
+                              role="menuitem"
+                              className={`boardBlogLineOption ${line.className}`}
+                              aria-label={line.label}
+                              onClick={() => insertLineStyle(line.className)}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {[
+                      {
+                        label: '🔗',
+                        command: openLinkModal,
+                      },
+                    ].map((item) => (
+                      <button
+                        key={item.label}
+                        type="button"
+                        className="boardBlogToolbarBtn"
+                        tabIndex={-1}
+                        onClick={item.command}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                    <label className="boardBlogColorPicker" title="글자색 변경">
+                      <span style={{ backgroundColor: editorColor }} />
+                      <input
+                        type="color"
+                        value={editorColor}
+                        onChange={(event) => {
+                          const nextColor = event.target.value
+                          setEditorColor(nextColor)
+                          editor?.chain().focus().setColor(nextColor).run()
+                        }}
+                      />
+                    </label>
+                  </div>
                 </div>
 
                 <div className={['boardBlogMetaArea', shouldShowCategory ? '' : 'boardBlogMetaAreaNoCategory'].filter(Boolean).join(' ')}>
@@ -786,8 +860,8 @@ export function BoardWritePage({ boardType }) {
             <button type="button" className="boardWriteCancelBtn" onClick={() => navigate(config.backPath)}>
               목록
             </button>
-            <button type="submit" className="boardWriteSubmitBtn">
-              {isEditMode ? '수정' : '등록'}
+            <button type="submit" className="boardWriteSubmitBtn" disabled={submitting}>
+              {submitting ? '저장 중...' : (isEditMode ? '수정' : '등록')}
             </button>
           </div>
         </form>

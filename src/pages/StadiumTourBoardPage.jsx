@@ -5,12 +5,12 @@
 
 import { useNavigate } from 'react-router-dom'
 import { BoardListTable } from '../components/BoardListTable'
-import { getBoardPosts } from '../lib/boardPostStorage'
+import { useBoardPosts } from '../hooks/useBoardPosts'
 import './boardPage.css'
 
 export function StadiumTourBoardPage() {
   const navigate = useNavigate()
-  const stadiumTourRows = getBoardPosts('stadiumTourBoard')
+  const { rows: stadiumTourRows, loading, error } = useBoardPosts('stadiumTourBoard')
 
   return (
     <article className="boardPage">
@@ -58,6 +58,8 @@ export function StadiumTourBoardPage() {
             </button>
           )}
         />
+        {loading && <p className="boardDataState">게시글을 불러오는 중입니다.</p>}
+        {error && <p className="boardDataState" role="alert">{error}</p>}
       </section>
     </article>
   )
