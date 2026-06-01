@@ -1,9 +1,6 @@
 {
-  "rewrites": [
-    { "source": "/robots.txt", "destination": "/robots.txt" },
-    { "source": "/sitemap.xml", "destination": "/sitemap.xml" },
-    { "source": "/google4b7725c9b67ee2fe.html", "destination": "/google4b7725c9b67ee2fe.html" },
-    { "source": "/naver35e43ada6c79200cd9746841c4b414b3.html", "destination": "/naver35e43ada6c79200cd9746841c4b414b3.html" },
-    { "source": "/(.*)", "destination": "/index.html" }
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/.*", "dest": "/index.html" }
   ]
 }
