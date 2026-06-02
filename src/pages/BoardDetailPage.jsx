@@ -129,12 +129,13 @@ export function BoardDetailPage({ boardType }) {
   }, [config.boardKey, postId])
 
   /*
-   * 검색엔진 최적화(SEO) 및 네이버 검색 로봇의 효과적인 정보 수집을 돕기 위해 구현한 동적 메타태그 갱신 로직입니다.
+   * 검색엔진 최적화(SEO) 및 네이버·구글 검색 로봇의 효과적인 정보 수집을 돕기 위해 구현한 동적 메타태그 갱신 로직입니다.
    * 게시글 데이터(post)가 성공적으로 로드되면, 기존의 공통 메타태그 정보를 해당 게시글에 맞는 고유 정보로 덮어씌웁니다.
    * - 브라우저 타이틀을 '게시글 제목 | 카테고리명 | 사이트명' 형태로 변경하여 탭에 명확히 표기합니다.
    * - 본문 콘텐츠(HTML 마크업 포함 가능)에서 텍스트만 추출하고 최대 150자까지 잘라 설명(description) 메타태그로 등록합니다.
-   * - 오픈그래프(og:) 및 트위터 메타태그도 함께 갱신하여, 네이버 블로그나 카페, SNS 등에 링크를 공유할 때 본문 제목과 요약 이미지가 예쁘게 나오도록 만듭니다.
-   * - 컴포넌트가 사라지거나(unmount) 다른 글로 바뀔 때에는 변경되기 전 이전 타이틀로 브라우저 상태를 복구시킵니다.
+   * - 오픈그래프(og:) 및 트위터 메타태그도 함께 갱신하여, 링크 공유 시 본문 제목과 요약 내용이 잘 노출되도록 지원합니다.
+   * - 특히 구글 검색 노출 최적화(Rich Snippet)를 위해, 개별 게시글 고유의 구조화 데이터(JSON-LD - BlogPosting 스키마)를 head에 동적으로 생성 및 삽입합니다.
+   * - 컴포넌트가 언마운트되거나 다른 글로 바뀔 때에는 변경 이전 브라우저 타이틀로 복구하고, 동적 생성된 JSON-LD 스크립트를 깔끔하게 청소합니다.
    */
   useEffect(() => {
     if (!post) return
@@ -186,8 +187,49 @@ export function BoardDetailPage({ boardType }) {
       return meta
     }, 'content', descriptionText)
 
+    // 구글 검색 로봇이 게시글 정보를 더 정확하게 구문 분석할 수 있도록 JSON-LD 구조화 데이터(BlogPosting)를 주입합니다.
+    let schemaScript = document.head.querySelector('script[id="dynamicJsonLdSchema"]')
+    if (!schemaScript) {
+      schemaScript = document.createElement('script')
+      schemaScript.setAttribute('id', 'dynamicJsonLdSchema')
+      schemaScript.setAttribute('type', 'application/ld+json')
+      document.head.appendChild(schemaScript)
+    }
+
+    // 날짜 포맷이 유효한지 확인하고 ISO 표준 형식으로 변환합니다.
+    const datePublishedIso = post.date ? new Date(post.date).toISOString() : new Date().toISOString()
+
+    const schemaData = {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": post.title,
+      "description": descriptionText,
+      "author": {
+        "@type": "Person",
+        "name": post.author || "유광 잠바 회원"
+      },
+      "datePublished": datePublishedIso,
+      "publisher": {
+        "@type": "Organization",
+        "name": "유광 잠바",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://lg-glossy-jacket.vercel.app/lgTwinsEmblem.png"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": window.location.href
+      }
+    }
+
+    schemaScript.textContent = JSON.stringify(schemaData)
+
     return () => {
       document.title = originalTitle
+      if (schemaScript) {
+        schemaScript.remove()
+      }
     }
   }, [post, config.eyebrow])
 
