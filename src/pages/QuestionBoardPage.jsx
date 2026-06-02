@@ -170,7 +170,7 @@ export function QuestionBoardPage() {
 
     const { data, error } = await supabase
       .from('signup_welcome_posts')
-      .select('id, user_id, parent_id, content, author_display, created_at')
+      .select('id, welcome_no, user_id, parent_id, content, author_display, created_at')
       .order('created_at', { ascending: false })
       .limit(300)
 

@@ -5,6 +5,7 @@ const boardCommentStoragePrefix = 'lgtwins.boardComments.'
 const sharedBoardKeys = new Set(['freeBoard', 'reviewBoard', 'stadiumTourBoard', 'twinsNewsBoard'])
 const boardPostSelectColumns = [
   'id',
+  'post_no',
   'board_key',
   'user_id',
   'category',
@@ -19,6 +20,7 @@ const boardPostSelectColumns = [
 ].join(', ')
 const boardCommentSelectColumns = [
   'id',
+  'comment_no',
   'post_id',
   'parent_id',
   'user_id',
@@ -85,6 +87,7 @@ function formatDateTimeFromTimestamp(value) {
 function mapBoardPostRow(row) {
   return {
     id: row.id,
+    postNo: row.post_no,
     category: row.category,
     title: row.title,
     content: row.content,
@@ -125,6 +128,7 @@ function boardPostUpdatePayload(post) {
 function mapBoardCommentRow(row) {
   return {
     id: row.id,
+    commentNo: row.comment_no,
     postId: row.post_id,
     parentId: row.parent_id,
     userId: row.user_id,

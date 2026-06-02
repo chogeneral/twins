@@ -128,6 +128,69 @@ export function BoardDetailPage({ boardType }) {
     }
   }, [config.boardKey, postId])
 
+  /*
+   * 검색엔진 최적화(SEO) 및 네이버 검색 로봇의 효과적인 정보 수집을 돕기 위해 구현한 동적 메타태그 갱신 로직입니다.
+   * 게시글 데이터(post)가 성공적으로 로드되면, 기존의 공통 메타태그 정보를 해당 게시글에 맞는 고유 정보로 덮어씌웁니다.
+   * - 브라우저 타이틀을 '게시글 제목 | 카테고리명 | 사이트명' 형태로 변경하여 탭에 명확히 표기합니다.
+   * - 본문 콘텐츠(HTML 마크업 포함 가능)에서 텍스트만 추출하고 최대 150자까지 잘라 설명(description) 메타태그로 등록합니다.
+   * - 오픈그래프(og:) 및 트위터 메타태그도 함께 갱신하여, 네이버 블로그나 카페, SNS 등에 링크를 공유할 때 본문 제목과 요약 이미지가 예쁘게 나오도록 만듭니다.
+   * - 컴포넌트가 사라지거나(unmount) 다른 글로 바뀔 때에는 변경되기 전 이전 타이틀로 브라우저 상태를 복구시킵니다.
+   */
+  useEffect(() => {
+    if (!post) return
+
+    const originalTitle = document.title
+    document.title = `${post.title} | ${config.eyebrow} | 유광 잠바`
+
+    // HTML 태그를 정규식으로 제거하고 순수 텍스트만 추출하여 150자 내외 요약본을 만듭니다.
+    const plainText = post.content || post.htmlContent?.replace(/<[^>]*>/g, '') || ''
+    const descriptionText = plainText.trim().slice(0, 150)
+
+    // 동적으로 head 내의 메타 태그를 찾아 속성을 업데이트하고, 없을 경우 새로 생성하여 주입하는 헬퍼 함수입니다.
+    const upsertMeta = (selector, createMeta, valueAttribute, value) => {
+      let element = document.head.querySelector(selector)
+      if (!element) {
+        element = createMeta()
+        document.head.appendChild(element)
+      }
+      element.setAttribute(valueAttribute, value)
+    }
+
+    upsertMeta('meta[name="description"]', () => {
+      const meta = document.createElement('meta')
+      meta.setAttribute('name', 'description')
+      return meta
+    }, 'content', descriptionText)
+
+    upsertMeta('meta[property="og:title"]', () => {
+      const meta = document.createElement('meta')
+      meta.setAttribute('property', 'og:title')
+      return meta
+    }, 'content', `${post.title} | ${config.eyebrow} | 유광 잠바`)
+
+    upsertMeta('meta[property="og:description"]', () => {
+      const meta = document.createElement('meta')
+      meta.setAttribute('property', 'og:description')
+      return meta
+    }, 'content', descriptionText)
+
+    upsertMeta('meta[name="twitter:title"]', () => {
+      const meta = document.createElement('meta')
+      meta.setAttribute('name', 'twitter:title')
+      return meta
+    }, 'content', `${post.title} | ${config.eyebrow} | 유광 잠바`)
+
+    upsertMeta('meta[name="twitter:description"]', () => {
+      const meta = document.createElement('meta')
+      meta.setAttribute('name', 'twitter:description')
+      return meta
+    }, 'content', descriptionText)
+
+    return () => {
+      document.title = originalTitle
+    }
+  }, [post, config.eyebrow])
+
   const detailClassName = useMemo(() => (
     [
       'boardPostContent',

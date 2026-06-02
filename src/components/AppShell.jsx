@@ -630,7 +630,7 @@ export function AppShell() {
               <p className="footerSiteName">유광 잠바</p>
               <p className="footerSiteTagline">LG 트윈스 팬 커뮤니티</p>
               <p className="footerSiteLead">
-                30년 골수 엘지팬이 만든 팬 롬페이지 입니다.
+                30년 골수 엘지팬이 만든 팬 홈페이지 입니다.
               </p>
             </div>
             <div className="footerColumn">
