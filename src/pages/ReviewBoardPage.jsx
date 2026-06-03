@@ -39,8 +39,8 @@ export function ReviewBoardPage() {
           rows={reviewBoardRows}
           caption="승요인증 게시글 목록"
           detailBasePath="/reviews"
-          variant="thumbnail"
           boardKey="reviewBoard"
+          showCategory={false}
           hideEmptyState={loading || Boolean(error)}
           bottomAction={(
             <button type="button" className="boardWriteLinkBtn" onClick={() => navigate('/reviews/write')}>
