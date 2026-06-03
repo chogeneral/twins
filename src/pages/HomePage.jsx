@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import mainVisualImage from '../assets/main_visul.jpg'
-import { fetchBoardPosts, getBoardPosts } from '../lib/boardPostStorage'
+import { fetchBoardPosts, getBoardPosts, isSharedBoardKey } from '../lib/boardPostStorage'
 import './homePage.css'
 
 const latestBoardSections = [
@@ -28,6 +28,8 @@ const latestBoardSections = [
 ]
 
 function getLatestBoardPosts(boardKey) {
+  if (isSharedBoardKey(boardKey)) return []
+
   /*
    * 게시글 저장 유틸은 최신 글을 배열 앞쪽에 넣습니다.
    * 메인에서는 각 게시판 첫 화면만 빠르게 훑을 수 있게 상위 5개만 잘라 보여줍니다.

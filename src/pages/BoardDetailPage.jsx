@@ -104,7 +104,9 @@ export function BoardDetailPage({ boardType }) {
         if (!ignore) setPost(nextPost)
       }
       catch {
-        if (!ignore) setPost(getBoardPost(config.boardKey, postId))
+        if (!ignore) {
+          setPost(isSharedBoardKey(config.boardKey) ? null : getBoardPost(config.boardKey, postId))
+        }
       }
       finally {
         if (!ignore) setPostLoading(false)
@@ -115,7 +117,9 @@ export function BoardDetailPage({ boardType }) {
         if (!ignore) setComments(nextComments)
       }
       catch {
-        if (!ignore) setComments(getBoardComments(config.boardKey, postId))
+        if (!ignore) {
+          setComments(isSharedBoardKey(config.boardKey) ? [] : getBoardComments(config.boardKey, postId))
+        }
       }
       finally {
         if (!ignore) setCommentsLoading(false)
@@ -271,7 +275,7 @@ export function BoardDetailPage({ boardType }) {
       setComments(nextComments)
     }
     catch {
-      setComments(getBoardComments(config.boardKey, postId))
+      setComments(isSharedBoardKey(config.boardKey) ? [] : getBoardComments(config.boardKey, postId))
     }
     finally {
       setCommentsLoading(false)
