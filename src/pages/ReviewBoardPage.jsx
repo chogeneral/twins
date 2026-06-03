@@ -53,6 +53,8 @@ export function ReviewBoardPage() {
           caption="승요인증 게시글 목록"
           detailBasePath="/reviews"
           variant="thumbnail"
+          boardKey="reviewBoard"
+          hideEmptyState={loading || Boolean(error)}
           bottomAction={(
             <button type="button" className="boardWriteLinkBtn" onClick={() => navigate('/reviews/write')}>
               글쓰기

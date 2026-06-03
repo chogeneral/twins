@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { incrementCachePostViews } from '../lib/boardPostStorage'
 
 const defaultPageSize = 9
 
@@ -31,6 +32,7 @@ export function BoardListTable({
   variant = 'table',
   showCategory = true,
   hideEmptyState = false,
+  boardKey,
 }) {
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -51,8 +53,10 @@ export function BoardListTable({
 
   /*
    * 사용자가 게시글 목록에서 특정 제목이나 카드를 클릭했을 때 실행되는 핸들러입니다.
-   * 상세 페이지로 넘어가기 직전에 클릭한 해당 게시글의 조회수(views) 데이터를 상태 내에서 즉시 1 올려주어
-   * 부드럽고 딜레이 없는 화면 동기화 효과를 제공합니다.
+   * - 상세 페이지로 넘어가기 직전에 클릭한 해당 게시글의 조회수(views) 데이터를 상태 내에서 즉시 1 올려주어
+   *   부드럽고 딜레이 없는 화면 동기화 효과를 제공합니다.
+   * - 더불어 뒤로가기를 눌러 캐시 데이터 기반으로 목록에 돌아왔을 때도 조회수가 유지되도록
+   *   메모리 캐시 및 로컬 스토리지 캐시의 정보도 함께 +1 증가시킵니다.
    */
   const handlePostClick = (clickedRowId) => {
     setLocalRows((prevRows) => (
@@ -62,6 +66,10 @@ export function BoardListTable({
           : row
       ))
     ))
+
+    if (boardKey) {
+      incrementCachePostViews(boardKey, clickedRowId)
+    }
   }
 
   const totalPages = Math.max(1, Math.ceil(localRows.length / pageSize))

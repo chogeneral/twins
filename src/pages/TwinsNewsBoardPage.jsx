@@ -53,6 +53,8 @@ export function TwinsNewsBoardPage() {
           caption="twins뉴스 게시글 목록"
           detailBasePath="/twins-news"
           showCategory={false}
+          boardKey="twinsNewsBoard"
+          hideEmptyState={loading || Boolean(error)}
           bottomAction={(
             <button type="button" className="boardWriteLinkBtn" onClick={() => navigate('/twins-news/write')}>
               글쓰기

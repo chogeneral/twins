@@ -51,6 +51,8 @@ export function StadiumTourBoardPage() {
           rows={stadiumTourRows}
           caption="구장투어 게시글 목록"
           detailBasePath="/stadium-tour"
+          boardKey="stadiumTourBoard"
+          hideEmptyState={loading || Boolean(error)}
           bottomAction={(
             <button type="button" className="boardWriteLinkBtn" onClick={() => navigate('/stadium-tour/write')}>
               글쓰기

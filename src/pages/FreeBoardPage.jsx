@@ -54,6 +54,8 @@ export function FreeBoardPage() {
           rows={freeBoardRows}
           caption="무적LG마당 게시글 목록"
           detailBasePath="/free-board"
+          boardKey="freeBoard"
+          hideEmptyState={loading || Boolean(error)}
           bottomAction={(
             <button type="button" className="boardWriteLinkBtn" onClick={() => navigate('/free-board/write')}>
               글쓰기

@@ -84,6 +84,7 @@ export function InquiryBoardPage() {
           caption="문의하기 게시글 목록"
           detailBasePath="/inquiry"
           showCategory={false}
+          boardKey="inquiryBoard"
           bottomAction={(
             <button type="button" className="boardWriteLinkBtn" onClick={() => navigate('/inquiry/write')}>
               글쓰기

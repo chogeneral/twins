@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react'
-import { fetchBoardPosts, getBoardPosts, isSharedBoardKey } from '../lib/boardPostStorage'
-
-const boardRowsMemoryCache = new Map()
+import {
+  fetchBoardPosts,
+  getBoardPosts,
+  getMemoryCacheRows,
+  isSharedBoardKey,
+  setMemoryCacheRows,
+} from '../lib/boardPostStorage'
 
 export function useBoardPosts(boardKey) {
-  const cachedRows = boardRowsMemoryCache.get(boardKey)
+  // 세션 메모리 캐시를 boardPostStorage 모듈로부터 조회합니다.
+  const cachedRows = getMemoryCacheRows(boardKey)
 
   /*
    * 1차로 빠른 세션 메모리 캐시를 조회하고, 없을 경우 2차로 로컬 스토리지에 백업된 캐시를 읽어와 초기 상태를 세팅합니다.
@@ -45,7 +50,7 @@ export function useBoardPosts(boardKey) {
         if (ignore) return
 
         if (isSharedBoardKey(boardKey)) {
-          boardRowsMemoryCache.set(boardKey, nextRows)
+          setMemoryCacheRows(boardKey, nextRows)
         }
 
         setRows(nextRows)
@@ -56,7 +61,7 @@ export function useBoardPosts(boardKey) {
         // 네트워크 에러 등이 났을 때도 사용자가 작성글을 계속 볼 수 있도록 백업 캐시를 재주입하여 복원력을 높입니다.
         setRows(
           isSharedBoardKey(boardKey)
-            ? (boardRowsMemoryCache.get(boardKey) ?? getBoardPosts(boardKey))
+            ? (getMemoryCacheRows(boardKey) ?? getBoardPosts(boardKey))
             : getBoardPosts(boardKey),
         )
         setError(loadError.message ?? '게시글을 불러오지 못했습니다.')

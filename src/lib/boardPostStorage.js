@@ -3,6 +3,12 @@ import { supabase } from './supabaseClient'
 const boardPostStoragePrefix = 'lgtwins.boardPosts.'
 const boardCommentStoragePrefix = 'lgtwins.boardComments.'
 const sharedBoardKeys = new Set(['freeBoard', 'reviewBoard', 'stadiumTourBoard', 'twinsNewsBoard'])
+
+/*
+ * 브라우저 탭 이동이나 단순 뒤로가기 시 딜레이 없는 화면 렌더링(0초 로딩)을 돕기 위해
+ * 1차로 메모리 상에 게시글 리스트 정보를 들고 있는 세션 메모리 캐시 객체입니다.
+ */
+const boardRowsMemoryCache = new Map()
 const boardPostBaseSelectColumns = [
   'id',
   'board_key',
@@ -674,3 +680,56 @@ export function deleteBoardComment(boardKey, postId, commentId) {
   window.localStorage.setItem(boardCommentStorageKey(boardKey, postId), JSON.stringify(nextRows))
   return nextRows.length !== previousRows.length
 }
+
+/*
+ * 외부 훅(useBoardPosts)에서 세션 메모리 캐시를 조회할 수 있게 제공하는 게터(Getter) 헬퍼 함수입니다.
+ */
+export function getMemoryCacheRows(boardKey) {
+  return boardRowsMemoryCache.get(boardKey)
+}
+
+/*
+ * 외부 훅(useBoardPosts)에서 서버로부터 수집한 신선한 리스트 데이터를 세션 메모리 캐시에 박을 때 쓰는 세터(Setter) 헬퍼 함수입니다.
+ */
+export function setMemoryCacheRows(boardKey, rows) {
+  boardRowsMemoryCache.set(boardKey, rows)
+}
+
+/*
+ * 사용자가 목록에서 특정 게시글을 클릭하여 상세 화면으로 넘어갈 때 실행하는 핵심 동기화 헬퍼 함수입니다.
+ * - 1차 세션 메모리 캐시와 2차 로컬 스토리지 백업 캐시 내부에 보관된 해당 게시글의 조회수(views)를 즉시 +1 시킵니다.
+ * - 이로 인해 상세 페이지 진입 후 다시 뒤로가기를 눌러 캐시 데이터로 목록 화면을 그릴 때에도
+ *   조회수 카운트가 즉각 1 증가한 최신 상태로 유지되어 사용자에게 완전한 실시간 동기화 피드백을 선사합니다.
+ */
+export function incrementCachePostViews(boardKey, postId) {
+  // 1. 메모리 캐시 갱신
+  const cachedRows = boardRowsMemoryCache.get(boardKey)
+  if (cachedRows) {
+    const nextMemoryRows = cachedRows.map((row) => (
+      row.id === postId
+        ? { ...row, views: Number(row.views ?? 0) + 1 }
+        : row
+    ))
+    boardRowsMemoryCache.set(boardKey, nextMemoryRows)
+  }
+
+  // 2. 로컬 스토리지 캐시 갱신
+  const rawLocal = window.localStorage.getItem(boardStorageKey(boardKey))
+  if (rawLocal) {
+    try {
+      const localRows = JSON.parse(rawLocal)
+      if (Array.isArray(localRows)) {
+        const nextLocalRows = localRows.map((row) => (
+          row.id === postId
+            ? { ...row, views: Number(row.views ?? 0) + 1 }
+            : row
+        ))
+        window.localStorage.setItem(boardStorageKey(boardKey), JSON.stringify(nextLocalRows))
+      }
+    }
+    catch (storageError) {
+      console.warn('로컬 캐시 조회수 갱신 중 예외 스킵:', storageError)
+    }
+  }
+}
+
