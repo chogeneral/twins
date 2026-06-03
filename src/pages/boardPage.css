@@ -207,6 +207,11 @@
   text-align: left;
 }
 
+/* 게시판 목록 테이블 댓글 컬럼 너비 */
+.boardListColComments {
+  width: 76px;
+}
+
 .boardListColAuthor {
   width: 140px;
 }
@@ -488,6 +493,8 @@
     white-space: nowrap;
   }
 
+  /* 모바일 게시판 목록 메타 정보 셀 */
+  .boardListTable .boardListCommentsCell,
   .boardListTable .boardListAuthorCell,
   .boardListTable .boardListDateCell,
   .boardListTable .boardListViewsCell {
@@ -496,6 +503,16 @@
     font-size: 0.8125rem;
     line-height: 1.5;
     white-space: nowrap;
+  }
+
+  /* 모바일 게시판 목록 댓글 구분점 */
+  .boardListCommentsCell::after {
+    content: ' · ';
+  }
+
+  /* 모바일 게시판 목록 댓글 레이블 */
+  .boardListCommentsCell::before {
+    content: '댓글 ';
   }
 
   .boardListAuthorCell::after {

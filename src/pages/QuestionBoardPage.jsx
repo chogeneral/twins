@@ -168,11 +168,22 @@ export function QuestionBoardPage() {
     setListLoading(true)
     setListError('')
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('signup_welcome_posts')
       .select('id, welcome_no, user_id, parent_id, content, author_display, created_at')
       .order('created_at', { ascending: false })
       .limit(300)
+
+    if (error && /welcome_no/i.test(`${error.message ?? ''} ${error.details ?? ''} ${error.hint ?? ''}`)) {
+      const retryResult = await supabase
+        .from('signup_welcome_posts')
+        .select('id, user_id, parent_id, content, author_display, created_at')
+        .order('created_at', { ascending: false })
+        .limit(300)
+
+      data = retryResult.data
+      error = retryResult.error
+    }
 
     setListLoading(false)
 
@@ -532,6 +543,16 @@ export function QuestionBoardPage() {
                 <div className="signupWelcomeLineRow">
                   {renderAvatar(row.author_display)}
                   <div className="signupWelcomeLineMeta">
+                    {/*
+                      사용자의 요청에 따라 글쓴이 닉네임 왼쪽에 실시간 댓글(답글)의 갯수를 표기합니다.
+                      답글이 달렸을 때만 '댓글 N' 형태로 출력되도록 분기 처리했습니다.
+                    */}
+                    {row.replies.length > 0 && (
+                      <>
+                        <span className="signupWelcomeLineComments">댓글 {row.replies.length}</span>
+                        <span aria-hidden="true"> · </span>
+                      </>
+                    )}
                     <span className="signupWelcomeLineNick">{row.author_display}</span>
                     <span aria-hidden="true"> · </span>
                     <time dateTime={row.created_at} className="signupWelcomeLineDt">

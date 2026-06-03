@@ -3,9 +3,8 @@ import { supabase } from './supabaseClient'
 const boardPostStoragePrefix = 'lgtwins.boardPosts.'
 const boardCommentStoragePrefix = 'lgtwins.boardComments.'
 const sharedBoardKeys = new Set(['freeBoard', 'reviewBoard', 'stadiumTourBoard', 'twinsNewsBoard'])
-const boardPostSelectColumns = [
+const boardPostBaseSelectColumns = [
   'id',
-  'post_no',
   'board_key',
   'user_id',
   'category',
@@ -18,9 +17,9 @@ const boardPostSelectColumns = [
   'views',
   'created_at',
 ].join(', ')
-const boardCommentSelectColumns = [
+const boardPostSelectColumns = `post_no, ${boardPostBaseSelectColumns}`
+const boardCommentBaseSelectColumns = [
   'id',
-  'comment_no',
   'post_id',
   'parent_id',
   'user_id',
@@ -29,6 +28,7 @@ const boardCommentSelectColumns = [
   'created_at',
   'updated_at',
 ].join(', ')
+const boardCommentSelectColumns = `comment_no, ${boardCommentBaseSelectColumns}`
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
@@ -85,6 +85,13 @@ function formatDateTimeFromTimestamp(value) {
 }
 
 function mapBoardPostRow(row) {
+  /*
+   * Supabase에서 조인해 온 board_comments의 count 값을 우선시하고,
+   * 만약 로컬 스토리지나 다른 경로를 통해 commentCount가 이미 정의되어 있다면 그 값을 안전하게 매핑합니다.
+   * 이를 통해 모든 게시판 데이터가 동일한 commentCount 속성을 사용할 수 있도록 일관성을 부여합니다.
+   */
+  const commentCount = row.commentCount ?? row.board_comments?.[0]?.count ?? 0
+
   return {
     id: row.id,
     postNo: row.post_no,
@@ -98,6 +105,7 @@ function mapBoardPostRow(row) {
     author: row.author_display || 'member',
     date: formatDateFromTimestamp(row.created_at),
     views: row.views ?? 0,
+    commentCount,
   }
 }
 
@@ -150,6 +158,11 @@ function boardCommentInsertPayload(postId, comment) {
   }
 }
 
+function isMissingDisplayNumberColumn(error) {
+  const message = `${error?.message ?? ''} ${error?.details ?? ''} ${error?.hint ?? ''}`
+  return /post_no|comment_no/i.test(message)
+}
+
 export function isSharedBoardKey(boardKey) {
   return sharedBoardKeys.has(boardKey)
 }
@@ -157,11 +170,60 @@ export function isSharedBoardKey(boardKey) {
 export async function fetchBoardPosts(boardKey) {
   if (!supabase || !isSharedBoardKey(boardKey)) return getBoardPosts(boardKey)
 
-  const { data, error } = await supabase
+  /*
+   * Supabase 게시글 목록을 읽어올 때 각 게시글별 댓글 개수를 효율적으로 계산하기 위하여
+   * board_comments(count) 관계 조인 쿼리를 select 절에 포함시킵니다.
+   * 이렇게 함으로써 별도의 네트워크 요청 없이 목록을 가져올 때 한 번에 모든 댓글 수가 실시간 수집됩니다.
+   */
+  let { data, error } = await supabase
     .from('board_posts')
-    .select(boardPostSelectColumns)
+    .select(`
+      post_no,
+      id,
+      board_key,
+      user_id,
+      category,
+      title,
+      content,
+      html_content,
+      font_family,
+      font_size,
+      author_display,
+      views,
+      created_at,
+      board_comments(count)
+    `)
     .eq('board_key', boardKey)
     .order('created_at', { ascending: false })
+
+  /*
+   * post_no 컬럼이 없는 기존 구 버전 데이터베이스 스키마와 호환을 유지하기 위해
+   * 오류 발생 시 post_no를 제외하고 board_comments(count)는 유지한 채 안전한 2차 조회를 재시도합니다.
+   */
+  if (error && isMissingDisplayNumberColumn(error)) {
+    const retryResult = await supabase
+      .from('board_posts')
+      .select(`
+        id,
+        board_key,
+        user_id,
+        category,
+        title,
+        content,
+        html_content,
+        font_family,
+        font_size,
+        author_display,
+        views,
+        created_at,
+        board_comments(count)
+      `)
+      .eq('board_key', boardKey)
+      .order('created_at', { ascending: false })
+
+    data = retryResult.data
+    error = retryResult.error
+  }
 
   if (error) throw error
 
@@ -169,16 +231,30 @@ export async function fetchBoardPosts(boardKey) {
 }
 
 export async function fetchBoardPost(boardKey, postId) {
-  if (!supabase || !isSharedBoardKey(boardKey) || !uuidPattern.test(postId)) {
+  if (!supabase || !isSharedBoardKey(boardKey)) {
     return getBoardPost(boardKey, postId)
   }
 
-  const { data, error } = await supabase
+  if (!uuidPattern.test(postId)) return null
+
+  let { data, error } = await supabase
     .from('board_posts')
     .select(boardPostSelectColumns)
     .eq('board_key', boardKey)
     .eq('id', postId)
     .maybeSingle()
+
+  if (error && isMissingDisplayNumberColumn(error)) {
+    const retryResult = await supabase
+      .from('board_posts')
+      .select(boardPostBaseSelectColumns)
+      .eq('board_key', boardKey)
+      .eq('id', postId)
+      .maybeSingle()
+
+    data = retryResult.data
+    error = retryResult.error
+  }
 
   if (error) throw error
 
@@ -188,11 +264,22 @@ export async function fetchBoardPost(boardKey, postId) {
 export async function createBoardPost(boardKey, post) {
   if (!supabase || !isSharedBoardKey(boardKey)) return addBoardPost(boardKey, post)
 
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from('board_posts')
     .insert(boardPostInsertPayload(boardKey, post))
     .select(boardPostSelectColumns)
     .single()
+
+  if (error && isMissingDisplayNumberColumn(error)) {
+    const retryResult = await supabase
+      .from('board_posts')
+      .insert(boardPostInsertPayload(boardKey, post))
+      .select(boardPostBaseSelectColumns)
+      .single()
+
+    data = retryResult.data
+    error = retryResult.error
+  }
 
   if (error) throw error
 
@@ -204,13 +291,26 @@ export async function saveBoardPost(boardKey, postId, post) {
     return updateBoardPost(boardKey, postId, post)
   }
 
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from('board_posts')
     .update(boardPostUpdatePayload(post))
     .eq('board_key', boardKey)
     .eq('id', postId)
     .select(boardPostSelectColumns)
     .maybeSingle()
+
+  if (error && isMissingDisplayNumberColumn(error)) {
+    const retryResult = await supabase
+      .from('board_posts')
+      .update(boardPostUpdatePayload(post))
+      .eq('board_key', boardKey)
+      .eq('id', postId)
+      .select(boardPostBaseSelectColumns)
+      .maybeSingle()
+
+    data = retryResult.data
+    error = retryResult.error
+  }
 
   if (error) throw error
 
@@ -248,15 +348,28 @@ export async function incrementBoardPostViews(boardKey, postId) {
 }
 
 export async function fetchBoardComments(boardKey, postId) {
-  if (!supabase || !isSharedBoardKey(boardKey) || !uuidPattern.test(postId)) {
+  if (!supabase || !isSharedBoardKey(boardKey)) {
     return getBoardComments(boardKey, postId)
   }
 
-  const { data, error } = await supabase
+  if (!uuidPattern.test(postId)) return []
+
+  let { data, error } = await supabase
     .from('board_comments')
     .select(boardCommentSelectColumns)
     .eq('post_id', postId)
     .order('created_at', { ascending: true })
+
+  if (error && isMissingDisplayNumberColumn(error)) {
+    const retryResult = await supabase
+      .from('board_comments')
+      .select(boardCommentBaseSelectColumns)
+      .eq('post_id', postId)
+      .order('created_at', { ascending: true })
+
+    data = retryResult.data
+    error = retryResult.error
+  }
 
   if (error) throw error
 
@@ -268,11 +381,22 @@ export async function createBoardComment(boardKey, postId, comment) {
     return addBoardComment(boardKey, postId, comment)
   }
 
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from('board_comments')
     .insert(boardCommentInsertPayload(postId, comment))
     .select(boardCommentSelectColumns)
     .single()
+
+  if (error && isMissingDisplayNumberColumn(error)) {
+    const retryResult = await supabase
+      .from('board_comments')
+      .insert(boardCommentInsertPayload(postId, comment))
+      .select(boardCommentBaseSelectColumns)
+      .single()
+
+    data = retryResult.data
+    error = retryResult.error
+  }
 
   if (error) throw error
 
@@ -284,13 +408,26 @@ export async function saveBoardComment(boardKey, postId, commentId, content) {
     return updateBoardComment(boardKey, postId, commentId, content)
   }
 
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from('board_comments')
     .update({ content })
     .eq('post_id', postId)
     .eq('id', commentId)
     .select(boardCommentSelectColumns)
     .maybeSingle()
+
+  if (error && isMissingDisplayNumberColumn(error)) {
+    const retryResult = await supabase
+      .from('board_comments')
+      .update({ content })
+      .eq('post_id', postId)
+      .eq('id', commentId)
+      .select(boardCommentBaseSelectColumns)
+      .maybeSingle()
+
+    data = retryResult.data
+    error = retryResult.error
+  }
 
   if (error) throw error
 
@@ -328,7 +465,20 @@ function safeParsePosts(rawValue) {
 
 export function getBoardPosts(boardKey) {
   const rows = safeParsePosts(window.localStorage.getItem(boardStorageKey(boardKey)))
-  return rows.filter((row) => row && typeof row.id === 'string')
+  const validRows = rows.filter((row) => row && typeof row.id === 'string')
+
+  /*
+   * Supabase를 사용하지 않는 로컬 저장소 기반의 테스트나 1:1 문의사항 게시판의 경우,
+   * 각 게시글별 댓글(getBoardComments) 데이터 갯수를 실시간으로 계산하여 commentCount로 주입합니다.
+   * 로컬 스토리지 환경에서도 목록에서 정상적으로 댓글 수가 카운팅되게 만들기 위함입니다.
+   */
+  return validRows.map((row) => {
+    const comments = getBoardComments(boardKey, row.id)
+    return {
+      ...row,
+      commentCount: comments.length,
+    }
+  })
 }
 
 export function getBoardPost(boardKey, postId) {
