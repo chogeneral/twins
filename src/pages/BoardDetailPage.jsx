@@ -101,7 +101,18 @@ export function BoardDetailPage({ boardType }) {
       try {
         const updatedPost = await incrementBoardPostViews(config.boardKey, postId)
         const nextPost = updatedPost ?? await fetchBoardPost(config.boardKey, postId)
-        if (!ignore) setPost(nextPost)
+        if (!ignore) {
+          /*
+           * DB 서버의 RPC 권한이나 네트워크 이슈로 인해 실시간 조회수가 제대로 반영되지 않고 0으로 올 경우,
+           * 이미 목록 클릭을 통해 로컬/메모리 캐시에 누적되어 있던 더 높은 조회수 값(cachedPost.views)을 보존합니다.
+           * 이를 통해 사용자 화면에서 조회수가 0으로 순간적으로 초기화되어 번쩍이는 오작동 현상을 방어합니다.
+           */
+          const cachedPost = getBoardPost(config.boardKey, postId)
+          if (nextPost && cachedPost && nextPost.views < cachedPost.views) {
+            nextPost.views = cachedPost.views
+          }
+          setPost(nextPost)
+        }
       }
       catch {
         if (!ignore) {
