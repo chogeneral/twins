@@ -1790,3 +1790,32 @@
   outline: 2px solid var(--focusRing);
   outline-offset: 2px;
 }
+
+/* 비밀 댓글 */
+.boardCommentSecretCheck {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0;
+  color: #666;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.boardCommentSecretCheck input {
+  width: 14px;
+  height: 14px;
+  accent-color: #c00;
+  cursor: pointer;
+}
+
+.boardCommentSecretBadge {
+  margin-left: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.boardCommentSecretBody {
+  color: #999;
+  font-style: italic;
+}

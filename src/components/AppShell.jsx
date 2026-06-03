@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import logoLgTwinsEmblem from '../assets/lgTwinsEmblem.png'
 import { useAuth } from '../hooks/useAuth'
+import { supabase } from '../lib/supabaseClient'
 import './appShell.css'
 
 /**
@@ -88,6 +89,57 @@ function IconChevronUp() {
         strokeLinejoin="round"
         d="M18 15l-6-6-6 6"
       />
+    </svg>
+  )
+}
+
+function IconWelcomeHand() {
+  return (
+    <svg className="siteQuickMenuSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M14 12V5a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7" />
+      <path d="M18 12V7.5a2 2 0 0 0-2-2 2 2 0 0 0-2 2v4.5" />
+      <path d="M10 12V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v6" />
+      <path d="M6 12V9.5a2 2 0 0 0-2-2 2 2 0 0 0-2 2v6.5a7 7 0 0 0 11.77 5.17l3.6-3.6a1.5 1.5 0 0 0-2.12-2.12l-2.25 2.25" />
+    </svg>
+  )
+}
+
+function IconFreeBoard() {
+  return (
+    <svg className="siteQuickMenuSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    </svg>
+  )
+}
+
+function IconTrophy() {
+  return (
+    <svg className="siteQuickMenuSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+      <path d="M4 22h16" />
+      <path d="M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34" />
+      <path d="M12 2a6 6 0 0 1 6 6v4a6 6 0 0 1-6 6 6 6 0 0 1-6-6V8a6 6 0 0 1 6-6z" />
+    </svg>
+  )
+}
+
+function IconTourFlag() {
+  return (
+    <svg className="siteQuickMenuSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+      <line x1="4" y1="22" x2="4" y2="15" />
+    </svg>
+  )
+}
+
+function IconNews() {
+  return (
+    <svg className="siteQuickMenuSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
+      <path d="M18 14h-8" />
+      <path d="M15 18h-5" />
+      <path d="M10 6h8v4h-8V6Z" />
     </svg>
   )
 }
@@ -232,14 +284,14 @@ function BottomFixedMenu() {
   }, [lastScrollY])
 
   const menuItems = [
-    { to: '/team', label: 'TEAM', icon: '⚾' },
-    { to: '/teamsong', label: '응원가', icon: '🎵' },
-    { to: '/stadium-info', label: '구장정보', icon: '🏟️' },
-    { to: '/qna', label: '가입인사', icon: '👋' },
-    { to: '/free-board', label: '무적LG마당', icon: '💬' },
-    { to: '/reviews', label: '승요인증', icon: '🏆' },
-    { to: '/stadium-tour', label: '구장투어', icon: '🚩' },
-    { to: '/twins-news', label: 'twins뉴스', icon: '📰' },
+    { to: '/team', label: 'TEAM', icon: <IconTeam /> },
+    { to: '/teamsong', label: '응원가', icon: <IconCheerSong /> },
+    { to: '/stadium-info', label: '구장정보', icon: <IconStadiumField /> },
+    { to: '/qna', label: '가입인사', icon: <IconWelcomeHand /> },
+    { to: '/free-board', label: '무적LG마당', icon: <IconFreeBoard /> },
+    { to: '/reviews', label: '승요인증', icon: <IconTrophy /> },
+    { to: '/stadium-tour', label: '구장투어', icon: <IconTourFlag /> },
+    { to: '/twins-news', label: 'twins뉴스', icon: <IconNews /> },
   ]
 
   return (
@@ -289,6 +341,149 @@ export function AppShell() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const navigate = useNavigate()
   const { user, loading, nickname, signOut } = useAuth()
+  const [hasNewComment, setHasNewComment] = useState(false)
+  const [commentedPosts, setCommentedPosts] = useState([])
+  const [postsLoading, setPostsLoading] = useState(true)
+
+  const fetchCommentedPosts = async () => {
+    if (!supabase || !user) return
+
+    try {
+      const { data: postsData, error: postsError } = await supabase
+        .from('board_posts')
+        .select(`
+          id,
+          title,
+          board_key,
+          created_at,
+          category,
+          board_comments(id)
+        `)
+        .eq('user_id', user.id)
+
+      if (postsError) {
+        console.error('내 글 목록 조회 실패:', postsError)
+        return
+      }
+
+      const myPostsWithComments = (postsData || []).filter(
+        (post) => post.board_comments && post.board_comments.length > 0,
+      )
+
+      const { data: repliesData, error: repliesError } = await supabase
+        .from('board_comments')
+        .select(`
+          board_posts!inner(
+            id,
+            title,
+            board_key,
+            created_at,
+            category,
+            board_comments(id)
+          ),
+          parent:parent_id!inner(user_id)
+        `)
+        .eq('parent.user_id', user.id)
+        .neq('user_id', user.id)
+
+      if (repliesError) {
+        console.error('내 댓글의 대댓글 게시글 조회 실패:', repliesError)
+        return
+      }
+
+      const postsFromReplies = repliesData?.map((item) => item.board_posts).filter(Boolean) || []
+      const mergedMap = new Map()
+
+      myPostsWithComments.forEach((post) => {
+        mergedMap.set(post.id, post)
+      })
+      postsFromReplies.forEach((post) => {
+        if (!mergedMap.has(post.id)) {
+          mergedMap.set(post.id, post)
+        }
+      })
+
+      const mergedList = Array.from(mergedMap.values())
+      mergedList.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+
+      setCommentedPosts(mergedList)
+    } catch (error) {
+      console.error('댓글 목록 조회 중 오류 발생:', error)
+    } finally {
+      setPostsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (!user) {
+      setHasNewComment(false)
+      setCommentedPosts([])
+      setPostsLoading(true)
+      return
+    }
+
+    let isMounted = true
+
+    const checkNewComments = async () => {
+      if (!supabase || !user) return
+
+      const localLastViewed = localStorage.getItem('last_viewed_comments_at')
+      const metaLastViewed = user.user_metadata?.last_viewed_comments_at
+      const lastViewedAt = localLastViewed || metaLastViewed || '1970-01-01T00:00:00.000Z'
+
+      try {
+        const { count: count1, error: err1 } = await supabase
+          .from('board_comments')
+          .select('id, board_posts!inner(user_id)', { count: 'exact', head: true })
+          .eq('board_posts.user_id', user.id)
+          .neq('user_id', user.id)
+          .gt('created_at', lastViewedAt)
+
+        if (err1) {
+          console.error('내 글의 새 댓글 확인 오류:', err1)
+          return
+        }
+
+        const { count: count2, error: err2 } = await supabase
+          .from('board_comments')
+          .select('id, parent:parent_id!inner(user_id)', { count: 'exact', head: true })
+          .eq('parent.user_id', user.id)
+          .neq('user_id', user.id)
+          .gt('created_at', lastViewedAt)
+
+        if (err2) {
+          console.error('내 댓글의 새 대댓글 확인 오류:', err2)
+          return
+        }
+
+        if (isMounted) {
+          setHasNewComment((count1 || 0) > 0 || (count2 || 0) > 0)
+        }
+      } catch (error) {
+        console.error('새 댓글 조회 실패:', error)
+      }
+    }
+
+    checkNewComments()
+    fetchCommentedPosts()
+
+    const intervalId = setInterval(() => {
+      checkNewComments()
+      fetchCommentedPosts()
+    }, 30000)
+
+    const handleCommentRead = () => {
+      setHasNewComment(false)
+      fetchCommentedPosts()
+    }
+    window.addEventListener('commentRead', handleCommentRead)
+
+    return () => {
+      isMounted = false
+      clearInterval(intervalId)
+      window.removeEventListener('commentRead', handleCommentRead)
+    }
+  }, [user])
 
   const handleSignOut = async () => {
     await signOut()
@@ -420,6 +615,7 @@ export function AppShell() {
                     aria-label={`${nickname}님 마이페이지로 이동`}
                   >
                     {nickname}
+                    {hasNewComment && <span className="nicknameBadge">N</span>}
                   </button>
                   <button
                     type="button"
@@ -612,7 +808,7 @@ export function AppShell() {
       </nav>
 
       <main className="mainSurface" id="mainContent" tabIndex={-1}>
-        <Outlet />
+        <Outlet context={{ commentedPosts, postsLoading, fetchCommentedPosts, hasNewComment }} />
       </main>
 
       {/* 

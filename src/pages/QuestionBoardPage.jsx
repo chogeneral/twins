@@ -97,6 +97,20 @@ export function QuestionBoardPage() {
   const [deletingPostId, setDeletingPostId] = useState('')
   const [deleteError, setDeleteError] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
+  const [replyIsSecret, setReplyIsSecret] = useState(false)
+
+  /*
+   * 비밀 답글 열람 권한을 판별하는 헬퍼입니다.
+   * 답글 작성자 본인, 원글 작성자, 관리자 세 경우에만 내용을 공개합니다.
+   */
+  const canReadSecret = (post, parentPost = null) => {
+    if (!post.is_secret) return true
+    if (!user) return false
+    if (user.id && post.user_id === user.id) return true
+    if (parentPost && user.id && parentPost.user_id === user.id) return true
+    if (user.email === 's2ckh1005@gmail.com') return true
+    return false
+  }
 
   const loginRedirectHref = useMemo(
     () => `/login?redirect=${encodeURIComponent(qnaBoardPath)}`,
@@ -156,6 +170,7 @@ export function QuestionBoardPage() {
     setReplyModalPost(null)
     setReplyDraft('')
     setReplyError('')
+    setReplyIsSecret(false)
   }, [])
 
   const loadPosts = useCallback(async () => {
@@ -170,11 +185,11 @@ export function QuestionBoardPage() {
 
     let { data, error } = await supabase
       .from('signup_welcome_posts')
-      .select('id, welcome_no, user_id, parent_id, content, author_display, created_at')
+      .select('id, welcome_no, user_id, parent_id, content, is_secret, author_display, created_at')
       .order('created_at', { ascending: false })
       .limit(300)
 
-    if (error && /welcome_no/i.test(`${error.message ?? ''} ${error.details ?? ''} ${error.hint ?? ''}`)) {
+    if (error && /welcome_no|is_secret/i.test(`${error.message ?? ''} ${error.details ?? ''} ${error.hint ?? ''}`)) {
       const retryResult = await supabase
         .from('signup_welcome_posts')
         .select('id, user_id, parent_id, content, author_display, created_at')
@@ -303,6 +318,7 @@ export function QuestionBoardPage() {
       user_id: user.id,
       parent_id: replyModalPost.id,
       content: trimmed,
+      is_secret: replyIsSecret,
     })
 
     setReplySubmitting(false)
@@ -415,6 +431,7 @@ export function QuestionBoardPage() {
     void loadPosts()
   }
 
+
   const renderPostActions = (post) => (
     <>
       <button
@@ -461,32 +478,43 @@ export function QuestionBoardPage() {
     </span>
   )
 
-  const renderReplyRow = (reply, parentAuthorDisplay) => (
-    <li key={reply.id} className="signupWelcomeReplyRow">
-      <div className="signupWelcomeReplyCard">
-        {renderAvatar(reply.author_display)}
-        <div className="signupWelcomeLineMeta">
-          <span className="signupWelcomeLineNick">{reply.author_display}</span>
-          <span aria-hidden="true"> · </span>
-          <time dateTime={reply.created_at} className="signupWelcomeLineDt">
-            {formatPostedAt(reply.created_at)}
-          </time>
+  const renderReplyRow = (reply, parentPost) => {
+    const isReadable = canReadSecret(reply, parentPost)
+    return (
+      <li key={reply.id} className="signupWelcomeReplyRow">
+        <div className="signupWelcomeReplyCard">
+          {renderAvatar(reply.author_display)}
+          <div className="signupWelcomeLineMeta">
+            <span className="signupWelcomeLineNick">{reply.author_display}</span>
+            <span aria-hidden="true"> · </span>
+            <time dateTime={reply.created_at} className="signupWelcomeLineDt">
+              {formatPostedAt(reply.created_at)}
+            </time>
+            {reply.is_secret && (
+              <span className="boardCommentSecretBadge" aria-label="비밀 답글">🔒</span>
+            )}
+          </div>
+          <p className={isReadable ? 'signupWelcomeLineBody' : 'signupWelcomeLineBody boardCommentSecretBody'}>
+            {!isReadable ? '비밀 답글입니다.' : (
+              <>
+                {parentPost?.author_display && (
+                  <span className="signupWelcomeReplyMention">{parentPost.author_display}</span>
+                )}
+                {reply.content}
+              </>
+            )}
+          </p>
+          {renderPostActions(reply)}
         </div>
-        <p className="signupWelcomeLineBody">
-          {parentAuthorDisplay && (
-            <span className="signupWelcomeReplyMention">{parentAuthorDisplay}</span>
-          )}
-          {reply.content}
-        </p>
-        {renderPostActions(reply)}
-      </div>
-      {reply.replies.length > 0 && (
-        <ul className="signupWelcomeReplyList" aria-label={`${reply.author_display}님 댓글의 답글`}>
-          {reply.replies.map((childReply) => renderReplyRow(childReply, reply.author_display))}
-        </ul>
-      )}
-    </li>
-  )
+        {reply.replies.length > 0 && (
+          <ul className="signupWelcomeReplyList" aria-label={`${reply.author_display}님 답글의 답글`}>
+            {reply.replies.map((childReply) => renderReplyRow(childReply, reply))}
+          </ul>
+        )}
+      </li>
+    )
+  }
+
 
   return (
     <article className="boardPage">
@@ -564,7 +592,7 @@ export function QuestionBoardPage() {
                 </div>
                 {row.replies.length > 0 && (
                   <ul className="signupWelcomeReplyList" aria-label={`${row.author_display}님 글의 답글`}>
-                    {row.replies.map((reply) => renderReplyRow(reply, row.author_display))}
+                    {row.replies.map((reply) => renderReplyRow(reply, row))}
                   </ul>
                 )}
               </li>
@@ -721,8 +749,14 @@ export function QuestionBoardPage() {
             />
 
             <div className="signupWelcomeReplyModalFooter">
-              <span className="signupWelcomeConfigHint">
-                최대 {maxContentLength.toLocaleString()}자
+              <span className="signupWelcomeSecretAbove">
+                <input
+                  type="checkbox" id="repple"
+                  style={{ margin: '0', accentColor: '#c00', cursor: 'pointer' }}
+                  checked={replyIsSecret}
+                  onChange={(e) => setReplyIsSecret(e.target.checked)}
+                />
+                <label for="repple">비밀 답글</label>
               </span>
               <button
                 type="button"
@@ -733,6 +767,7 @@ export function QuestionBoardPage() {
                 {replySubmitting ? '등록 중…' : '등록'}
               </button>
             </div>
+
 
             {replyError && (
               <p className="signupWelcomeError" role="alert">

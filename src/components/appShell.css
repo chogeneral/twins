@@ -873,7 +873,7 @@
     justify-content: space-around;
   }
 
-  /* 모바일 하단 고정 메뉴의 개별 탭 버튼 */
+  /* 모바일 하단 고정 메뉴 */
   .bottomFixedMenuItem {
     flex: 1;
     display: flex;
@@ -882,27 +882,51 @@
     justify-content: center;
     gap: 0.1875rem;
     text-decoration: none;
-    color: rgba(0, 0, 0, 0.58);
+    color: #000000;
     font-weight: 500;
     transition: color 0.15s ease;
   }
 
-  /* 모바일 하단 고정 메뉴의 탭 아이콘 */
+  /* 모바일 하단 고정 메뉴 */
   .bottomFixedMenuIcon {
-    font-size: 1.25rem;
-    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #3f3f3f;
   }
 
-  /* 모바일 하단 고정 메뉴의 탭 글씨 라벨 */
+  /*
+   * 모바일 하단 메뉴 아이콘은 검정보다 한 단계 부드러운 진한 회색으로 보이게 하고,
+   * SVG 내부 선 두께를 살짝 낮춰 아이콘이 과하게 볼드해 보이지 않도록 조정합니다.
+   */
+  .bottomFixedMenuIcon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    stroke-width: 1.45;
+  }
+
+  .bottomFixedMenuIcon svg * {
+    stroke-width: 1.45;
+  }
+
+  /* 모바일 하단 고정 메뉴 */
   .bottomFixedMenuLabel {
     font-size: 0.625rem;
     letter-spacing: -0.04em;
     font-weight: 700;
   }
 
-  /* 모바일 하단 고정 메뉴의 탭 활성화 색상 */
+  /* 모바일 하단 고정 메뉴 */
   .bottomFixedMenuItemActive {
     color: #c0002f !important;
+  }
+
+  /* 활성 탭은 라벨만 강조하고, 아이콘은 요청대로 진한 회색을 유지합니다. */
+  .bottomFixedMenuItemActive .bottomFixedMenuIcon {
+    color: #3f3f3f;
   }
 
   /* 모바일 뷰에서의 메인 본문 바닥 여백 보정 */
@@ -935,14 +959,15 @@
     border-bottom: 1px solid #f3f3f3;
   }
 
-  /* 790px 이하 개별 탭 여유 있는 간격 조정 */
+  /* 모바일 하단 고정 메뉴 */
   .bottomFixedMenuItem {
     gap: 0.25rem;
   }
 
-  /* 790px 이하 시원한 대형 아이콘 크기 적용 */
+  /* 모바일 하단 고정 메뉴 */
   .bottomFixedMenuIcon {
-    font-size: 1.4375rem;
+    width: 1.4375rem;
+    height: 1.4375rem;
   }
 
   /* 790px 이하 선명하고 큰 본문 폰트 적용 */
@@ -959,4 +984,21 @@
   .siteFooter {
     padding-bottom: 5rem !important;
   }
+}
+
+/* 헤더 닉네임 버튼의 새 댓글 알림 배지 */
+.nicknameBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.875rem;
+  height: 0.875rem;
+  background-color: #e60012;
+  color: #ffffff;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  border-radius: 50%;
+  margin-left: 0.25rem;
+  vertical-align: middle;
+  line-height: 1;
 }

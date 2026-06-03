@@ -71,6 +71,8 @@ export function BoardDetailPage({ boardType }) {
   )
   const [replyDraft, setReplyDraft] = useState('')
   const [replyError, setReplyError] = useState('')
+  const [commentIsSecret, setCommentIsSecret] = useState(false)
+  const [replyIsSecret, setReplyIsSecret] = useState(false)
   const loginRedirectHref = `/login?redirect=${encodeURIComponent(`${config.listPath}/${postId ?? ''}`)}`
   const authorDisplay = nickname || user?.email?.split('@')[0] || 'member'
   const isInquiryAdmin = config.boardKey === 'inquiryBoard' && user?.email === 's2ckh1005@gmail.com'
@@ -80,6 +82,19 @@ export function BoardDetailPage({ boardType }) {
   )
   const canReadPost = !config.writerOnly || !post || isPostOwner || isInquiryAdmin
   const canEditPost = Boolean(user && isPostOwner)
+
+  /*
+   * 비밀 댓글 열람 권한을 판별하는 헬퍼입니다.
+   * 댓글 작성자 본인, 게시글 작성자, 관리자 세 경우에만 내용을 공개합니다.
+   */
+  const canReadSecret = (comment) => {
+    if (!comment.isSecret) return true
+    if (!user) return false
+    if (user.id && comment.userId === user.id) return true
+    if (post?.userId && post.userId === user.id) return true
+    if (user.email === 's2ckh1005@gmail.com') return true
+    return false
+  }
 
   useEffect(() => {
     if (authLoading || !user || canReadPost) return
@@ -328,8 +343,10 @@ export function BoardDetailPage({ boardType }) {
         userId: user.id,
         authorDisplay,
         content: trimmed,
+        isSecret: commentIsSecret,
       })
       setCommentDraft('')
+      setCommentIsSecret(false)
       await refreshComments()
     }
     catch (submitError) {
@@ -354,9 +371,11 @@ export function BoardDetailPage({ boardType }) {
         userId: user.id,
         authorDisplay,
         content: trimmed,
+        isSecret: replyIsSecret,
       })
       setReplyTarget(null)
       setReplyDraft('')
+      setReplyIsSecret(false)
       await refreshComments()
     }
     catch (submitError) {
@@ -444,31 +463,41 @@ export function BoardDetailPage({ boardType }) {
     </>
   )
 
-  const renderCommentRow = (comment, parentAuthorDisplay = '') => (
-    <li key={comment.id} className="signupWelcomeReplyRow">
-      <div className="signupWelcomeReplyCard">
-        {renderAvatar(comment.authorDisplay)}
-        <div className="signupWelcomeLineMeta">
-          <span className="signupWelcomeLineNick">{comment.authorDisplay}</span>
-          <span aria-hidden="true"> · </span>
-          <time className="signupWelcomeLineDt">{comment.createdAt}</time>
-          {comment.updatedAt && <span> · 수정됨</span>}
+  const renderCommentRow = (comment, parentAuthorDisplay = '') => {
+    const isReadable = canReadSecret(comment)
+    return (
+      <li key={comment.id} className="signupWelcomeReplyRow">
+        <div className="signupWelcomeReplyCard">
+          {renderAvatar(comment.authorDisplay)}
+          <div className="signupWelcomeLineMeta">
+            <span className="signupWelcomeLineNick">{comment.authorDisplay}</span>
+            <span aria-hidden="true"> · </span>
+            <time className="signupWelcomeLineDt">{comment.createdAt}</time>
+            {comment.updatedAt && <span> · 수정됨</span>}
+            {comment.isSecret && (
+              <span className="boardCommentSecretBadge" aria-label="비밀 댓글">🔒</span>
+            )}
+          </div>
+          <p className={isReadable ? 'signupWelcomeLineBody' : 'signupWelcomeLineBody boardCommentSecretBody'}>
+            {!isReadable ? '비밀 댓글입니다.' : (
+              <>
+                {parentAuthorDisplay && (
+                  <span className="signupWelcomeReplyMention">{parentAuthorDisplay}</span>
+                )}
+                {comment.content}
+              </>
+            )}
+          </p>
+          {renderCommentActions(comment)}
         </div>
-        <p className="signupWelcomeLineBody">
-          {parentAuthorDisplay && (
-            <span className="signupWelcomeReplyMention">{parentAuthorDisplay}</span>
-          )}
-          {comment.content}
-        </p>
-        {renderCommentActions(comment)}
-      </div>
-      {comment.replies.length > 0 && (
-        <ul className="signupWelcomeReplyList" aria-label={`${comment.authorDisplay}님 댓글의 대댓글`}>
-          {comment.replies.map((reply) => renderCommentRow(reply, comment.authorDisplay))}
-        </ul>
-      )}
-    </li>
-  )
+        {comment.replies.length > 0 && (
+          <ul className="signupWelcomeReplyList" aria-label={`${comment.authorDisplay}님 댓글의 대댓글`}>
+            {comment.replies.map((reply) => renderCommentRow(reply, comment.authorDisplay))}
+          </ul>
+        )}
+      </li>
+    )
+  }
 
   if (config.writerOnly && authLoading) {
     return (
@@ -563,8 +592,13 @@ export function BoardDetailPage({ boardType }) {
                       <span aria-hidden="true"> · </span>
                       <time className="signupWelcomeLineDt">{comment.createdAt}</time>
                       {comment.updatedAt && <span> · 수정됨</span>}
+                      {comment.isSecret && (
+                        <span className="boardCommentSecretBadge" aria-label="비밀 댓글">🔒</span>
+                      )}
                     </div>
-                    <p className="signupWelcomeLineBody">{comment.content}</p>
+                    <p className={canReadSecret(comment) ? 'signupWelcomeLineBody' : 'signupWelcomeLineBody boardCommentSecretBody'}>
+                      {canReadSecret(comment) ? comment.content : '비밀 댓글입니다.'}
+                    </p>
                     {renderCommentActions(comment)}
                   </div>
                   {comment.replies.length > 0 && (
@@ -605,6 +639,14 @@ export function BoardDetailPage({ boardType }) {
                   확인
                 </button>
               </div>
+              <label className="boardCommentSecretCheck">
+                <input
+                  type="checkbox"
+                  checked={commentIsSecret}
+                  onChange={(e) => setCommentIsSecret(e.target.checked)}
+                />
+                비밀 댓글
+              </label>
               {commentError && <p className="signupWelcomeError" role="alert">{commentError}</p>}
             </div>
           ) : (
@@ -678,6 +720,15 @@ export function BoardDetailPage({ boardType }) {
                 setReplyError('')
               }}
             />
+
+            <label className="boardCommentSecretCheck">
+              <input
+                type="checkbox"
+                checked={replyIsSecret}
+                onChange={(e) => setReplyIsSecret(e.target.checked)}
+              />
+              비밀 댓글
+            </label>
 
             <div className="signupWelcomeReplyModalFooter">
               <span className="signupWelcomeConfigHint">최대 2,000자</span>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate, useOutletContext } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabaseClient'
 import './signupPage.css'
@@ -43,6 +43,14 @@ function parseProfileError(error) {
 export function MyPage() {
   const navigate = useNavigate()
   const { user, loading: authLoading } = useAuth()
+  const { commentedPosts, postsLoading, fetchCommentedPosts, hasNewComment } = useOutletContext()
+
+  /*
+   * 마이페이지에 들어가면 알림이 즉시 초기화되므로, 진입 시점의 새 댓글 유무 상태를
+   * 보존하여 화면의 "아이디" 라벨 옆에 N 배지를 지속적으로 노출하기 위해 로컬 상태로 정의합니다.
+   */
+  const [hasNewCommentAtMount] = useState(hasNewComment)
+
   const [form, setForm] = useState({
     nickname: '',
     phone: '',
@@ -108,6 +116,37 @@ export function MyPage() {
     return () => {
       isMounted = false
     }
+  }, [user])
+
+  /*
+   * 마이페이지 진입 시 부모 레이아웃에서 로드해 둔 댓글 목록을 최신화하기 위해 API 페치를 다시 실행하고,
+   * 사용자가 모든 알림을 확인한 것으로 간주하여 마지막 확인 시간(last_viewed_comments_at)을
+   * 로컬 스토리지 및 DB 유저 메타데이터에 반영합니다.
+   * 또한 즉시 헤더 닉네임의 알림 배지(N 아이콘)가 소멸하도록 이벤트를 발송합니다.
+   */
+  useEffect(() => {
+    if (!user) return
+
+    const clearNoticeAndUpdate = async () => {
+      fetchCommentedPosts()
+
+      const now = new Date().toISOString()
+      localStorage.setItem('last_viewed_comments_at', now)
+      window.dispatchEvent(new Event('commentRead'))
+
+      try {
+        await supabase.auth.updateUser({
+          data: {
+            ...user.user_metadata,
+            last_viewed_comments_at: now
+          }
+        })
+      } catch (err) {
+        console.error('댓글 확인 업데이트 실패:', err)
+      }
+    }
+
+    clearNoticeAndUpdate()
   }, [user])
 
   const validate = (name, value, nextForm = form) => {
@@ -231,10 +270,67 @@ export function MyPage() {
           <p className="myPageHint">아이디와 회원 정보를 확인하고 수정할 수 있습니다.</p>
         </div>
 
+        {/* 댓글이 달린 게시글 목록을 표시하는 추가 영역입니다. */}
+        <div className="myPageCommentedSection">
+          <h2 className="myPageSubTitle">댓글 달린 게시글 목록</h2>
+          {postsLoading ? null : commentedPosts.length === 0 ? (
+            <p className="myPageListHint">댓글이 달린 게시글이 없습니다.</p>
+          ) : (
+            <div className="myPagePostList">
+              {commentedPosts.map((post) => {
+                let boardName = ''
+                let boardPath = ''
+                switch (post.board_key) {
+                  case 'freeBoard':
+                    boardName = '무적LG마당'
+                    boardPath = `/free-board/${post.id}`
+                    break
+                  case 'reviewBoard':
+                    boardName = '승요인증'
+                    boardPath = `/reviews/${post.id}`
+                    break
+                  case 'stadiumTourBoard':
+                    boardName = '구장투어'
+                    boardPath = `/stadium-tour/${post.id}`
+                    break
+                  case 'twinsNewsBoard':
+                    boardName = 'twins뉴스'
+                    boardPath = `/twins-news/${post.id}`
+                    break
+                  default:
+                    boardName = '게시판'
+                    boardPath = '/'
+                }
+
+                return (
+                  <div key={post.id} className="myPagePostItem" onClick={() => navigate(boardPath)}>
+                    <div className="myPagePostMeta">
+                      <span className="myPagePostBoard">{boardName}</span>
+                      {post.category && <span className="myPagePostCategory">{post.category}</span>}
+                    </div>
+                    <div className="myPagePostTitleGroup">
+                      <span className="myPagePostTitle">{post.title}</span>
+                      <span className="myPagePostCommentCount">[{post.board_comments.length}]</span>
+                    </div>
+                    <span className="myPagePostDate">
+                      {new Date(post.created_at).toLocaleDateString('ko-KR', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                      })}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
         <form className="signupForm" onSubmit={handleSubmit} noValidate>
           <div className="signupField">
             <label className="signupLabel" htmlFor="myPageEmail">
               아이디
+              {hasNewCommentAtMount && <span className="nicknameBadge">N</span>}
             </label>
             <input
               id="myPageEmail"

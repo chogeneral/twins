@@ -243,6 +243,7 @@ export function BoardWritePage({ boardType }) {
   const [linkUrl, setLinkUrl] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [isNotice, setIsNotice] = useState(editingPost?.isNotice ?? false)
   const lineMenuRef = useRef(null)
 
   const currentPath = isEditMode ? `${config.backPath}/${postId}/edit` : `${config.backPath}/write`
@@ -332,6 +333,7 @@ export function BoardWritePage({ boardType }) {
         setContent(nextPost.content ?? '')
         setEditorFontFamily(nextPost.fontFamily ?? 'default')
         setEditorFontSize(String(nextPost.fontSize ?? '16'))
+        setIsNotice(nextPost.isNotice ?? false)
         editor?.commands.setContent(cleanBoardHtmlContent(nextPost.htmlContent ?? ''))
       }
       catch (loadError) {
@@ -469,6 +471,7 @@ export function BoardWritePage({ boardType }) {
       fontSize: isBlogBoard ? editorFontSize : undefined,
       userId: user.id,
       author: authorDisplay,
+      isNotice,
     }
 
     /*
@@ -697,39 +700,30 @@ export function BoardWritePage({ boardType }) {
                             { className: 'boardEditorLineBold', label: '굵은 라인' },
                             { className: 'boardEditorLineWave', label: '물결 라인' },
                             { className: 'boardEditorLineVertical', label: '세로 라인' },
-                            { className: 'boardEditorLineThin', label: '얇은 라인' },
-                            { className: 'boardEditorLineSoft', label: '연한 라인' },
-                            { className: 'boardEditorLineDiamond', label: '다이아몬드 라인' },
-                            { className: 'boardEditorLineCircle', label: '원 라인' },
-                          ].map((line) => (
+                            { className: 'boardEditorLineDouble', label: '이중 라인' },
+                          ].map((item) => (
                             <button
-                              key={line.className}
+                              key={item.className}
                               type="button"
                               role="menuitem"
-                              className={`boardBlogLineOption ${line.className}`}
-                              aria-label={line.label}
-                              onClick={() => insertLineStyle(line.className)}
-                            />
+                              className="boardBlogLineMenuItem"
+                              onClick={() => insertLineStyle(item.className)}
+                            >
+                              {item.label}
+                            </button>
                           ))}
                         </div>
                       )}
                     </div>
-                    {[
-                      {
-                        label: '🔗',
-                        command: openLinkModal,
-                      },
-                    ].map((item) => (
-                      <button
-                        key={item.label}
-                        type="button"
-                        className="boardBlogToolbarBtn"
-                        tabIndex={-1}
-                        onClick={item.command}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
+                    <button
+                      type="button"
+                      className="boardBlogToolbarBtn"
+                      aria-label="링크 삽입"
+                      tabIndex={-1}
+                      onClick={openLinkModal}
+                    >
+                      <span aria-hidden="true" />
+                    </button>
                     <label className="boardBlogColorPicker" title="글자색 변경">
                       <span style={{ backgroundColor: editorColor }} />
                       <input
@@ -746,25 +740,37 @@ export function BoardWritePage({ boardType }) {
                 </div>
 
                 <div className={['boardBlogMetaArea', shouldShowCategory ? '' : 'boardBlogMetaAreaNoCategory'].filter(Boolean).join(' ')}>
-                  {shouldShowCategory && (
-                    <>
-                      <label className="srOnly" htmlFor="boardBlogCategory">
-                        카테고리
-                      </label>
-                      <select
-                        id="boardBlogCategory"
-                        className="boardBlogCategorySelect"
-                        value={category}
-                        onChange={(event) => setCategory(event.target.value)}
-                      >
-                        {config.categories.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </>
-                  )}
+                  {shouldShowCategory && (() => {
+                    const categoriesToRender = [...(config.categories || [])]
+                    if (boardType === 'free' && user?.email === 's2ckh1005@gmail.com') {
+                      if (!categoriesToRender.includes('공지사항')) {
+                        categoriesToRender.unshift('공지사항')
+                      }
+                    }
+                    return (
+                      <>
+                        <label className="srOnly" htmlFor="boardBlogCategory">
+                          카테고리
+                        </label>
+                        <select
+                          id="boardBlogCategory"
+                          className="boardBlogCategorySelect"
+                          value={category}
+                          onChange={(event) => {
+                            const nextCat = event.target.value
+                            setCategory(nextCat)
+                            setIsNotice(nextCat === '공지사항')
+                          }}
+                        >
+                          {categoriesToRender.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </>
+                    )
+                  })()}
 
                   <label className="srOnly" htmlFor="boardWriteTitle">
                     제목
@@ -783,6 +789,7 @@ export function BoardWritePage({ boardType }) {
                   />
                 </div>
 
+
                 <div
                   id="boardBlogContent"
                   className={`boardBlogEditorContent boardBlogFont-${editorFontFamily}`}
@@ -798,18 +805,33 @@ export function BoardWritePage({ boardType }) {
                 <label className="boardWriteLabel" htmlFor="boardWriteCategory">
                   구분
                 </label>
-                <select
-                  id="boardWriteCategory"
-                  className="boardWriteSelect"
-                  value={category}
-                  onChange={(event) => setCategory(event.target.value)}
-                >
-                  {config.categories.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
+                {(() => {
+                  const categoriesToRender = [...(config.categories || [])]
+                  if (boardType === 'free' && user?.email === 's2ckh1005@gmail.com') {
+                    if (!categoriesToRender.includes('공지사항')) {
+                      categoriesToRender.unshift('공지사항')
+                    }
+                  }
+                  return (
+                    <select
+                      id="boardWriteCategory"
+                      className="boardWriteSelect"
+                      value={category}
+                      onChange={(event) => {
+                        const nextCat = event.target.value
+                        setCategory(nextCat)
+                        setIsNotice(nextCat === '공지사항')
+                      }}
+                    >
+                      {categoriesToRender.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  )
+                })()}
+
               </div>
 
               <div className="boardWriteField">

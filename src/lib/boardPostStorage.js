@@ -22,6 +22,21 @@ const boardPostBaseSelectColumns = [
   'author_display',
   'views',
   'created_at',
+  'is_notice',
+].join(', ')
+const boardPostLegacySelectColumns = [
+  'id',
+  'board_key',
+  'user_id',
+  'category',
+  'title',
+  'content',
+  'html_content',
+  'font_family',
+  'font_size',
+  'author_display',
+  'views',
+  'created_at',
 ].join(', ')
 const boardPostSelectColumns = `post_no, ${boardPostBaseSelectColumns}`
 const boardCommentBaseSelectColumns = [
@@ -31,6 +46,7 @@ const boardCommentBaseSelectColumns = [
   'user_id',
   'author_display',
   'content',
+  'is_secret',
   'created_at',
   'updated_at',
 ].join(', ')
@@ -112,6 +128,7 @@ function mapBoardPostRow(row) {
     date: formatDateFromTimestamp(row.created_at),
     views: row.views ?? 0,
     commentCount,
+    isNotice: row.is_notice ?? false,
   }
 }
 
@@ -125,6 +142,7 @@ function boardPostInsertPayload(boardKey, post) {
     html_content: post.htmlContent,
     font_family: post.fontFamily,
     font_size: post.fontSize,
+    is_notice: post.isNotice ?? false,
   }
 }
 
@@ -136,6 +154,7 @@ function boardPostUpdatePayload(post) {
     html_content: post.htmlContent,
     font_family: post.fontFamily,
     font_size: post.fontSize,
+    is_notice: post.isNotice ?? false,
   }
 }
 
@@ -148,6 +167,7 @@ function mapBoardCommentRow(row) {
     userId: row.user_id,
     authorDisplay: row.author_display || 'member',
     content: row.content,
+    isSecret: row.is_secret ?? false,
     createdAt: formatDateTimeFromTimestamp(row.created_at),
     updatedAt: row.updated_at && row.updated_at !== row.created_at
       ? formatDateTimeFromTimestamp(row.updated_at)
@@ -161,12 +181,13 @@ function boardCommentInsertPayload(postId, comment) {
     parent_id: comment.parentId ?? null,
     user_id: comment.userId,
     content: comment.content,
+    is_secret: comment.isSecret ?? false,
   }
 }
 
 function isMissingDisplayNumberColumn(error) {
   const message = `${error?.message ?? ''} ${error?.details ?? ''} ${error?.hint ?? ''}`
-  return /post_no|comment_no/i.test(message)
+  return /post_no|comment_no|is_notice/i.test(message)
 }
 
 export function isSharedBoardKey(boardKey) {
@@ -306,34 +327,48 @@ export async function fetchBoardPost(boardKey, postId) {
 
 export async function createBoardPost(boardKey, post) {
   if (!supabase || !isSharedBoardKey(boardKey)) return addBoardPost(boardKey, post)
-
+ 
   let { data, error } = await supabase
     .from('board_posts')
     .insert(boardPostInsertPayload(boardKey, post))
     .select(boardPostSelectColumns)
     .single()
-
+ 
   if (error && isMissingDisplayNumberColumn(error)) {
-    const retryResult = await supabase
+    const retryResult1 = await supabase
       .from('board_posts')
       .insert(boardPostInsertPayload(boardKey, post))
       .select(boardPostBaseSelectColumns)
       .single()
+ 
+    data = retryResult1.data
+    error = retryResult1.error
 
-    data = retryResult.data
-    error = retryResult.error
+    if (error && isMissingDisplayNumberColumn(error)) {
+      const legacyPayload = boardPostInsertPayload(boardKey, post)
+      delete legacyPayload.is_notice
+
+      const retryResult2 = await supabase
+        .from('board_posts')
+        .insert(legacyPayload)
+        .select(boardPostLegacySelectColumns)
+        .single()
+
+      data = retryResult2.data
+      error = retryResult2.error
+    }
   }
-
+ 
   if (error) throw error
-
+ 
   return mapBoardPostRow(data)
 }
-
+ 
 export async function saveBoardPost(boardKey, postId, post) {
   if (!supabase || !isSharedBoardKey(boardKey) || !uuidPattern.test(postId)) {
     return updateBoardPost(boardKey, postId, post)
   }
-
+ 
   let { data, error } = await supabase
     .from('board_posts')
     .update(boardPostUpdatePayload(post))
@@ -341,22 +376,38 @@ export async function saveBoardPost(boardKey, postId, post) {
     .eq('id', postId)
     .select(boardPostSelectColumns)
     .maybeSingle()
-
+ 
   if (error && isMissingDisplayNumberColumn(error)) {
-    const retryResult = await supabase
+    const retryResult1 = await supabase
       .from('board_posts')
       .update(boardPostUpdatePayload(post))
       .eq('board_key', boardKey)
       .eq('id', postId)
       .select(boardPostBaseSelectColumns)
       .maybeSingle()
+ 
+    data = retryResult1.data
+    error = retryResult1.error
 
-    data = retryResult.data
-    error = retryResult.error
+    if (error && isMissingDisplayNumberColumn(error)) {
+      const legacyPayload = boardPostUpdatePayload(post)
+      delete legacyPayload.is_notice
+
+      const retryResult2 = await supabase
+        .from('board_posts')
+        .update(legacyPayload)
+        .eq('board_key', boardKey)
+        .eq('id', postId)
+        .select(boardPostLegacySelectColumns)
+        .maybeSingle()
+
+      data = retryResult2.data
+      error = retryResult2.error
+    }
   }
-
+ 
   if (error) throw error
-
+ 
   return data ? mapBoardPostRow(data) : null
 }
 
@@ -618,6 +669,7 @@ export function addBoardComment(boardKey, postId, comment) {
   /*
    * 댓글은 서버 테이블 연결 전까지 게시글 id 단위로 분리 저장합니다.
    * parentId가 있으면 대댓글이고, null이면 원 댓글입니다.
+   * isSecret이 true이면 비밀 댓글로 저장하여 열람 권한을 제한합니다.
    */
   const nextComment = {
     id: `${boardKey}-${postId}-comment-${Date.now()}`,
@@ -626,6 +678,7 @@ export function addBoardComment(boardKey, postId, comment) {
     userId: comment.userId,
     authorDisplay: comment.authorDisplay,
     content: comment.content,
+    isSecret: comment.isSecret ?? false,
     createdAt: formatNow(),
     updatedAt: '',
   }

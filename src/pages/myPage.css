@@ -77,3 +77,117 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* 마이페이지 댓글 달린 게시글 목록 */
+.myPageCommentedSection {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  border-bottom: 2px solid #000000;
+  padding-bottom: 2rem;
+}
+
+.myPageSubTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #000000;
+  margin: 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #000000;
+}
+
+.myPageListHint {
+  color: #888888;
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 2.5rem 0;
+}
+
+.myPagePostList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.myPagePostItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background-color: #ffffff;
+  border: 1px solid #e8eaef;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  gap: 1rem;
+}
+
+.myPagePostItem:hover {
+  border-color: #c0002f;
+  background-color: #fafafa;
+}
+
+.myPagePostMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.myPagePostBoard {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #c0002f;
+  background-color: rgba(192, 0, 47, 0.08);
+  padding: 0.2rem 0.5rem;
+}
+
+.myPagePostCategory {
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.58);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  padding: 0.2rem 0.4rem;
+}
+
+.myPagePostTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.myPagePostTitle {
+  font-size: 0.875rem;
+  color: #000000;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.myPagePostCommentCount {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #c0002f;
+}
+
+.myPagePostDate {
+  font-size: 0.8125rem;
+  color: rgba(0, 0, 0, 0.58);
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .myPagePostItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.875rem 1rem;
+  }
+  
+  .myPagePostDate {
+    align-self: flex-end;
+  }
+}
