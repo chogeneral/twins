@@ -28,20 +28,7 @@ export function FreeBoardPage() {
        * 게시글이 아직 없을 때도 구글이 빈 목록만 있는 Soft 404 페이지로 오해하지 않도록,
        * 이 게시판에서 실제로 다루는 주제와 이용 맥락을 사용자에게도 보이는 안내 콘텐츠로 제공합니다.
        */}
-      <section className="boardSeoGuide" aria-labelledby="freeBoardGuideHeading">
-        <h2 id="freeBoardGuideHeading" className="boardSeoGuideTitle">
-          무적LG마당에서 나누는 이야기
-        </h2>
-        <p className="boardSeoGuideText">
-          무적LG마당은 LG 트윈스 팬들이 경기 전후 이야기, 응원 분위기, 티켓과 직관 준비,
-          선수 응원 메시지와 일상적인 팬 이야기를 자유롭게 남기는 커뮤니티 게시판입니다.
-        </p>
-        <ul className="boardSeoGuideList">
-          <li>LG 트윈스 경기 관전평과 응원 후기</li>
-          <li>잠실야구장 직관 준비, 티켓, 좌석 관련 정보</li>
-          <li>팬들이 함께 나누는 자유 주제와 응원 메시지</li>
-        </ul>
-      </section>
+
 
       <section
         className="boardPanel"

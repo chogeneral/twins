@@ -26,19 +26,7 @@ export function StadiumTourBoardPage() {
        * 구장투어 페이지가 단순한 빈 게시판으로 보이지 않도록,
        * 구글이 페이지의 정보 목적을 이해할 수 있는 구장 방문 안내 문맥을 실제 본문에 배치합니다.
        */}
-      <section className="boardSeoGuide" aria-labelledby="stadiumTourGuideHeading">
-        <h2 id="stadiumTourGuideHeading" className="boardSeoGuideTitle">
-          야구장 방문과 원정 구장 정보를 함께 모으는 공간
-        </h2>
-        <p className="boardSeoGuideText">
-          구장투어는 잠실야구장을 비롯한 KBO 구장 방문 후기, 좌석 시야, 교통 동선,
-          주변 맛집과 숙소 정보를 LG 트윈스 팬들이 함께 정리하는 게시판입니다.
-        </p>
-        <ul className="boardSeoGuideList">
-          <li>대중교통, 주차, 입장 동선 등 방문 팁</li>
-          <li>구장 주변 먹거리, 숙소, 여행 정보</li>
-        </ul>
-      </section>
+
 
       <section
         className="boardPanel stadiumTourBoardPanel"
