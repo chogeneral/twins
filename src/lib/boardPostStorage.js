@@ -227,7 +227,17 @@ export async function fetchBoardPosts(boardKey) {
 
   if (error) throw error
 
-  return (data ?? []).map(mapBoardPostRow)
+  const mapped = (data ?? []).map(mapBoardPostRow)
+
+  /*
+   * Supabase 서버로부터 신선한(fresh) 최신 데이터를 수집하는 데 성공하면
+   * 이를 로컬 스토리지 캐시에도 백업하여 보관합니다.
+   * 이렇게 함으로써 다음 번에 사용자가 페이지에 진입할 때 대기 딜레이(로딩바) 없이 
+   * 로컬 스토리지에 임시 저장된 목록을 0초 만에 보여줄 수 있는 강력한 Stale-While-Revalidate 효과를 낼 수 있습니다.
+   */
+  window.localStorage.setItem(boardStorageKey(boardKey), JSON.stringify(mapped))
+
+  return mapped
 }
 
 export async function fetchBoardPost(boardKey, postId) {
