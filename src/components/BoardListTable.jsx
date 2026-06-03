@@ -131,7 +131,12 @@ export function BoardListTable({
         ) : rows.length > 0 ? (
           <div className="boardThumbnailGrid" role="list" aria-label={caption}>
             {pageRows.map((row) => {
-              const thumbnailSrc = getFirstImageSrc(row.htmlContent)
+              /*
+                로컬 스토리지 용량 한도 한계를 넘지 않기 위해 저장된 경량화 이미지 주소(row.thumbnailSrc)를 우선 사용합니다.
+                만약 캐시에 이미지가 없다면 fallback으로 기존의 htmlContent 분석 헬퍼를 실행합니다.
+              */
+              const thumbnailSrc = row.thumbnailSrc || getFirstImageSrc(row.htmlContent)
+              const excerptText = row.excerpt || getExcerpt(row)
 
               return (
                 <article key={row.id} className="boardThumbnailCard" role="listitem">
@@ -152,7 +157,7 @@ export function BoardListTable({
                       )}
                     </div>
                     <strong className="boardThumbnailTitle">{row.title}</strong>
-                    <p className="boardThumbnailExcerpt">{getExcerpt(row)}</p>
+                    <p className="boardThumbnailExcerpt">{excerptText}</p>
                     {/*
                       구글 및 네이버 검색 최적화 이후 카드형 목록에서도 게시글의 상세 활성도를 한눈에 파악할 수 있도록,
                       작성자(author) 및 실시간 댓글 개수(commentCount) 정보를 하단 메타 영역에 추가로 표현합니다.

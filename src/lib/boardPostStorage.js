@@ -230,12 +230,39 @@ export async function fetchBoardPosts(boardKey) {
   const mapped = (data ?? []).map(mapBoardPostRow)
 
   /*
-   * Supabase 서버로부터 신선한(fresh) 최신 데이터를 수집하는 데 성공하면
-   * 이를 로컬 스토리지 캐시에도 백업하여 보관합니다.
-   * 이렇게 함으로써 다음 번에 사용자가 페이지에 진입할 때 대기 딜레이(로딩바) 없이 
-   * 로컬 스토리지에 임시 저장된 목록을 0초 만에 보여줄 수 있는 강력한 Stale-While-Revalidate 효과를 낼 수 있습니다.
+   * 브라우저의 로컬 스토리지 5MB 한도(QuotaExceededError) 초과 오류를 영구적으로 방지하기 위한 경량화 캐싱 로직입니다.
+   * - 목록 화면 노출에 전혀 필요치 않은 무거운 본문(content) 및 HTML 에디터 마크업(htmlContent) 필드를 캐시에서 제외합니다.
+   * - 썸네일 뷰를 고려하여 본문의 대표 이미지 주소(thumbnailSrc)와 100자 본문 요약본(excerpt)만 사전 추출하여 가볍게 30개 한도로 저장합니다.
+   * - 스토리지 용량이 꽉 차서 예외가 발생하더라도 사용자 화면이 멈추거나 크래시 나지 않도록 try-catch로 감사서 안전성을 보장합니다.
    */
-  window.localStorage.setItem(boardStorageKey(boardKey), JSON.stringify(mapped))
+  try {
+    const lightweightCache = mapped.slice(0, 30).map((post) => {
+      const match = String(post.htmlContent ?? '').match(/<img[^>]*\ssrc=["']([^"']+)["']/i)
+      const thumbnailSrc = match?.[1] ?? ''
+      
+      const plainText = String(post.content ?? '').trim() 
+        || String(post.htmlContent ?? '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+      const excerpt = plainText.slice(0, 100)
+
+      return {
+        id: post.id,
+        postNo: post.postNo,
+        category: post.category,
+        title: post.title,
+        author: post.author,
+        date: post.date,
+        views: post.views,
+        commentCount: post.commentCount,
+        thumbnailSrc,
+        excerpt,
+      }
+    })
+
+    window.localStorage.setItem(boardStorageKey(boardKey), JSON.stringify(lightweightCache))
+  }
+  catch (storageError) {
+    console.warn('로컬 스토리지 캐시 갱신 한도 초과 오류 방지 처리 완료:', storageError)
+  }
 
   return mapped
 }
