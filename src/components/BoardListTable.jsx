@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 const defaultPageSize = 9
@@ -34,7 +34,37 @@ export function BoardListTable({
 }) {
   const [currentPage, setCurrentPage] = useState(1)
 
-  const totalPages = Math.max(1, Math.ceil(rows.length / pageSize))
+  /*
+   * 상세 페이지로 화면이 전환되거나 뒤로가기를 통해 돌아왔을 때,
+   * 서버로부터 새로운 게시판 목록 데이터를 다시 패치하기 전에 사용자가 조회수 증가를 즉각 체감할 수 있도록
+   * 내부적으로 로컬 상태인 localRows를 통해 실시간 조회수를 임시 관리합니다.
+   */
+  const [localRows, setLocalRows] = useState(rows)
+
+  /*
+   * 부모 컴포넌트(페이지)가 새로 렌더링되어 최신의 rows 데이터가 공급되면
+   * 로컬 상태인 localRows를 최신 상태로 동기화합니다.
+   */
+  useEffect(() => {
+    setLocalRows(rows)
+  }, [rows])
+
+  /*
+   * 사용자가 게시글 목록에서 특정 제목이나 카드를 클릭했을 때 실행되는 핸들러입니다.
+   * 상세 페이지로 넘어가기 직전에 클릭한 해당 게시글의 조회수(views) 데이터를 상태 내에서 즉시 1 올려주어
+   * 부드럽고 딜레이 없는 화면 동기화 효과를 제공합니다.
+   */
+  const handlePostClick = (clickedRowId) => {
+    setLocalRows((prevRows) => (
+      prevRows.map((row) => (
+        row.id === clickedRowId
+          ? { ...row, views: Number(row.views ?? 0) + 1 }
+          : row
+      ))
+    ))
+  }
+
+  const totalPages = Math.max(1, Math.ceil(localRows.length / pageSize))
   /*
    * 게시글은 9개 단위(pageSize)로 끊어서 보여 줍니다.
    * 1페이지에 담기지 않는 10번째 글부터 다음 페이지가 생기므로, 실제 페이지가 2개 이상일 때만 페이징을 노출합니다.
@@ -42,8 +72,8 @@ export function BoardListTable({
   const shouldShowPagination = totalPages > 1
   const pageStartIndex = (currentPage - 1) * pageSize
   const pageRows = useMemo(() => {
-    return rows.slice(pageStartIndex, pageStartIndex + pageSize)
-  }, [pageSize, pageStartIndex, rows])
+    return localRows.slice(pageStartIndex, pageStartIndex + pageSize)
+  }, [pageSize, pageStartIndex, localRows])
 
   const goToPage = (page) => {
     setCurrentPage(Math.min(Math.max(page, 1), totalPages))
@@ -105,7 +135,15 @@ export function BoardListTable({
 
               return (
                 <article key={row.id} className="boardThumbnailCard" role="listitem">
-                  <Link className="boardThumbnailLink" to={`${detailBasePath}/${row.id}`}>
+                  {/*
+                    사용자가 썸네일 카드를 클릭할 때 handlePostClick을 연동하여
+                    상세페이지로 넘어가기 전 해당 카드 내 조회수도 즉시 1 올린 상태로 화면을 동기화합니다.
+                  */}
+                  <Link
+                    className="boardThumbnailLink"
+                    to={`${detailBasePath}/${row.id}`}
+                    onClick={() => handlePostClick(row.id)}
+                  >
                     <div className="boardThumbnailImageWrap">
                       {thumbnailSrc ? (
                         <img className="boardThumbnailImage" src={thumbnailSrc} alt="" />
@@ -156,7 +194,7 @@ export function BoardListTable({
             </tr>
           </thead>
           <tbody>
-            {rows.length === 0 && !hideEmptyState ? (
+            {localRows.length === 0 && !hideEmptyState ? (
               <tr>
                 {/*
                   댓글(Comments) 컬럼이 1개 늘어남에 따라,
@@ -166,14 +204,22 @@ export function BoardListTable({
                   아직 등록된 글이 없습니다
                 </td>
               </tr>
-            ) : rows.length > 0 ? (
+            ) : localRows.length > 0 ? (
               pageRows.map((row, index) => (
                 <tr key={row.id}>
-                  <td className="boardListNumberCell">{rows.length - (pageStartIndex + index)}</td>
+                  <td className="boardListNumberCell">{localRows.length - (pageStartIndex + index)}</td>
                   {showCategory && <td className="boardListCategoryCell">{row.category}</td>}
                   <td className="boardListTitleCell">
                     {detailBasePath ? (
-                      <Link className="boardListTitleText" to={`${detailBasePath}/${row.id}`}>
+                      /*
+                        사용자가 제목 링크를 클릭할 때 handlePostClick을 연동하여
+                        즉각적으로 조회수 숫자를 1 올린 상태로 목록에 임시 반영해 줍니다.
+                      */
+                      <Link
+                        className="boardListTitleText"
+                        to={`${detailBasePath}/${row.id}`}
+                        onClick={() => handlePostClick(row.id)}
+                      >
                         {row.title}
                       </Link>
                     ) : (
