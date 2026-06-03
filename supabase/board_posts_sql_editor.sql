@@ -234,8 +234,9 @@ $$;
 
 comment on function public.increment_board_post_views(uuid) is '게시글 상세 진입 시 조회수 1 증가';
 
+-- 비로그인(anon) 사용자도 게시판 상세를 읽을 때 조회수가 정상 반영될 수 있게 로그인(authenticated) 사용자와 함께 실행 권한을 부여합니다.
 revoke all on function public.increment_board_post_views(uuid) from public;
-grant execute on function public.increment_board_post_views(uuid) to authenticated;
+grant execute on function public.increment_board_post_views(uuid) to anon, authenticated;
 
 /*
  * =====================================================================

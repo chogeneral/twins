@@ -206,3 +206,28 @@ order by welcome_no desc;
 grant select on public.board_posts_numbered to anon, authenticated;
 grant select on public.board_comments_numbered to anon, authenticated;
 grant select on public.signup_welcome_posts_numbered to anon, authenticated;
+
+-- 상세 페이지 진입 시 클라이언트가 직접 조회수(views)를 조작하지 못하도록, 서버 측에서 안전하게 1 증가시킨 뒤 업데이트된 행을 반환하는 RPC 함수입니다.
+create or replace function public.increment_board_post_views(p_post_id uuid)
+returns public.board_posts
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  updated_row public.board_posts;
+begin
+  update public.board_posts
+  set views = views + 1
+  where id = p_post_id
+  returning * into updated_row;
+
+  return updated_row;
+end;
+$$;
+
+comment on function public.increment_board_post_views(uuid) is '게시글 상세 진입 시 조회수 1 증가';
+
+-- 비로그인(anon) 사용자도 상세 화면 진입 시 조회수를 정상적으로 올릴 수 있도록, 로그인 사용자(authenticated)와 함께 실행 권한을 부여합니다.
+revoke all on function public.increment_board_post_views(uuid) from public;
+grant execute on function public.increment_board_post_views(uuid) to anon, authenticated;
