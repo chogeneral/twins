@@ -191,3 +191,302 @@
     align-self: flex-end;
   }
 }
+
+/* 관리자 전용 전체 회원 메일 발송 버튼 */
+.adminBulkMailBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  border: 2px solid #c0002f;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #c0002f 0%, #8b0020 100%);
+  color: #fff;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+  box-shadow: 0 2px 8px rgba(192, 0, 47, 0.35);
+}
+
+.adminBulkMailBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(192, 0, 47, 0.45);
+}
+
+.adminBulkMailBtn:active {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.adminBulkMailBtn:focus-visible {
+  outline: 2px solid #c0002f;
+  outline-offset: 3px;
+}
+
+/* 메일 발송 모달 */
+.bulkMailBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.bulkMailDialog {
+  width: min(100%, 560px);
+  box-sizing: border-box;
+  padding: 2rem;
+  border: 1px solid rgba(192, 0, 47, 0.3);
+  border-radius: 14px;
+  background: #fff;
+  color: #1a1a1a;
+  box-shadow: 0 32px 80px rgba(15, 23, 42, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.bulkMailHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.bulkMailEyebrow {
+  margin: 0 0 0.25rem;
+  color: #c0002f;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+
+.bulkMailTitle {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: #1a1a1a;
+}
+
+.bulkMailCloseBtn {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: 1px solid #e0e0e0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  color: #888;
+  font: inherit;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.bulkMailCloseBtn:hover {
+  color: #1a1a1a;
+  border-color: #1a1a1a;
+}
+
+.bulkMailCloseBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.bulkMailCloseBtn:focus-visible {
+  outline: 2px solid #c0002f;
+  outline-offset: 2px;
+}
+
+.bulkMailDesc {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid #c0002f;
+  background: rgba(192, 0, 47, 0.05);
+  color: #555;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  border-radius: 0 6px 6px 0;
+}
+
+.bulkMailField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bulkMailLabel {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.bulkMailInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  background: #fafafa;
+  font: inherit;
+  font-size: 0.9375rem;
+  color: #1a1a1a;
+  transition: border-color 0.15s ease;
+}
+
+.bulkMailInput:focus-visible {
+  outline: none;
+  border-color: #c0002f;
+  background: #fff;
+}
+
+.bulkMailInput:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.bulkMailTextarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.875rem 1rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  background: #fafafa;
+  font: inherit;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: #1a1a1a;
+  resize: vertical;
+  min-height: 10rem;
+  transition: border-color 0.15s ease;
+}
+
+.bulkMailTextarea:focus-visible {
+  outline: none;
+  border-color: #c0002f;
+  background: #fff;
+}
+
+.bulkMailTextarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.bulkMailError {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid #c0002f;
+  background: rgba(192, 0, 47, 0.07);
+  color: #c0002f;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0 6px 6px 0;
+}
+
+.bulkMailSuccess {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid #22c55e;
+  background: rgba(34, 197, 94, 0.08);
+  color: #15803d;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0 6px 6px 0;
+}
+
+.bulkMailFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.bulkMailCancelBtn {
+  padding: 0.625rem 1.25rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  background: transparent;
+  color: #555;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.bulkMailCancelBtn:hover:not(:disabled) {
+  border-color: #1a1a1a;
+  color: #1a1a1a;
+}
+
+.bulkMailCancelBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.bulkMailCancelBtn:focus-visible {
+  outline: 2px solid #c0002f;
+  outline-offset: 2px;
+}
+
+.bulkMailSendBtn {
+  padding: 0.625rem 1.75rem;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #c0002f 0%, #8b0020 100%);
+  color: #fff;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+  box-shadow: 0 2px 8px rgba(192, 0, 47, 0.35);
+}
+
+.bulkMailSendBtn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.bulkMailSendBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none;
+  box-shadow: none;
+}
+
+.bulkMailSendBtn:focus-visible {
+  outline: 2px solid #c0002f;
+  outline-offset: 2px;
+}
+
+@media (max-width: 520px) {
+  .bulkMailDialog {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .bulkMailFooter {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bulkMailCancelBtn,
+  .bulkMailSendBtn {
+    width: 100%;
+    text-align: center;
+  }
+}

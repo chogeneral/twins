@@ -1,9 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Navigate, useNavigate, useOutletContext } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabaseClient'
 import './signupPage.css'
 import './myPage.css'
+
+// 관리자 이메일 — 이 계정에만 전체 회원 메일 발송 UI가 노출됩니다
+const ADMIN_EMAIL = 's2ckh1005@gmail.com'
 
 const RULES = {
   nickname: (value) => {
@@ -63,6 +66,18 @@ export function MyPage() {
   const [profileLoading, setProfileLoading] = useState(false)
   const [serverError, setServerError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+
+  // 관리자 전용: 전체 회원 메일 발송 모달 상태
+  const [bulkMailOpen, setBulkMailOpen] = useState(false)
+  const [mailSubject, setMailSubject] = useState('')
+  const [mailContent, setMailContent] = useState('')
+  const [mailSending, setMailSending] = useState(false)
+  const [mailResult, setMailResult] = useState('')
+  const [mailError, setMailError] = useState('')
+  const bulkMailDialogRef = useRef(null)
+
+  // 현재 로그인 사용자가 관리자인지 여부
+  const isAdmin = user?.email === ADMIN_EMAIL
 
   useEffect(() => {
     if (!user) return
@@ -247,6 +262,72 @@ export function MyPage() {
     setSuccessMessage('회원 정보가 수정되었습니다.')
   }
 
+  /**
+   * 전체 회원 메일 발송 — Edge Function(send-bulk-email)을 호출합니다.
+   * 클라이언트 세션의 JWT를 Authorization 헤더로 전달해 서버 측에서 관리자 여부를 재검증합니다.
+   */
+  const handleBulkMailSend = async () => {
+    if (!supabase || !user) return
+
+    if (!mailSubject.trim() || !mailContent.trim()) {
+      setMailError('제목과 내용을 모두 입력해 주세요.')
+      return
+    }
+
+    setMailSending(true)
+    setMailError('')
+    setMailResult('')
+
+    try {
+      const { data: sessionData } = await supabase.auth.getSession()
+      const jwt = sessionData?.session?.access_token
+
+      if (!jwt) {
+        setMailError('로그인 세션이 만료되었습니다. 다시 로그인해 주세요.')
+        setMailSending(false)
+        return
+      }
+
+      const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-bulk-email`
+
+      const response = await fetch(functionUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${jwt}`,
+          'Content-Type': 'application/json',
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify({ subject: mailSubject, content: mailContent }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        setMailError(result.error ?? '메일 발송에 실패했습니다.')
+      } else {
+        setMailResult(result.message ?? '발송 완료!')
+        setMailSubject('')
+        setMailContent('')
+      }
+    } catch (err) {
+      console.error('메일 발송 오류:', err)
+      setMailError('네트워크 오류가 발생했습니다.')
+    } finally {
+      setMailSending(false)
+    }
+  }
+
+  /**
+   * 메일 발송 모달을 닫을 때 입력 내용과 결과 메시지를 초기화합니다.
+   */
+  const handleBulkMailClose = () => {
+    setBulkMailOpen(false)
+    setMailSubject('')
+    setMailContent('')
+    setMailError('')
+    setMailResult('')
+  }
+
   if (authLoading) {
     return (
       <div className="signupPage">
@@ -264,10 +345,111 @@ export function MyPage() {
 
   return (
     <div className="signupPage">
+      {/* 관리자 전용 전체 회원 메일 발송 모달 */}
+      {isAdmin && bulkMailOpen && (
+        <div
+          className="bulkMailBackdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="bulkMailTitle"
+          onClick={(e) => { if (e.target === e.currentTarget) handleBulkMailClose() }}
+          onKeyDown={(e) => { if (e.key === 'Escape') handleBulkMailClose() }}
+          tabIndex={-1}
+          ref={bulkMailDialogRef}
+        >
+          <div className="bulkMailDialog">
+            <div className="bulkMailHeader">
+              <div>
+                <p className="bulkMailEyebrow">ADMIN ONLY</p>
+                <h2 id="bulkMailTitle" className="bulkMailTitle">전체 회원 메일 발송</h2>
+              </div>
+              <button
+                type="button"
+                className="bulkMailCloseBtn"
+                aria-label="닫기"
+                onClick={handleBulkMailClose}
+                disabled={mailSending}
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="bulkMailDesc">
+              현재 가입된 <strong>모든 회원</strong>의 이메일로 메시지를 발송합니다.
+            </p>
+
+            <div className="bulkMailField">
+              <label className="bulkMailLabel" htmlFor="bulkMailSubject">메일 제목</label>
+              <input
+                id="bulkMailSubject"
+                className="bulkMailInput"
+                type="text"
+                placeholder="ex) 유광 잠바 공지사항"
+                value={mailSubject}
+                onChange={(e) => { setMailSubject(e.target.value); setMailError(''); setMailResult('') }}
+                disabled={mailSending}
+                maxLength={200}
+              />
+            </div>
+
+            <div className="bulkMailField">
+              <label className="bulkMailLabel" htmlFor="bulkMailContent">메일 내용</label>
+              <textarea
+                id="bulkMailContent"
+                className="bulkMailTextarea"
+                placeholder="회원들에게 전달할 내용을 입력해 주세요."
+                value={mailContent}
+                onChange={(e) => { setMailContent(e.target.value); setMailError(''); setMailResult('') }}
+                disabled={mailSending}
+                rows={8}
+              />
+            </div>
+
+            {mailError && (
+              <p className="bulkMailError" role="alert">{mailError}</p>
+            )}
+            {mailResult && (
+              <p className="bulkMailSuccess" role="status">{mailResult}</p>
+            )}
+
+            <div className="bulkMailFooter">
+              <button
+                type="button"
+                className="bulkMailCancelBtn"
+                onClick={handleBulkMailClose}
+                disabled={mailSending}
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                id="bulkMailSendBtn"
+                className="bulkMailSendBtn"
+                onClick={handleBulkMailSend}
+                disabled={mailSending || !mailSubject.trim() || !mailContent.trim()}
+              >
+                {mailSending ? '발송 중...' : '✉ 전체 발송'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="signupCard myPageCard">
         <div className="myPageHeader">
           <h1 className="signupTitle">마이페이지</h1>
           <p className="myPageHint">아이디와 회원 정보를 확인하고 수정할 수 있습니다.</p>
+          {/* 관리자 계정에만 전체 회원 메일 발송 버튼을 노출합니다 */}
+          {isAdmin && (
+            <button
+              type="button"
+              id="adminBulkMailBtn"
+              className="adminBulkMailBtn"
+              onClick={() => setBulkMailOpen(true)}
+            >
+              ✉ 전체 회원 메일 발송
+            </button>
+          )}
         </div>
 
         {/* 댓글이 달린 게시글 목록을 표시하는 추가 영역입니다. */}
