@@ -183,7 +183,9 @@ serve(async (req: Request) => {
     // ymckh1005.com 도메인 인증 완료 후 커스텀 발신 주소로 변경합니다
     const fromAddress = 'LG트윈스 팬 커뮤니티 유광잠바 <noreply@ymckh1005.com>'
 
-    // 각 수신자에게 순차 발송합니다 — 동시 요청이 너무 많으면 SMTP 제한에 걸릴 수 있습니다
+    // Resend 무료 플랜은 초당 최대 2회 요청만 허용하므로 안전하게 1초 간격으로 발송합니다
+    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
     for (const email of allEmails) {
       try {
         if (resendApiKey) {
@@ -218,6 +220,9 @@ serve(async (req: Request) => {
         console.error(`${email} 발송 중 에러:`, err)
         results.failed++
       }
+
+      // Rate Limit 방지: 다음 발송 전 1초 대기 (초당 1회로 안전하게 제한)
+      await delay(1000)
     }
 
     return new Response(
