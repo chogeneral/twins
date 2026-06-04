@@ -180,7 +180,8 @@ serve(async (req: Request) => {
      * 발신 주소: Resend 무료 플랜은 도메인 인증 없이 onboarding@resend.dev만 허용합니다.
      * 커스텀 도메인 인증 후에는 원하는 주소(예: noreply@yourdomain.com)로 변경 가능합니다.
      */
-    const fromAddress = 'LG트윈스 팬 커뮤니티 유광잠바 <onboarding@resend.dev>'
+    // ymckh1005.com 도메인 인증 완료 후 커스텀 발신 주소로 변경합니다
+    const fromAddress = 'LG트윈스 팬 커뮤니티 유광잠바 <noreply@ymckh1005.com>'
 
     // 각 수신자에게 순차 발송합니다 — 동시 요청이 너무 많으면 SMTP 제한에 걸릴 수 있습니다
     for (const email of allEmails) {
