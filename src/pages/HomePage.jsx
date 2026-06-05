@@ -28,11 +28,9 @@ const latestBoardSections = [
 ]
 
 function getLatestBoardPosts(boardKey) {
-  if (isSharedBoardKey(boardKey)) return []
-
   /*
-   * 게시글 저장 유틸은 최신 글을 배열 앞쪽에 넣습니다.
-   * 메인에서는 각 게시판 첫 화면만 빠르게 훑을 수 있게 상위 5개만 잘라 보여줍니다.
+   * 메인 페이지가 켜지자마자 0초 만에 목록이 바로 뜨도록 하기 위해,
+   * 공유 게시판 여부와 관계없이 로컬 스토리지에 캐싱되어 있는 최신 게시글 5개를 즉시 반환합니다.
    */
   return getBoardPosts(boardKey).slice(0, 5)
 }
@@ -49,10 +47,25 @@ function getInitialLatestPosts() {
 export function HomePage() {
   const [latestPostsByBoard, setLatestPostsByBoard] = useState(getInitialLatestPosts)
 
+  /*
+   * 캐시된 데이터가 이미 있는 경우에는 화면이 바로 준비되므로 로딩 상태를 false로 시작합니다.
+   * 캐시 데이터조차 전혀 없는 첫 접속 시에만 true로 설정합니다.
+   */
+  const [loading, setLoading] = useState(() => {
+    const initialPosts = getInitialLatestPosts()
+    const hasAnyCache = Object.values(initialPosts).some((posts) => posts && posts.length > 0)
+    return !hasAnyCache
+  })
+
   useEffect(() => {
     let ignore = false
 
     async function loadLatestPosts() {
+      // 캐시가 전혀 없을 때만 로딩 문구를 노출하며 백그라운드 패치를 진행합니다.
+      const initialPosts = getInitialLatestPosts()
+      const hasAnyCache = Object.values(initialPosts).some((posts) => posts && posts.length > 0)
+      setLoading(!hasAnyCache)
+
       const entries = await Promise.all(
         latestBoardSections.map(async (section) => {
           try {
@@ -67,6 +80,7 @@ export function HomePage() {
 
       if (!ignore) {
         setLatestPostsByBoard(Object.fromEntries(entries))
+        setLoading(false)
       }
     }
 
@@ -134,6 +148,12 @@ export function HomePage() {
                       </li>
                     ))}
                   </ul>
+                ) : loading ? (
+                  /*
+                   * 로딩 중에 글이 아직 채워지지 않은 짧은 시간 동안에는
+                   * 등록된 글이 없다는 문구 대신 로딩 중이라는 메시지를 노출합니다.
+                   */
+                  <p className="homeLatestPostEmpty">게시글을 불러오는 중입니다...</p>
                 ) : (
                   <p className="homeLatestPostEmpty">아직 등록된 글이 없습니다.</p>
                 )}
