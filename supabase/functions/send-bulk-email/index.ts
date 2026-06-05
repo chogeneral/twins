@@ -180,8 +180,8 @@ serve(async (req: Request) => {
      * 발신 주소: Resend 무료 플랜은 도메인 인증 없이 onboarding@resend.dev만 허용합니다.
      * 커스텀 도메인 인증 후에는 원하는 주소(예: noreply@yourdomain.com)로 변경 가능합니다.
      */
-    // ymckh1005.com 도메인 인증 완료 후 커스텀 발신 주소로 변경합니다
-    const fromAddress = 'LG트윈스 팬 커뮤니티 유광잠바 <noreply@ymckh1005.com>'
+    // 사이트의 대표 도메인이 jaelab.kr로 변경됨에 따라, 메일 수신자에게 신뢰감을 주고 스팸 분류를 방지하기 위해 발신 도메인 주소를 jaelab.kr로 변경하여 사용합니다.
+    const fromAddress = 'LG트윈스 팬 커뮤니티 유광잠바 <noreply@jaelab.kr>'
 
     // Resend 무료 플랜은 초당 최대 2회 요청만 허용하므로 안전하게 1초 간격으로 발송합니다
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))

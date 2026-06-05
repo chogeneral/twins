@@ -706,10 +706,11 @@ export function BoardWritePage({ boardType }) {
                               key={item.className}
                               type="button"
                               role="menuitem"
-                              className="boardBlogLineMenuItem"
+                              className={`boardBlogLineOption ${item.className}`}
+                              aria-label={item.label}
                               onClick={() => insertLineStyle(item.className)}
                             >
-                              {item.label}
+                              <span className="srOnly">{item.label}</span>
                             </button>
                           ))}
                         </div>

@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://lg-glossy-jacket.vercel.app/sitemap.xml
+Sitemap: https://twinsyugwang.jaelab.kr/sitemap.xml
 

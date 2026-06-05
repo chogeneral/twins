@@ -244,7 +244,7 @@ export function BoardDetailPage({ boardType }) {
         "name": "유광 잠바",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://lg-glossy-jacket.vercel.app/lgTwinsEmblem.png"
+          "url": "https://twinsyugwang.jaelab.kr/lgTwinsEmblem.png"
         }
       },
       "mainEntityOfPage": {

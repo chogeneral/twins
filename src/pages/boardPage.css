@@ -922,6 +922,7 @@
 .boardEditorLineBold::before,
 .boardEditorLineWave::before,
 .boardEditorLineVertical::before,
+.boardEditorLineDouble::before,
 .boardEditorLineThin::before,
 .boardEditorLineSoft::before,
 .boardEditorLineDiamond::before,
@@ -955,6 +956,12 @@
   width: 1px;
   height: 24px;
   background: #bbb;
+}
+
+.boardEditorLineDouble::before {
+  height: 5px;
+  border-top: 1px solid #777;
+  border-bottom: 1px solid #777;
 }
 
 .boardEditorLineThin::before {
@@ -1818,4 +1825,4 @@
 .boardCommentSecretBody {
   color: #999;
   font-style: italic;
-}
+}
