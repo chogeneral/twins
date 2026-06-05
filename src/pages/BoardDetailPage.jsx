@@ -58,8 +58,28 @@ export function BoardDetailPage({ boardType }) {
   const { postId } = useParams()
   const navigate = useNavigate()
   const { user, loading: authLoading, nickname } = useAuth()
-  const [post, setPost] = useState(null)
-  const [postLoading, setPostLoading] = useState(Boolean(postId && isSharedBoardKey(config.boardKey)))
+  /*
+   * 상세 페이지 진입 시 로딩 딜레이 없이 바로 화면이 열리도록
+   * 1차 메모리 캐시 및 2차 로컬 스토리지 캐시에서 해당 글의 기초 정보(제목, 작성자 등)를 꺼내와 초기 상태로 셋팅합니다.
+   */
+  const [post, setPost] = useState(() => {
+    if (postId && isSharedBoardKey(config.boardKey)) {
+      return getBoardPost(config.boardKey, postId) ?? null
+    }
+    return getBoardPost(config.boardKey, postId)
+  })
+
+  /*
+   * 캐시된 게시글 데이터가 이미 로드되어 존재한다면
+   * 사용자에게 답답한 로딩창을 보여주지 않고 즉시 페이지를 그릴 수 있게 postLoading을 false로 설정합니다.
+   */
+  const [postLoading, setPostLoading] = useState(() => {
+    if (postId && isSharedBoardKey(config.boardKey)) {
+      const cached = getBoardPost(config.boardKey, postId)
+      return !cached
+    }
+    return false
+  })
   const [comments, setComments] = useState([])
   const [commentDraft, setCommentDraft] = useState('')
   const [commentError, setCommentError] = useState('')
@@ -110,7 +130,12 @@ export function BoardDetailPage({ boardType }) {
      */
     let ignore = false
     const timerId = window.setTimeout(async () => {
-      setPostLoading(isSharedBoardKey(config.boardKey))
+      /*
+       * 이미 캐시된 게시글 데이터가 준비되어 있는 상태라면
+       * 백그라운드에서 조용히 상세 내용을 갱신하므로 전체 화면을 가리는 로딩창을 띄우지 않습니다.
+       */
+      const cached = getBoardPost(config.boardKey, postId)
+      setPostLoading(!cached)
       setCommentsLoading(isSharedBoardKey(config.boardKey))
 
       try {
@@ -570,8 +595,14 @@ export function BoardDetailPage({ boardType }) {
             style={post.fontSize ? { fontSize: `${post.fontSize}px` } : undefined}
             dangerouslySetInnerHTML={{ __html: cleanedPostHtmlContent }}
           />
-        ) : (
+        ) : post.content ? (
           <p className="boardPostPlainContent">{post.content}</p>
+        ) : (
+          /*
+           * 목록 캐시에는 상세 본문 HTML이 생략되어 있을 수 있으므로,
+           * 백그라운드 API 호출이 완료되기 전까지 본문 영역에만 로딩 표시를 띄웁니다.
+           */
+          <p className="boardPostPlainContent boardPostLoadingText">본문을 불러오는 중입니다...</p>
         )}
 
         {post.tags && (

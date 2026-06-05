@@ -576,6 +576,17 @@ export function getBoardPosts(boardKey) {
 }
 
 export function getBoardPost(boardKey, postId) {
+  /*
+   * 상세 페이지 진입 시 화면이 즉시(0초 로딩) 열릴 수 있도록
+   * htmlContent 등 전체 필드가 살아있는 1차 메모리 캐시를 먼저 확인하고,
+   * 없을 경우에만 2차 로컬 스토리지 캐시 목록에서 게시글 정보를 조회하여 반환합니다.
+   */
+  const cachedRows = boardRowsMemoryCache.get(boardKey)
+  if (cachedRows) {
+    const memoryFound = cachedRows.find((row) => row.id === postId)
+    if (memoryFound) return memoryFound
+  }
+
   return getBoardPosts(boardKey).find((row) => row.id === postId) ?? null
 }
 
