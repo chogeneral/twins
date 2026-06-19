@@ -26,9 +26,9 @@ import { FindIdPage } from './pages/FindIdPage.jsx'
 import { FindPasswordPage } from './pages/FindPasswordPage.jsx'
 
 const defaultSeo = {
-  title: '유광 잠바 | LG 트윈스 팬 커뮤니티',
-  description: '유광 잠바는 LG 트윈스 팬을 위한 커뮤니티입니다. 팀 정보, 응원가, 가입인사, 무적LG마당, 승요인증, 구장투어, 트윈스뉴스를 함께 나눕니다.',
-  keywords: '유광 잠바, LG 트윈스, 엘지 트윈스, LG Twins, LG트윈스 팬 커뮤니티, 무적LG마당, 승요인증, 구장투어, 트윈스뉴스, 응원가',
+  title: '유광잠바 | LG트윈스 팬 커뮤니티',
+  description: '유광잠바는 LG트윈스(엘지 트윈스) 팬 커뮤니티입니다. 트윈스 응원가, 구장 정보, 직관 후기, 승요인증, 무적LG마당, 트윈스뉴스를 함께 나눠보세요.',
+  keywords: '유광잠바, 유광 잠바, LG트윈스, LG 트윈스, 엘지트윈스, 엘지 트윈스, LG Twins, LG트윈스 팬 커뮤니티, 트윈스 응원가, LG트윈스 응원가, 잠실야구장, 무적LG마당, 승요인증, 구장투어, 트윈스뉴스, KBO',
   robots: 'index, follow',
 }
 
@@ -42,51 +42,51 @@ const routeSeoEntries = [
   },
   {
     path: '/team',
-    title: 'TEAM | 유광 잠바',
-    description: 'LG 트윈스 팀 역사, 주요 기록, 영구결번, 선수 이야기를 확인할 수 있는 유광 잠바 TEAM 페이지입니다.',
-    keywords: 'LG 트윈스 TEAM, LG 트윈스 역사, LG 트윈스 기록, 유광 잠바',
+    title: 'LG트윈스 팀 정보 | 유광잠바',
+    description: 'LG트윈스(엘지 트윈스) 팀 역사, 주요 기록, 영구결번, 선수 이야기를 확인할 수 있는 유광잠바 TEAM 페이지입니다.',
+    keywords: 'LG트윈스 팀, LG트윈스 역사, LG트윈스 기록, LG트윈스 영구결번, 엘지 트윈스 팀, 유광잠바',
   },
   {
     path: '/teamsong',
-    title: '응원가 | 유광 잠바',
-    description: 'LG 트윈스 팀 응원가와 선수별 응원가를 모아 볼 수 있는 유광 잠바 응원가 페이지입니다.',
-    keywords: 'LG 트윈스 응원가, 엘지 트윈스 응원가, 선수 응원가, 유광 잠바',
+    title: 'LG트윈스 응원가 | 유광잠바',
+    description: 'LG트윈스(엘지 트윈스) 팀 응원가와 선수별 응원가를 모아 볼 수 있는 유광잠바 응원가 페이지입니다.',
+    keywords: 'LG트윈스 응원가, 엘지 트윈스 응원가, LG 트윈스 응원가, 선수 응원가, 트윈스 치어리더, 유광잠바',
   },
   {
     path: '/qna',
-    title: '가입인사 | 유광 잠바',
-    description: 'LG 트윈스 팬들이 처음 인사를 나누고 서로를 환영하는 유광 잠바 가입인사 게시판입니다.',
-    keywords: 'LG 트윈스 가입인사, 유광 잠바 가입인사, LG트윈스 팬 커뮤니티',
+    title: '가입인사 | 유광잠바 LG트윈스 팬 커뮤니티',
+    description: 'LG트윈스 팬들이 처음 인사를 나누고 서로를 환영하는 유광잠바 가입인사 게시판입니다.',
+    keywords: 'LG트윈스 팬 커뮤니티 가입, 유광잠바 가입인사, 엘지 트윈스 팬',
   },
   {
     path: '/free-board',
-    title: '무적LG마당 | 유광 잠바',
-    description: 'LG 트윈스 팬들이 경기, 응원, 티켓, 일상 이야기를 자유롭게 나누는 무적LG마당 게시판입니다.',
-    keywords: '무적LG마당, LG 트윈스 자유게시판, 엘지 트윈스 팬 게시판, 유광 잠바',
+    title: '무적LG마당 자유게시판 | 유광잠바',
+    description: 'LG트윈스 팬들이 경기, 응원, 티켓, 일상 이야기를 자유롭게 나누는 무적LG마당 자유게시판입니다.',
+    keywords: '무적LG마당, LG트윈스 자유게시판, 엘지 트윈스 팬 게시판, LG트윈스 커뮤니티, 유광잠바',
   },
   {
     path: '/reviews',
-    title: '승요인증 | 유광 잠바',
-    description: 'LG 트윈스 승리 순간과 직관 후기를 팬들과 함께 공유하는 승요인증 게시판입니다.',
-    keywords: '승요인증, LG 트윈스 직관 후기, LG 트윈스 승리 인증, 유광 잠바',
+    title: '승요인증 직관 후기 | 유광잠바',
+    description: 'LG트윈스 승리 순간과 직관 후기를 팬들과 함께 공유하는 승요인증 게시판입니다.',
+    keywords: '승요인증, LG트윈스 직관 후기, LG트윈스 승리 인증, 잠실야구장 직관, 엘지 트윈스, 유광잠바',
   },
   {
     path: '/stadium-tour',
-    title: '구장투어 | 유광 잠바',
-    description: '야구장 방문 후기, 좌석 시야, 먹거리, 동선 정보를 나누는 유광 잠바 구장투어 게시판입니다.',
-    keywords: '구장투어, 야구장 후기, 잠실야구장 후기, LG 트윈스 직관, 유광 잠바',
+    title: '구장투어 야구장 후기 | 유광잠바',
+    description: '야구장 방문 후기, 좌석 시야, 먹거리, 동선 정보를 나누는 유광잠바 구장투어 게시판입니다.',
+    keywords: '구장투어, 잠실야구장 후기, 야구장 좌석 시야, LG트윈스 직관, KBO 구장, 유광잠바',
   },
   {
     path: '/twins-news',
-    title: 'twins뉴스 | 유광 잠바',
-    description: 'LG 트윈스 경기 소식, 기사, 인터뷰, 팬들이 주목한 뉴스를 공유하는 twins뉴스 게시판입니다.',
-    keywords: 'twins뉴스, LG 트윈스 뉴스, 엘지 트윈스 소식, 유광 잠바',
+    title: 'LG트윈스 뉴스 | 유광잠바',
+    description: 'LG트윈스 경기 소식, 기사, 인터뷰, 팬들이 주목한 뉴스를 공유하는 트윈스뉴스 게시판입니다.',
+    keywords: 'LG트윈스 뉴스, 엘지 트윈스 소식, LG트윈스 경기 결과, 트윈스 인터뷰, 유광잠바',
   },
   {
     path: '/stadium-info',
-    title: '구장정보 | 유광 잠바',
-    description: 'KBO 주요 구장 위치, 지도, 날씨, 교통 정보를 확인할 수 있는 유광 잠바 구장정보 페이지입니다.',
-    keywords: '구장정보, 잠실야구장, KBO 구장, 야구장 교통, 유광 잠바',
+    title: 'KBO 구장정보 | 유광잠바',
+    description: 'KBO 주요 구장 위치, 지도, 날씨, 교통 정보를 확인할 수 있는 유광잠바 구장정보 페이지입니다.',
+    keywords: '잠실야구장 정보, KBO 구장 교통, 야구장 위치, 고척스카이돔, 유광잠바, LG트윈스',
   },
 ]
 
